@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CurrencyResource\Pages;
 use App\Models\Currency;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -46,6 +47,12 @@ class CurrencyResource extends Resource
                 TextInput::make('exchange')->label('Tasa de Cambio')
                     ->required()
                     ->numeric(),
+
+                Select::make('paymentMethods')
+                    ->label('Métodos de Pago')
+                    ->relationship('paymentMethods', 'name')
+                    ->multiple()
+                    ->preload(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')

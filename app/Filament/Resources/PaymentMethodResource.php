@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PaymentMethodResource\Pages;
 use App\Models\PaymentMethod;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -42,6 +43,11 @@ class PaymentMethodResource extends Resource
                     ->required(),
 
                 TextInput::make('description')->label('Descripción'),
+
+                Select::make('currencies')
+                    ->relationship(name: 'currencies', titleAttribute: 'name')
+                    ->multiple()
+                    ->preload(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')

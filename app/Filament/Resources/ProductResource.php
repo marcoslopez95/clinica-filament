@@ -56,18 +56,17 @@ class ProductResource extends Resource
                 Select::make('unit_id')
                     ->label('Unidad')
                     ->relationship('unit', 'name')
-                    ->searchable()
-                    ->required(),
+                    ->preload(),
 
                 Select::make('product_id')
                     ->label('Producto')
                     ->relationship('product', 'name')
-                    ->searchable(),
+                    ->preload(),
 
                 Select::make('product_category_id')
                     ->label('Categoría')
                     ->relationship('productCategory', 'name')
-                    ->searchable(),
+                    ->preload(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
