@@ -171,18 +171,18 @@ class InvoiceResource extends Resource
                                     ->dehydrated(),
                             ])
                             ->columns(3)->columnSpan(2)
-                            ->afterStateUpdated(function (Set $set, Get $get, mixed $state){
-                                $total = collect($state)->sum(function($item) {
+                        ,
+                        Placeholder::make('to_pay')
+                            ->label('Por Pagar')
+                            ->content(function (Get $get): string {
+                                $total = collect($get('payments'))->sum(function($item) {
                                     $exchange = $item['exchange'] ?? 1;
                                     $amount = $item['amount'] ?? 0;
                                     return $item['currency_id'] === 1 ? $amount : $amount/$exchange;
                                 });
                                 $pay = +$get('total');
-                                $set('to_pay', $pay - $total);
-                            })
-                        ,
-                        TextInput::make('to_pay')
-                            ->label('Por Pagar')->dehydrated()->disabled(),
+                                return $pay - $total;
+                            }),
                     ]),
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
@@ -203,6 +203,7 @@ class InvoiceResource extends Resource
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
                 TextColumn::make('total')->label('Total'),
+                TextColumn::make('to_pay')->label('Por Pagar'),
                 TextColumn::make('status')->label('Estado')->searchable()->sortable(),
             ])
             ->filters([

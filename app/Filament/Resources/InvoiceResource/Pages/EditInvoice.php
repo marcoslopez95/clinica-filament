@@ -5,10 +5,13 @@ namespace App\Filament\Resources\InvoiceResource\Pages;
 use App\Enums\InvoiceStatus;
 use App\Filament\Resources\InvoiceResource;
 use App\Models\Invoice;
+use App\Models\InvoiceDetail;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
+use JetBrains\PhpStorm\NoReturn;
 
 class EditInvoice extends EditRecord
 {
@@ -23,6 +26,7 @@ class EditInvoice extends EditRecord
         ];
     }
 
+    #[NoReturn]
     protected function afterSave():void
     {
         /**
@@ -33,5 +37,6 @@ class EditInvoice extends EditRecord
             $invoice->status = InvoiceStatus::CLOSED->value;
             $invoice->save();
         }
+
     }
 }

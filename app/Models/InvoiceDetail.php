@@ -18,4 +18,19 @@ class InvoiceDetail extends Model
         return $this->belongsTo(Product::class);
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (InvoiceDetail $detail) {
+            $amount = $detail->product->inventory->amount;
+            $detail->product->inventory->update(['amount' => $amount - $detail->quantity]);
+        });
+
+        static::updating(function (InvoiceDetail $detail) {
+            $oldQuantity = $detail->getOriginal('quantity');
+            $newQuantity = +$detail->quantity;
+            $totalToDiscount = $newQuantity - $oldQuantity;
+            $amountInInventory = $detail->product->inventory->amount;
+            $detail->product->inventory->update(['amount' => $amountInInventory - $totalToDiscount]);
+        });
+    }
 }

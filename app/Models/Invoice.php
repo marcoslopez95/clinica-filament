@@ -37,6 +37,11 @@ class Invoice extends Model
         return new Attribute($get);
     }
 
+    public function toPay(): Attribute
+    {
+        return new Attribute(fn() => $this->total - $this->total_paid);
+    }
+
     public function isComplete(): bool
     {
         return $this->total_paid === $this->total;
