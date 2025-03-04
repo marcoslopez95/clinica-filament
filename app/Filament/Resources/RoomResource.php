@@ -28,6 +28,7 @@ class RoomResource extends Resource
 
     protected static ?string $slug = 'rooms';
 
+    protected static ?string $navigationGroup = 'Configuración';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $modelLabel = 'Habitación';
     protected static ?string $pluralModelLabel = 'Habitaciones';

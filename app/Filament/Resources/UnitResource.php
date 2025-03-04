@@ -28,7 +28,8 @@ class UnitResource extends Resource
 
     protected static ?string $slug = 'units';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationIcon = 'heroicon-o-adjustments-vertical';
     protected static ?string $modelLabel = 'Unidad';
     protected static ?string $pluralModelLabel = 'Unidades';
     protected static ?string $navigationLabel = 'Unidades';

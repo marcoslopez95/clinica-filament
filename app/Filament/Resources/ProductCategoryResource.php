@@ -28,7 +28,8 @@ class ProductCategoryResource extends Resource
 
     protected static ?string $slug = 'product-categories';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?string $modelLabel = 'Categoría de Producto';
     protected static ?string $pluralModelLabel = 'Categorías de Productos';
     protected static ?string $navigationLabel = 'Categorías de Productos';

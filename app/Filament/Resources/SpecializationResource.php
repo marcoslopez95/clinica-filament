@@ -28,7 +28,8 @@ class SpecializationResource extends Resource
 
     protected static ?string $slug = 'specializations';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationIcon = 'heroicon-o-star';
     protected static ?string $modelLabel = 'Especialización';
     protected static ?string $pluralModelLabel = 'Especializaciones';
     protected static ?string $navigationLabel = 'Especializaciones';

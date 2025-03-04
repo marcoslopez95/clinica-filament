@@ -31,7 +31,8 @@ class PatientResource extends Resource
 
     protected static ?string $slug = 'patients';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'RRHH';
+    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
     protected static ?string $modelLabel = 'Paciente';
     protected static ?string $pluralModelLabel = 'Pacientes';
     protected static ?string $navigationLabel = 'Pacientes';

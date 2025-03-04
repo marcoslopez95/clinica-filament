@@ -31,7 +31,8 @@ class DoctorResource extends Resource
 
     protected static ?string $slug = 'doctors';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'RRHH';
+    protected static ?string $navigationIcon = 'heroicon-o-plus-circle';
     protected static ?string $modelLabel = 'Doctor';
     protected static ?string $pluralModelLabel = 'Doctores';
     protected static ?string $navigationLabel = 'Doctores';

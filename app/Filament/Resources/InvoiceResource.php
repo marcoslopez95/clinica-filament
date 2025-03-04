@@ -28,6 +28,8 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,7 +44,7 @@ class InvoiceResource extends Resource
 
     protected static ?string $slug = 'invoices';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
     protected static ?string $modelLabel = 'Factura';
     protected static ?string $pluralModelLabel = 'Facturas';
     protected static ?string $navigationLabel = 'Facturas';
@@ -208,6 +210,11 @@ class InvoiceResource extends Resource
             ])
             ->filters([
                 TrashedFilter::make(),
+                SelectFilter::make('Status')
+                ->options(collect(InvoiceStatus::cases())
+                    ->map(fn(InvoiceStatus $status) => $status->value)
+                    ->toArray()
+                )->attribute('status')
             ])
             ->actions([
                 EditAction::make(),

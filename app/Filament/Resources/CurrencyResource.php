@@ -29,7 +29,8 @@ class CurrencyResource extends Resource
 
     protected static ?string $slug = 'currencies';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
     protected static ?string $modelLabel = 'Moneda';
     protected static ?string $pluralModelLabel = 'Monedas';
     protected static ?string $navigationLabel = 'Monedas';
