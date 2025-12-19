@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ProductDetail extends Model
+class ProductServiceDetail extends Model
 {
-    protected $table = 'product_details';
+    protected $table = 'product_service_details';
 
     public function product(): BelongsTo
     {

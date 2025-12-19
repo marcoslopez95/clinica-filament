@@ -34,7 +34,7 @@ class Product extends Model
 
     public function services(): BelongsToMany
     {
-        return $this->belongsToMany(Service::class, 'product_details')
+        return $this->belongsToMany(Service::class, 'product_service_details')
                     ->withPivot('quantity');
     }
 

@@ -24,12 +24,12 @@ class Service extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'product_details')
+        return $this->belongsToMany(Product::class, 'product_service_details')
                     ->withPivot('quantity');
     }
 
     public function productDetails(): HasMany
     {
-        return $this->hasMany(ProductDetail::class);
+        return $this->hasMany(ProductServiceDetail::class);
     }
 }
