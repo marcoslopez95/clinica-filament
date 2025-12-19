@@ -23,6 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ServiceResource\RelationManagers\ProductsRelationManager;
 
 class ServiceResource extends Resource
 {
@@ -97,6 +98,7 @@ class ServiceResource extends Resource
                     ->label('Categoría')
                     ->searchable()
                     ->sortable(),
+
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -119,7 +121,7 @@ class ServiceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ProductsRelationManager::class,
         ];
     }
 
