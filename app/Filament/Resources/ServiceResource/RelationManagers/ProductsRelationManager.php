@@ -6,11 +6,14 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder as FormPlaceholder;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
+use App\Models\Product;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -21,8 +24,8 @@ class ProductsRelationManager extends RelationManager
         return $form->schema([
             Select::make('product_id')
                 ->label('Producto')
-                ->relationship('product', 'name')
-                ->preload()
+                ->options(fn () => Product::pluck('name', 'id')->toArray())
+                ->searchable()
                 ->required(),
 
             TextInput::make('quantity')
@@ -44,8 +47,12 @@ class ProductsRelationManager extends RelationManager
                     ->form([
                         Select::make('product_id')
                             ->label('Producto')
-                            ->relationship('product', 'name')
-                            ->preload()
+                            ->options(function () {
+                                $owner = $this->getOwnerRecord();
+                                $used = $owner->productDetails()->pluck('product_id')->toArray();
+                                return Product::whereNotIn('id', $used)->pluck('name', 'id')->toArray();
+                            })
+                            ->searchable()
                             ->required(),
 
                         TextInput::make('quantity')
@@ -55,7 +62,20 @@ class ProductsRelationManager extends RelationManager
                     ]),
             ])
             ->actions([
-                EditAction::make(),
+                EditAction::make()->form([
+                    Hidden::make('product_id')
+                        ->default(fn ($record) => $record->product_id)
+                        ->required(),
+
+                    FormPlaceholder::make('product_label')
+                        ->label('Producto')
+                        ->content(fn ($record) => $record->product?->name ?? '-'),
+
+                    TextInput::make('quantity')
+                        ->label('Cantidad')
+                        ->numeric()
+                        ->required(),
+                ]),
                 DeleteAction::make(),
             ]);
     }
