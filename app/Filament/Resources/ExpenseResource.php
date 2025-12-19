@@ -19,8 +19,11 @@ use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Forms\Components\Placeholder;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ExpenseResource extends Resource
 {
     protected static ?string $model = Expense::class;
@@ -29,7 +32,7 @@ class ExpenseResource extends Resource
     
     protected static ?string $navigationGroup = 'Configuración';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $modelLabel = 'Gastos';
+    protected static ?string $modelLabel = 'Gasto';
     protected static ?string $pluralModelLabel = 'Gastos';
     protected static ?string $navigationLabel = 'Gastos';
 
@@ -48,14 +51,14 @@ class ExpenseResource extends Resource
                     ->numeric(),
 
                 Select::make('currency_id')
-                ->label('Moneda')
-                ->relationship('currency', 'name')
-                ->required()
-                ->reactive()
-                ->preload()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    $set('exchange', Currency::find($state)->exchange);
-                }),
+                    ->label('Moneda')
+                    ->relationship('currency', 'name')
+                    ->required()
+                    ->reactive()
+                    ->preload()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('exchange', Currency::find($state)->exchange);
+                    }),
 
                 Select::make('expense_category_id')
                     ->label('Categoría')
@@ -67,7 +70,15 @@ class ExpenseResource extends Resource
                     ->label('Tasa de Cambio')
                     ->readOnly()
                     ->numeric()
-                    ->required()
+                    ->required(),
+
+                Placeholder::make('created_at')
+                    ->label('Fecha de Creación')
+                    ->content(fn(?Expense $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+
+                Placeholder::make('updated_at')
+                    ->label('Fecha Última Modificación')
+                    ->content(fn(?Expense $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -75,11 +86,25 @@ class ExpenseResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('description')->label('Descripción')->limit(50),
-                TextColumn::make('price')->label('Precio')->sortable(),
-                TextColumn::make('currency.name')->label('Moneda')->sortable(),
-                TextColumn::make('category.name')->label('Categoría')->sortable(),
-                TextColumn::make('exchange')->label('Tasa de Cambio')->sortable(),
+                TextColumn::make('description')
+                ->label('Descripción')
+                ->limit(50),
+
+                TextColumn::make('price')
+                ->label('Precio')
+                ->sortable(),
+
+                TextColumn::make('currency.name')
+                ->label('Moneda')
+                ->sortable(),
+
+                TextColumn::make('category.name')
+                ->label('Categoría')
+                ->sortable(),
+
+                TextColumn::make('exchange')
+                ->label('Tasa de Cambio')
+                ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -113,5 +138,18 @@ class ExpenseResource extends Resource
             'create' => Pages\CreateExpense::route('/create'),
             'edit' => Pages\EditExpense::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['description'];
     }
 }
