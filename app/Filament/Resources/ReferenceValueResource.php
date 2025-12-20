@@ -41,31 +41,31 @@ class ReferenceValueResource extends Resource
         return $form
             ->schema([
                 Select::make('exam_id')
-                    ->label('Exam')
+                    ->label('Examen')
                     ->relationship('exam', 'name')
                     ->required()
                     ->preload(),
 
                 TextInput::make('name')
-                    ->label('Name')
+                    ->label('Nombre')
                     ->required(),
 
                 TextInput::make('min_value')
-                    ->label('Min Value')
+                    ->label('Valor Mínimo')
                     ->required()
                     ->numeric(),
 
                 TextInput::make('max_value')
-                    ->label('Max Value')
+                    ->label('Valor Máximo')
                     ->required()
                     ->numeric(),
 
                 Placeholder::make('created_at')
-                    ->label('Created At')
+                    ->label('Fecha de Creación')
                     ->content(fn(?ReferenceValue $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
-                    ->label('Updated At')
+                    ->label('Fecha de Actualización')
                     ->content(fn(?ReferenceValue $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
