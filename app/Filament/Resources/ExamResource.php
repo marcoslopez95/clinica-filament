@@ -28,7 +28,7 @@ class ExamResource extends Resource
 {
     protected static ?string $model = Exam::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $slug = 'exams';
     protected static ?string $navigationGroup = 'Configuración';
     protected static ?string $modelLabel = 'Examen';
@@ -40,20 +40,20 @@ class ExamResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->label('Name')
+                    ->label('Nombre')
                     ->required(),
 
                 TextInput::make('price')
-                    ->label('Price')
+                    ->label('Precio')
                     ->required()
                     ->numeric(),
 
                 Placeholder::make('created_at')
-                    ->label('Created At')
+                    ->label('Fecha de Creación')
                     ->content(fn(?Exam $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
-                    ->label('Updated At')
+                    ->label('Fecha de Última Modificación')
                     ->content(fn(?Exam $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }

@@ -31,7 +31,7 @@ class ExpenseResource extends Resource
     protected static ?string $slug = 'expenses';
     
     protected static ?string $navigationGroup = 'Configuración';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $modelLabel = 'Gasto';
     protected static ?string $pluralModelLabel = 'Gastos';
     protected static ?string $navigationLabel = 'Gastos';

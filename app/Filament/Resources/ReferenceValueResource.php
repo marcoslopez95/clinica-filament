@@ -29,7 +29,7 @@ class ReferenceValueResource extends Resource
 {
     protected static ?string $model = ReferenceValue::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $slug = 'reference-values';
     protected static ?string $navigationGroup = 'Configuración';
     protected static ?string $modelLabel = 'Valor Referencial';

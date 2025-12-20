@@ -69,7 +69,7 @@ class ServiceResource extends Resource
                     ->content(fn(?Service $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
-                    ->label('Fecha Última Modificación')
+                    ->label('Fecha de Última Modificación')
                     ->content(fn(?Service $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }

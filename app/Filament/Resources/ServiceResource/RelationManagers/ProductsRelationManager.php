@@ -86,7 +86,7 @@ class ProductsRelationManager extends RelationManager
                         ->required(),
                 ]),
                 DeleteAction::make(),
-            ]);
+            ])->emptyStateDescription('');
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
