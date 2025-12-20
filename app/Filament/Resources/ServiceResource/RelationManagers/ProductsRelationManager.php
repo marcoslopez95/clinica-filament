@@ -13,11 +13,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
 
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'productDetails';
+
+    protected static ?string $modelLabel = 'Producto';
+    protected static ?string $pluralModelLabel = 'Productos';
 
     public function form(Form $form): Form
     {
@@ -39,8 +43,13 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('product.name')->label('Producto'),
-                TextColumn::make('quantity')->label('Cantidad'),
+                TextColumn::make('product.name')
+                    ->label('Producto asociado')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('quantity')
+                    ->label('Cantidad asignada'),
             ])
             ->headerActions([
                 CreateAction::make()
@@ -78,5 +87,10 @@ class ProductsRelationManager extends RelationManager
                 ]),
                 DeleteAction::make(),
             ]);
+    }
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return 'Productos del servicio';
     }
 }
