@@ -56,7 +56,7 @@ class ExpenseResource extends Resource
                     ->reactive()
                     ->preload()
                     ->afterStateUpdated(function ($state, callable $set) {
-                        $set('exchange', Currency::find($state)->exchange);
+                        $set('exchange', Currency::find($state)?->exchange ?? 0);
                     }),
 
                 Select::make('expense_category_id')

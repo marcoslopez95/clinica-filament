@@ -6,6 +6,8 @@ use App\Filament\Resources\ExamResource\Pages;
 use App\Filament\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -53,6 +55,30 @@ class ExamResource extends Resource
                     ->label('Moneda')
                     ->relationship('currency', 'name')
                     ->required(),
+
+                Section::make('')
+                    ->label('Valores Referenciales')
+                    ->description('Agrega o selecciona valores referenciales para este examen')
+                    ->schema([
+                        Repeater::make('reference_values')
+                            ->relationship('referenceValues')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Nombre')
+                                    ->required(),
+
+                                TextInput::make('min_value')
+                                    ->label('Valor mínimo')
+                                    ->numeric()
+                                    ->required(),
+
+                                TextInput::make('max_value')
+                                    ->label('Valor máximo')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->columns(3)
+                    ]),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
