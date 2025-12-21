@@ -30,7 +30,7 @@ class ExpenseResource extends Resource
 
     protected static ?string $slug = 'expenses';
     
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'Contabilidad';
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $modelLabel = 'Gasto';
     protected static ?string $pluralModelLabel = 'Gastos';
@@ -42,8 +42,7 @@ class ExpenseResource extends Resource
             ->schema([
                 Textarea::make('description')
                     ->label('Descripción')
-                    ->required()
-                    ->rows(1),
+                    ->required(),
 
                 TextInput::make('price')
                     ->label('Precio')
@@ -87,24 +86,24 @@ class ExpenseResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('description')
-                ->label('Descripción')
-                ->limit(50),
+                    ->label('Descripción')
+                    ->limit(50),
 
                 TextColumn::make('price')
-                ->label('Precio')
-                ->sortable(),
+                    ->label('Precio')
+                    ->sortable(),
 
                 TextColumn::make('currency.name')
-                ->label('Moneda')
-                ->sortable(),
+                    ->label('Moneda')
+                    ->sortable(),
 
                 TextColumn::make('category.name')
-                ->label('Categoría')
-                ->sortable(),
+                    ->label('Categoría')
+                    ->sortable(),
 
                 TextColumn::make('exchange')
-                ->label('Tasa de Cambio')
-                ->sortable(),
+                    ->label('Tasa de Cambio')
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -117,9 +116,9 @@ class ExpenseResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                DeleteBulkAction::make(),
-                RestoreBulkAction::make(),
-                ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
                 ]),
             ]);
     }
