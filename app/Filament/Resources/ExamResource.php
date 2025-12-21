@@ -6,6 +6,7 @@ use App\Filament\Resources\ExamResource\Pages;
 use App\Filament\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -48,6 +49,11 @@ class ExamResource extends Resource
                     ->required()
                     ->numeric(),
 
+                Select::make('currency_id')
+                    ->label('Moneda')
+                    ->relationship('currency', 'name')
+                    ->required(),
+
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
                     ->content(fn(?Exam $record): string => $record?->created_at?->diffForHumans() ?? '-'),
@@ -69,6 +75,10 @@ class ExamResource extends Resource
 
                 TextColumn::make('price')
                     ->label('Price')
+                    ->sortable(),
+
+                TextColumn::make('currency.name')
+                    ->label('Moneda')
                     ->sortable(),
             ])
             ->filters([
