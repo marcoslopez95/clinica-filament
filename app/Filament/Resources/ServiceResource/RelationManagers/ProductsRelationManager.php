@@ -51,9 +51,9 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('quantity')
                     ->label('Cantidad asignada'),
             ])
-            ->headerActions([
-                CreateAction::make()
-                    ->form([
+                ->headerActions([
+                    CreateAction::make()->label('Crear ' . static::$modelLabel)
+                        ->form([
                         Select::make('product_id')
                             ->label('Producto')
                             ->options(function () {

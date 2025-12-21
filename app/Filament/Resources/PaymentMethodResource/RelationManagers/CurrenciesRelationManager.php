@@ -35,7 +35,7 @@ class CurrenciesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->label('Crear Moneda'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
