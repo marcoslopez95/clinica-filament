@@ -15,6 +15,8 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
+use App\Models\Unit;
+use App\Models\ProductCategory;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -26,9 +28,31 @@ class ProductsRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form->schema([
-            Select::make('product_id')
-                ->label('Producto')
-                ->options(fn () => Product::pluck('name', 'id')->toArray())
+            TextInput::make('name')
+                ->label('Nombre del producto')
+                ->required(),
+
+            TextInput::make('buy_price')
+                ->label('Precio de compra')
+                ->numeric()
+                ->required(),
+
+            TextInput::make('sell_price')
+                ->label('Precio de venta')
+                ->numeric()
+                ->required(),
+
+            Select::make('unit_id')
+                ->label('Unidad')
+                ->required()
+                ->options(fn() => Unit::pluck('name', 'id'))
+                ->searchable()
+                ->required(),
+
+            Select::make('product_category_id')
+                ->label('Categoría')
+                ->required()
+                ->options(fn() => ProductCategory::pluck('name', 'id'))
                 ->searchable()
                 ->required(),
 
@@ -51,9 +75,61 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('quantity')
                     ->label('Cantidad asignada'),
             ])
-                ->headerActions([
-                    CreateAction::make()->label('Crear ' . static::$modelLabel)
-                        ->form([
+            ->headerActions([
+                CreateAction::make()
+                    ->label('Añadir producto')
+                    ->form([
+                        TextInput::make('name')
+                            ->label('Nombre del producto')
+                            ->required(),
+
+                        TextInput::make('buy_price')
+                            ->label('Precio de compra')
+                            ->numeric()
+                            ->required(),
+
+                        TextInput::make('sell_price')
+                            ->label('Precio de venta')
+                            ->numeric()
+                            ->required(),
+
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->required()
+                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+
+                        Select::make('product_category_id')
+                            ->label('Categoría')
+                            ->required()
+                            ->options(fn() => ProductCategory::pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+
+                        TextInput::make('quantity')
+                            ->label('Cantidad')
+                            ->numeric()
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $product = Product::create([
+                            'name' => $data['name'],
+                            'buy_price' => $data['buy_price'],
+                            'sell_price' => $data['sell_price'],
+                            'unit_id' => $data['unit_id'],
+                            'product_category_id' => $data['product_category_id'],
+                        ]);
+                        $owner = $livewire->getOwnerRecord();
+                        $owner->productDetails()->create([
+                            'product_id' => $product->id,
+                            'quantity' => $data['quantity'],
+                        ]);
+                    }),
+
+                CreateAction::make('add_existing')
+                    ->label('Añadir producto existente')
+                    ->form([
                         Select::make('product_id')
                             ->label('Producto')
                             ->options(function () {
@@ -68,25 +144,78 @@ class ProductsRelationManager extends RelationManager
                             ->label('Cantidad')
                             ->numeric()
                             ->required(),
-                    ]),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $owner = $livewire->getOwnerRecord();
+                        $owner->productDetails()->create([
+                            'product_id' => $data['product_id'],
+                            'quantity' => $data['quantity'],
+                        ]);
+                    }),
             ])
             ->actions([
-                EditAction::make()->form([
-                    Hidden::make('product_id')
-                        ->default(fn ($record) => $record->product_id)
-                        ->required(),
+                EditAction::make()
+                    ->form([
+                        TextInput::make('name')
+                            ->label('Nombre del producto')
+                            ->required(),
 
-                    FormPlaceholder::make('product_label')
-                        ->label('Producto')
-                        ->content(fn ($record) => $record->product?->name ?? '-'),
+                        TextInput::make('buy_price')
+                            ->label('Precio de compra')
+                            ->numeric()
+                            ->required(),
 
-                    TextInput::make('quantity')
-                        ->label('Cantidad')
-                        ->numeric()
-                        ->required(),
-                ]),
+                        TextInput::make('sell_price')
+                            ->label('Precio de venta')
+                            ->numeric()
+                            ->required(),
+
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->required()
+                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+
+                        Select::make('product_category_id')
+                            ->label('Categoría')
+                            ->required()
+                            ->options(fn() => ProductCategory::pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+
+                        TextInput::make('quantity')
+                            ->label('Cantidad')
+                            ->numeric()
+                            ->required(),
+                    ])
+                    ->mutateRecordDataUsing(function ($data, $record) {
+                        if ($record->product) {
+                            $data['name'] = $record->product->name;
+                            $data['buy_price'] = $record->product->buy_price;
+                            $data['sell_price'] = $record->product->sell_price;
+                            $data['unit_id'] = $record->product->unit_id;
+                            $data['product_category_id'] = $record->product->product_category_id;
+                        }
+                        $data['quantity'] = $record->quantity;
+                        return $data;
+                    })
+                    ->action(function ($data, $record) {
+                        if ($record->product) {
+                            $record->product->update([
+                                'name' => $data['name'],
+                                'buy_price' => $data['buy_price'],
+                                'sell_price' => $data['sell_price'],
+                                'unit_id' => $data['unit_id'],
+                                'product_category_id' => $data['product_category_id'],
+                            ]);
+                        }
+                        $record->update([
+                            'quantity' => $data['quantity'],
+                        ]);
+                    }),
                 DeleteAction::make(),
-            ])->emptyStateDescription('');
+            ]);
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string

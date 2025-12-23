@@ -56,6 +56,7 @@ class ProductResource extends Resource
 
                 Select::make('unit_id')
                     ->label('Unidad')
+                    ->required()
                     ->relationship('unit', 'name')
                     ->preload(),
 
@@ -66,6 +67,7 @@ class ProductResource extends Resource
 
                 Select::make('product_category_id')
                     ->label('Categoría')
+                    ->required()
                     ->relationship('productCategory', 'name')
                     ->preload(),
 

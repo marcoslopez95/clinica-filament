@@ -56,11 +56,13 @@ class ServiceResource extends Resource
 
                 Select::make('unit_id')
                     ->label('Unidad')
+                    ->required()
                     ->relationship('unit', 'name')
                     ->preload(),
 
                 Select::make('service_category_id')
                     ->label('Categoría')
+                    ->required()
                     ->relationship('serviceCategory', 'name')
                     ->preload(),
 
