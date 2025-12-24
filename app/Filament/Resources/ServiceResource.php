@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
-use App\Models\Product;
+use App\Filament\Resources\ServiceResource\Pages;
+use App\Models\Service;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,18 +23,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ServiceResource\RelationManagers\ProductsRelationManager;
 
-class ProductResource extends Resource
+class ServiceResource extends Resource
 {
-    protected static ?string $model = Product::class;
+    protected static ?string $model = Service::class;
 
-    protected static ?string $slug = 'products';
 
     protected static ?string $navigationGroup = 'Almacén';
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-    protected static ?string $modelLabel = 'Producto';
-    protected static ?string $pluralModelLabel = 'Productos';
-    protected static ?string $navigationLabel = 'Productos';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'Servicio';
+    protected static ?string $pluralModelLabel = 'Servicios';
+    protected static ?string $navigationLabel = 'Servicios';
 
     public static function form(Form $form): Form
     {
@@ -60,24 +60,19 @@ class ProductResource extends Resource
                     ->relationship('unit', 'name')
                     ->preload(),
 
-                Select::make('product_id')
-                    ->label('Producto')
-                    ->relationship('product', 'name')
-                    ->preload(),
-
-                Select::make('product_category_id')
+                Select::make('service_category_id')
                     ->label('Categoría')
                     ->required()
-                    ->relationship('productCategory', 'name')
+                    ->relationship('serviceCategory', 'name')
                     ->preload(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
-                    ->content(fn(?Product $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?Service $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
-                    ->label('Fecha Última Modificación')
-                    ->content(fn(?Product $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->label('Fecha de Última Modificación')
+                    ->content(fn(?Service $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -91,25 +86,21 @@ class ProductResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('buy_price')
-                ->label('Precio de Compra'),
+                    ->label('Precio de Compra'),
 
                 TextColumn::make('sell_price')
-                ->label('Precio de Venta'),
+                    ->label('Precio de Venta'),
 
                 TextColumn::make('unit.name')
                     ->label('Unidad')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('product.name')
-                    ->label('Producto')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('productCategory.name')
+                TextColumn::make('serviceCategory.name')
                     ->label('Categoría')
                     ->searchable()
                     ->sortable(),
+
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -129,12 +120,19 @@ class ProductResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            ProductsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProducts::route('/'),
-            'create' => Pages\CreateProduct::route('/create'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'index' => Pages\ListServices::route('/'),
+            'create' => Pages\CreateService::route('/create'),
+            'edit' => Pages\EditService::route('/{record}/edit'),
         ];
     }
 
