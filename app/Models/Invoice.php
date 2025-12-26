@@ -5,9 +5,9 @@ namespace App\Models;
 use App\Enums\InvoiceStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
@@ -63,6 +63,11 @@ class Invoice extends Model
     public function details(): HasMany
     {
         return $this->hasMany(InvoiceDetail::class);
+    }
+
+    public function typeDocument(): BelongsTo
+    {
+        return $this->belongsTo(TypeDocument::class, 'type_document_id');
     }
 
     public function payments(): HasMany

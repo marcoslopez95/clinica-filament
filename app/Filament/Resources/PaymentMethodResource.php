@@ -46,6 +46,7 @@ class PaymentMethodResource extends Resource
                 TextInput::make('description')->label('Descripción'),
 
                 Select::make('currencies')
+                    ->label('Moneda')
                     ->relationship(name: 'currencies', titleAttribute: 'name')
                     ->multiple()
                     ->preload(),

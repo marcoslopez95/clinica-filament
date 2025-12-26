@@ -7,6 +7,9 @@ use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Patient;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder as FormPlaceholder;
+use App\Models\TypeDocument;
 use App\Models\Product;
 use Faker\Provider\Text;
 use Filament\Forms\Components\DatePicker;
@@ -53,23 +56,20 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('patient_id')
+                Hidden::make('invoiceable_type')->default(Patient::class),
+
+                Select::make('invoiceable_id')
                     ->label('Paciente')
-                    ->relationship('patient')
-                    ->getOptionLabelFromRecordUsing(fn(Patient $patient) => $patient->full_name)
+                    ->options(fn() => Patient::all()->pluck('full_name', 'id'))
+                    ->searchable()
                     ->required()
-                    ->createOptionForm([
-                        TextInput::make('name')
-                            ->required(),
-                        TextInput::make('email')
-                            ->required()
-                            ->email(),
-                    ])
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $patient = Patient::findOrFail($state);
-                        $set('full_name', $patient->full_name);
+                        $set('full_name', $patient->first_name.' '.$patient->last_name);
                         $set('dni', $patient->full_document);
+                        $set('type_document_id', $patient->typeDocument->id);
+                        $set('type_document', $patient->typeDocument->name);
                     }),
 
                 TextInput::make('full_name')
@@ -77,11 +77,14 @@ class InvoiceResource extends Resource
 
                 TextInput::make('dni')
                     ->label('Documento'),
+                    
+                Hidden::make('type_document_id'),
+                TextInput::make('type_document')
+                    ->label('Tipo de Documento')
+                    ->disabled(),
 
                 DatePicker::make('date')
                     ->label('Fecha')->default(now()->format('Y-m-d')),
-
-
 
                 Section::make('')
                     ->label('Detalles')
@@ -91,15 +94,23 @@ class InvoiceResource extends Resource
                             ->relationship()
                             ->schema([
                                 Select::make('product_id')
-                                    ->relationship('product', 'name')
+                                    ->relationship(
+                                        name: 'product',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn ($query) => $query->whereHas('inventory')
+                                    )
                                     ->label('Producto')
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function (Set $set, ?int $state, Get $get){
-                                        $product = Product::find($state);
-                                        $set('price', $product?->sell_price ?? 0);
-                                        $set('quantity', null);;
+                                    ->afterStateUpdated(function (Set $set, ?int $state, Get $get) {
+                                        $product = Product::with('inventory')->find($state);
+
+                                        if ($product?->inventory) {
+                                            $set('price', $product->sell_price ?? 0);
+                                            $set('quantity', null);
+                                        }
                                     }),
+                                    
                                 TextInput::make('price')
                                     ->label('Precio')
                                     ->type('number')
