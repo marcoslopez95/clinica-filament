@@ -3,16 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Enums\InvoiceStatus;
-use App\Filament\Resources\InvoiceResource\Pages;
+use App\Filament\Resources\EntryResource\Pages;
 use App\Models\Currency;
 use App\Models\Invoice;
-use App\Models\Patient;
+use App\Models\Supplier;
+use App\Models\TypeDocument;
 use App\Enums\InvoiceType;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder as FormPlaceholder;
-use App\Models\TypeDocument;
 use App\Models\Product;
-use Faker\Provider\Text;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -32,44 +30,37 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
-class InvoiceResource extends Resource
+class EntryResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $slug = 'invoices';
+    protected static ?string $slug = 'entries';
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
-    protected static ?string $modelLabel = 'Factura';
-    protected static ?string $pluralModelLabel = 'Facturas';
-    protected static ?string $navigationLabel = 'Facturas';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'Entrada';
+    protected static ?string $pluralModelLabel = 'Entradas';
+    protected static ?string $navigationLabel = 'Entradas';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-
                 Select::make('invoiceable_id')
-                    ->label('Paciente')
-                    ->options(fn() => Patient::all()->pluck('full_name', 'id'))
+                    ->label('Proveedor')
+                    ->options(fn() => Supplier::all()->pluck('name', 'id'))
                     ->searchable()
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $patient = Patient::findOrFail($state);
-                        $set('full_name', $patient->first_name.' '.$patient->last_name);
-                        $set('dni', $patient->full_document);
-                        $set('type_document_id', $patient->typeDocument->id);
-                        $set('type_document', $patient->typeDocument->name);
+                        $supplier = Supplier::findOrFail($state);
+                        $set('full_name', $supplier->name);
+                        $set('dni', $supplier->rif);
                     }),
 
                 TextInput::make('full_name')
@@ -78,10 +69,11 @@ class InvoiceResource extends Resource
                 TextInput::make('dni')
                     ->label('Documento'),
                     
-                Hidden::make('type_document_id'),
-                TextInput::make('type_document')
+                Select::make('type_document_id')
                     ->label('Tipo de Documento')
-                    ->disabled(),
+                    ->options(fn() => TypeDocument::all()->pluck('name','id'))
+                    ->default(fn() => TypeDocument::where('code', 'RIF')->first()?->id)
+                    ->required(),
 
                 DatePicker::make('date')
                     ->label('Fecha')->default(now()->format('Y-m-d')),
@@ -110,7 +102,7 @@ class InvoiceResource extends Resource
                                             $set('quantity', null);
                                         }
                                     }),
-
+                                    
                                 TextInput::make('price')
                                     ->label('Precio')
                                     ->type('number')
@@ -245,9 +237,9 @@ class InvoiceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInvoices::route('/'),
-            'create' => Pages\CreateInvoice::route('/create'),
-            'edit' => Pages\EditInvoice::route('/{record}/edit'),
+            'index' => Pages\ListEntries::route('/'),
+            'create' => Pages\CreateEntry::route('/create'),
+            'edit' => Pages\EditEntry::route('/{record}/edit'),
         ];
     }
 
@@ -256,7 +248,8 @@ class InvoiceResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ])->where('invoice_type', InvoiceType::DEFAULT->value);
+            ])
+            ->where('invoice_type', InvoiceType::INVENTORY->value);
     }
 
     public static function getGloballySearchableAttributes(): array
