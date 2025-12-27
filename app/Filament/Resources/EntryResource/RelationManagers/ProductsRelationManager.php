@@ -23,6 +23,7 @@ class ProductsRelationManager extends RelationManager
 
     protected static ?string $modelLabel = 'Producto';
     protected static ?string $pluralModelLabel = 'Productos';
+    protected static ?string $title = 'Detalles de Productos';
 
     public function form(Form $form): Form
     {
@@ -123,7 +124,8 @@ class ProductsRelationManager extends RelationManager
                         // Crear registro de inventario para que sea visible
                         Inventory::create([
                             'product_id' => $product->id,
-                            'stock' => 0, // Se actualizará con la entrada si hay lógica de inventario
+                            'stock_min' => 0,
+                            'amount' => 0,
                         ]);
 
                         $owner = $livewire->getOwnerRecord();

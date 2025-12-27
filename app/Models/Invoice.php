@@ -81,4 +81,16 @@ class Invoice extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function inventories()
+    {
+        return $this->hasManyThrough(
+            Inventory::class,
+            InvoiceDetail::class,
+            'invoice_id',
+            'product_id',
+            'id',
+            'product_id'
+        );
+    }
 }

@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 use App\Filament\Resources\EntryResource\RelationManagers\ProductsRelationManager;
+use App\Filament\Resources\EntryResource\RelationManagers\InventoryRelationManager;
 
 class EntryResource extends Resource
 {
@@ -174,6 +175,7 @@ class EntryResource extends Resource
     {
         return [
             ProductsRelationManager::class,
+            InventoryRelationManager::class,
         ];
     }
 
