@@ -101,6 +101,68 @@ class EntryResource extends Resource
                     ->numeric()
                     ->required(),
 
+                Section::make('Pagos')
+                    ->description('Pagos Asignados a la Entrada')
+                    ->schema([
+                        Repeater::make('payments')->label('Pagos')
+                            ->relationship()
+                            ->schema([
+                                Select::make('payment_method_id')
+                                    ->relationship('paymentMethod', 'name')
+                                    ->label('Método de Pago')
+                                    ->required()
+                                    ->live(),
+
+                                Select::make('currency_id')
+                                    ->relationship('currency', 'name',
+                                        modifyQueryUsing: fn (Get $get,Builder $query) => $query
+                                            ->whereRelation(
+                                                'paymentMethods',
+                                                'payment_methods.id',$get('payment_method_id')
+                                            )
+                                    )
+                                    ->label('Moneda')
+                                    ->disabled(fn(Get $get) => !$get('payment_method_id'))
+                                    ->required()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, mixed $state){
+                                        $currency = Currency::find($state);
+                                        $set('exchange', $currency->exchange ?? 0);
+                                    }),
+
+                                TextInput::make('amount')
+                                    ->label('Monto')
+                                    ->numeric()
+                                    ->required()
+                                    ->disabled(fn(Get $get) => !$get('currency_id'))
+                                    ->live(debounce: 500),
+
+                                TextInput::make('exchange')
+                                    ->label('Tasa de Cambio')
+                                    ->disabled()
+                                    ->dehydrated(),
+                            ])
+                            ->columns(3)->columnSpan(2)
+                        ,
+                        Placeholder::make('to_pay')
+                            ->label('Por Pagar')
+                            ->content(function (Get $get): string {
+                                $total = collect($get('payments'))->sum(function($item) {
+                                    $exchange = (float) ($item['exchange'] ?? 1);
+                                    $amount = (float) ($item['amount'] ?? 0);
+                                    $currencyId = (int) ($item['currency_id'] ?? 0);
+
+                                    if ($exchange <= 0) {
+                                        $exchange = 1;
+                                    }
+
+                                    return $currencyId === 1 ? $amount : $amount / $exchange;
+                                });
+                                $pay = (float) $get('total');
+                                return (string) ($pay - $total);
+                            }),
+                    ]),
+
                 TextInput::make('total')
                     ->label('Monto')
                     ->numeric()
