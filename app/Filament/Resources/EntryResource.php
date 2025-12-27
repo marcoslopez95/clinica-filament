@@ -11,6 +11,7 @@ use App\Models\TypeDocument;
 use App\Enums\InvoiceType;
 use Filament\Forms\Components\Hidden;
 use App\Models\Product;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -104,7 +105,19 @@ class EntryResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->readOnly()
-                    ->dehydrated(),
+                    ->dehydrated()
+                    ->suffixAction(
+                        Action::make('calculateTotal')
+                            ->icon('heroicon-m-calculator')
+                            ->label('Calcular')
+                            ->action(function (Set $set, ?Invoice $record) {
+                                if ($record) {
+                                    $total = $record->details()->sum('subtotal');
+                                    $record->update(['total' => $total]);
+                                    $set('total', $total);
+                                }
+                            })
+                    ),
 
                 DatePicker::make('credit_date')
                     ->label('Fecha de crédito')
