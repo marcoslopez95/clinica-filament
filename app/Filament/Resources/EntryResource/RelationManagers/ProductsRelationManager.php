@@ -9,9 +9,11 @@ use App\Models\Inventory;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
@@ -185,6 +187,50 @@ class ProductsRelationManager extends RelationManager
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
+                Action::make('taxes')
+                    ->label('Taxes')
+                    ->color('warning')
+                    ->icon('heroicon-m-receipt-percent')
+                    ->modalHeading('Gestionar Impuestos')
+                    ->mountUsing(fn (Form $form, Model $record) => $form->fill([
+                        'taxes' => $record->taxes->toArray(),
+                    ]))
+                    ->action(function (Model $record, array $data): void {
+                        $record->taxes()->delete();
+                        $record->taxes()->createMany($data['taxes']);
+                    })
+                    ->form([
+                        Repeater::make('taxes')
+                            ->label('Impuestos')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Nombre')
+                                    ->required(),
+                                TextInput::make('percentage')
+                                    ->label('Porcentaje')
+                                    ->numeric()
+                                    ->step(0.01)
+                                    ->required()
+                                    ->suffix('%')
+                                    ->suffixAction(
+                                        \Filament\Forms\Components\Actions\Action::make('calculateAmount')
+                                            ->label('Calcular')
+                                            ->icon('heroicon-m-calculator')
+                                            ->action(function ($state, $set, Model $record) {
+                                                $price = $record->price ?? 0;
+                                                $quantity = $record->quantity ?? 0;
+                                                $percentage = (float)$state;
+                                                $amount = ($price * $quantity) * ($percentage / 100);
+                                                $set('amount', $amount);
+                                            })
+                                    ),
+                                TextInput::make('amount')
+                                    ->label('Monto')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->columns(3)
+                    ]),
                 DeleteAction::make()
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
