@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('invoice_detail_id')->constrained()->cascadeOnDelete();
             $table->date('expiration_date')->nullable();
             $table->string('batch_number')->nullable();
-            $table->decimal('quantity', 15, 2)->default(0);
+            $table->integer('quantity')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

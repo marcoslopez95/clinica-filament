@@ -4,7 +4,9 @@ namespace App\Enums;
 
 enum InvoiceStatus: string
 {
-    case OPEN = 'Abierta';
-    case CLOSED = 'Cerrado';
+    case OPEN = 'Por pagar';
+    case CLOSED = 'Pagada';
     case CANCELLED = 'Cancelado';
+    case PARTIAL = 'Pago parcial';
+    case EXPIRED = 'Vencida';
 }

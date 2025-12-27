@@ -265,6 +265,7 @@ class ProductsRelationManager extends RelationManager
                                 TextInput::make('quantity')
                                     ->label('Cantidad')
                                     ->numeric()
+                                    ->step(1)
                                     ->required(),
                             ])
                             ->columns(3)
