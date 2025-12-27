@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\InvoiceType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceDetail extends Model
@@ -17,6 +18,11 @@ class InvoiceDetail extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function taxes(): HasMany
+    {
+        return $this->hasMany(InvoiceDetailTax::class);
     }
 
     protected static function booted(): void
