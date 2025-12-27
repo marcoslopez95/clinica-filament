@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -18,6 +19,7 @@ use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Actions\Action as FormAction;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -123,7 +125,6 @@ class ProductsRelationManager extends RelationManager
                             'product_category_id' => $data['product_category_id'],
                         ]);
 
-                        // Crear registro de inventario para que sea visible
                         Inventory::create([
                             'product_id' => $product->id,
                             'stock_min' => 0,
@@ -197,7 +198,11 @@ class ProductsRelationManager extends RelationManager
                     ]))
                     ->action(function (Model $record, array $data): void {
                         $record->taxes()->delete();
-                        $record->taxes()->createMany($data['taxes']);
+                        $taxes = collect($data['taxes'])->map(function ($tax) {
+                            unset($tax['id']);
+                            return $tax;
+                        })->toArray();
+                        $record->taxes()->createMany($taxes);
                     })
                     ->form([
                         Repeater::make('taxes')
@@ -213,7 +218,7 @@ class ProductsRelationManager extends RelationManager
                                     ->required()
                                     ->suffix('%')
                                     ->suffixAction(
-                                        \Filament\Forms\Components\Actions\Action::make('calculateAmount')
+                                        FormAction::make('calculateAmount')
                                             ->label('Calcular')
                                             ->icon('heroicon-m-calculator')
                                             ->action(function ($state, $set, Model $record) {
@@ -226,6 +231,39 @@ class ProductsRelationManager extends RelationManager
                                     ),
                                 TextInput::make('amount')
                                     ->label('Monto')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->columns(3)
+                    ]),
+                Action::make('batches')
+                    ->label('Lotes')
+                    ->color('success')
+                    ->icon('heroicon-m-archive-box')
+                    ->modalHeading('Gestionar Lotes')
+                    ->mountUsing(fn (Form $form, Model $record) => $form->fill([
+                        'batches' => $record->batchDetails->toArray(),
+                    ]))
+                    ->action(function (Model $record, array $data): void {
+                        $record->batchDetails()->delete();
+                        $batches = collect($data['batches'])->map(function ($batch) {
+                            unset($batch['id']);
+                            return $batch;
+                        })->toArray();
+                        $record->batchDetails()->createMany($batches);
+                    })
+                    ->form([
+                        Repeater::make('batches')
+                            ->label('Lotes')
+                            ->schema([
+                                TextInput::make('batch_number')
+                                    ->label('Número de Lote')
+                                    ->required(),
+                                DatePicker::make('expiration_date')
+                                    ->label('Fecha de Vencimiento')
+                                    ->required(),
+                                TextInput::make('quantity')
+                                    ->label('Cantidad')
                                     ->numeric()
                                     ->required(),
                             ])

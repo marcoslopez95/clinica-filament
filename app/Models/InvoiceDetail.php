@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceDetail extends Model
 {
+    use SoftDeletes;
+
+    protected $fillable = ['invoice_id', 'product_id', 'price', 'quantity'];
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
