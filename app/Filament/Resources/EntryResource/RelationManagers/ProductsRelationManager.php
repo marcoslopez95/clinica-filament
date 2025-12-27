@@ -298,6 +298,11 @@ class ProductsRelationManager extends RelationManager
                     ->label('Lotes')
                     ->color('success')
                     ->icon('heroicon-m-archive-box')
+                    ->visible(fn (Model $record): bool =>
+                        $record->product &&
+                        $record->product->productCategory &&
+                        strtolower($record->product->productCategory->name) === 'medicina'
+                    )
                     ->modalHeading('Gestionar Lotes')
                     ->mountUsing(fn (Form $form, Model $record) => $form->fill([
                         'batches' => $record->batchDetails->toArray(),

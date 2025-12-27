@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\InvoiceStatus;
 use App\Filament\Resources\InvoiceResource\Pages;
+use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Patient;
@@ -189,12 +190,18 @@ class InvoiceResource extends Resource
                             ->label('Por Pagar')
                             ->content(function (Get $get): string {
                                 $total = collect($get('payments'))->sum(function($item) {
-                                    $exchange = $item['exchange'] ?? 1;
-                                    $amount = $item['amount'] ?? 0;
-                                    return $item['currency_id'] === 1 ? $amount : $amount/$exchange;
+                                    $exchange = (float) ($item['exchange'] ?? 1);
+                                    $amount = (float) ($item['amount'] ?? 0);
+                                    $currencyId = (int) ($item['currency_id'] ?? 0);
+
+                                    if ($exchange <= 0) {
+                                        $exchange = 1;
+                                    }
+
+                                    return $currencyId === 1 ? $amount : $amount / $exchange;
                                 });
-                                $pay = +$get('total');
-                                return $pay - $total;
+                                $pay = (float) $get('total');
+                                return (string) ($pay - $total);
                             }),
                     ]),
                 Placeholder::make('created_at')
@@ -248,6 +255,13 @@ class InvoiceResource extends Resource
             'index' => Pages\ListInvoices::route('/'),
             'create' => Pages\CreateInvoice::route('/create'),
             'edit' => Pages\EditInvoice::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\InventoryRelationManager::class,
         ];
     }
 
