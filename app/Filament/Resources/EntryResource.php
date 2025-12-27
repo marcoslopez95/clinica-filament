@@ -101,7 +101,7 @@ class EntryResource extends Resource
                     ->required(),
 
                 TextInput::make('total')
-                    ->label('Total')
+                    ->label('Monto')
                     ->numeric()
                     ->default(0)
                     ->readOnly()
@@ -141,7 +141,7 @@ class EntryResource extends Resource
                 TextColumn::make('full_name')->sortable()->searchable(),
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
-                TextColumn::make('total')->label('Total'),
+                TextColumn::make('total')->label('Monto'),
                 TextColumn::make('currency.name')->label('Moneda'),
                 TextColumn::make('exchange')->label('Tasa de cambio'),
                 TextColumn::make('to_pay')->label('Por Pagar'),

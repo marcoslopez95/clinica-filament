@@ -1,0 +1,192 @@
+<?php
+
+namespace App\Filament\Resources\EntryResource\RelationManagers;
+
+use App\Models\Product;
+use App\Models\Unit;
+use App\Models\ProductCategory;
+use App\Models\Inventory;
+use Filament\Forms\Form;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Illuminate\Database\Eloquent\Model;
+
+class ProductsRelationManager extends RelationManager
+{
+    protected static string $relationship = 'details';
+
+    protected static ?string $modelLabel = 'Producto';
+    protected static ?string $pluralModelLabel = 'Productos';
+
+    public function form(Form $form): Form
+    {
+        return $form->schema([
+            Select::make('product_id')
+                ->label('Producto')
+                ->options(function () {
+                    $owner = $this->getOwnerRecord();
+                    $used = $owner->details()->pluck('product_id')->toArray();
+                    return Product::whereHas('inventory')
+                        ->whereNotIn('id', $used)
+                        ->pluck('name', 'id');
+                })
+                ->searchable()
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, $set) {
+                    $product = Product::find($state);
+                    if ($product) {
+                        $set('price', $product->buy_price);
+                    }
+                }),
+
+            TextInput::make('price')
+                ->label('Precio de compra')
+                ->numeric()
+                ->required(),
+
+            TextInput::make('quantity')
+                ->label('Cantidad')
+                ->numeric()
+                ->required(),
+        ]);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('product.name')
+                    ->label('Producto')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('quantity')
+                    ->label('Cantidad'),
+                TextColumn::make('price')
+                    ->label('Precio'),
+                TextColumn::make('subtotal')
+                    ->label('Subtotal')
+                    ->money('USD')
+                    ->state(fn (Model $record): float => $record->quantity * $record->price),
+            ])
+            ->headerActions([
+                CreateAction::make('create_new')
+                    ->label('Crear producto')
+                    ->modalHeading('Crear nuevo producto y añadir a la entrada')
+                    ->form([
+                        TextInput::make('name')
+                            ->label('Nombre del producto')
+                            ->required(),
+
+                        TextInput::make('buy_price')
+                            ->label('Precio de compra')
+                            ->numeric()
+                            ->required(),
+
+                        TextInput::make('sell_price')
+                            ->label('Precio de venta')
+                            ->numeric()
+                            ->required(),
+
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->required()
+                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->searchable(),
+
+                        Select::make('product_category_id')
+                            ->label('Categoría')
+                            ->required()
+                            ->options(fn() => ProductCategory::pluck('name', 'id'))
+                            ->searchable(),
+
+                        TextInput::make('quantity')
+                            ->label('Cantidad')
+                            ->numeric()
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $product = Product::create([
+                            'name' => $data['name'],
+                            'buy_price' => $data['buy_price'],
+                            'sell_price' => $data['sell_price'],
+                            'unit_id' => $data['unit_id'],
+                            'product_category_id' => $data['product_category_id'],
+                        ]);
+
+                        // Crear registro de inventario para que sea visible
+                        Inventory::create([
+                            'product_id' => $product->id,
+                            'stock' => 0, // Se actualizará con la entrada si hay lógica de inventario
+                        ]);
+
+                        $owner = $livewire->getOwnerRecord();
+                        $owner->details()->create([
+                            'product_id' => $product->id,
+                            'quantity' => $data['quantity'],
+                            'price' => $data['buy_price'],
+                        ]);
+
+                        $livewire->dispatch('refreshTotal');
+                    }),
+
+                CreateAction::make()
+                    ->label('Añadir producto existente')
+                    ->modalHeading('Añadir producto existente a la entrada')
+                    ->after(function ($livewire) {
+                        $livewire->dispatch('refreshTotal');
+                    }),
+            ])
+            ->actions([
+                EditAction::make()
+                    ->form(function (Form $form) {
+                        return $form->schema([
+                            Select::make('product_id')
+                                ->label('Producto')
+                                ->options(function (Model $record) {
+                                    $owner = $this->getOwnerRecord();
+                                    $used = $owner->details()
+                                        ->where('id', '!=', $record->id)
+                                        ->pluck('product_id')
+                                        ->toArray();
+                                    return Product::whereHas('inventory')
+                                        ->whereNotIn('id', $used)
+                                        ->pluck('name', 'id');
+                                })
+                                ->searchable()
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $product = Product::find($state);
+                                    if ($product) {
+                                        $set('price', $product->buy_price);
+                                    }
+                                }),
+
+                            TextInput::make('price')
+                                ->label('Precio de compra')
+                                ->numeric()
+                                ->required(),
+
+                            TextInput::make('quantity')
+                                ->label('Cantidad')
+                                ->numeric()
+                                ->required(),
+                        ]);
+                    })
+                    ->after(function ($livewire) {
+                        $livewire->dispatch('refreshTotal');
+                    }),
+                DeleteAction::make()
+                    ->after(function ($livewire) {
+                        $livewire->dispatch('refreshTotal');
+                    }),
+            ]);
+    }
+}
