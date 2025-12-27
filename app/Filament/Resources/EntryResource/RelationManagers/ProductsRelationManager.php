@@ -171,11 +171,42 @@ class ProductsRelationManager extends RelationManager
                                     $product = Product::find($state);
                                     if ($product) {
                                         $set('price', $product->buy_price);
+                                        $set('name', $product->name);
+                                        $set('buy_price', $product->buy_price);
+                                        $set('sell_price', $product->sell_price);
+                                        $set('unit_id', $product->unit_id);
+                                        $set('product_category_id', $product->product_category_id);
                                     }
                                 }),
 
+                            TextInput::make('name')
+                                ->label('Nombre del producto')
+                                ->required(),
+
+                            TextInput::make('buy_price')
+                                ->label('Precio de compra (Producto)')
+                                ->numeric()
+                                ->required(),
+
+                            TextInput::make('sell_price')
+                                ->label('Precio de venta')
+                                ->numeric()
+                                ->required(),
+
+                            Select::make('unit_id')
+                                ->label('Unidad')
+                                ->required()
+                                ->options(fn() => Unit::pluck('name', 'id'))
+                                ->searchable(),
+
+                            Select::make('product_category_id')
+                                ->label('Categoría')
+                                ->required()
+                                ->options(fn() => ProductCategory::pluck('name', 'id'))
+                                ->searchable(),
+
                             TextInput::make('price')
-                                ->label('Precio de compra')
+                                ->label('Precio de compra (Entrada)')
                                 ->numeric()
                                 ->required(),
 
@@ -184,6 +215,33 @@ class ProductsRelationManager extends RelationManager
                                 ->numeric()
                                 ->required(),
                         ]);
+                    })
+                    ->mutateRecordDataUsing(function (array $data, Model $record): array {
+                        if ($record->product) {
+                            $data['name'] = $record->product->name;
+                            $data['buy_price'] = $record->product->buy_price;
+                            $data['sell_price'] = $record->product->sell_price;
+                            $data['unit_id'] = $record->product->unit_id;
+                            $data['product_category_id'] = $record->product->product_category_id;
+                        }
+                        return $data;
+                    })
+                    ->action(function (Model $record, array $data, $livewire): void {
+                        $record->product->update([
+                            'name' => $data['name'],
+                            'buy_price' => $data['buy_price'],
+                            'sell_price' => $data['sell_price'],
+                            'unit_id' => $data['unit_id'],
+                            'product_category_id' => $data['product_category_id'],
+                        ]);
+
+                        $record->update([
+                            'product_id' => $data['product_id'],
+                            'price' => $data['price'],
+                            'quantity' => $data['quantity'],
+                        ]);
+
+                        $livewire->dispatch('refreshTotal');
                     })
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
