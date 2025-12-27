@@ -144,10 +144,51 @@ class EntryResource extends Resource
                             ])
                             ->columns(3)->columnSpan(2)
                         ,
+
+                        Section::make('Descuentos')
+                            ->schema([
+                                Repeater::make('discounts')
+                                    ->relationship()
+                                    ->schema([
+                                        TextInput::make('percentage')
+                                            ->label('Porcentaje (%)')
+                                            ->numeric()
+                                            ->suffixAction(
+                                                Action::make('calculateAmount')
+                                                    ->icon('heroicon-m-calculator')
+                                                    ->action(function (Get $get, Set $set, $state) {
+                                                        $total = (float) $get('../../total');
+                                                        $percentage = (float) $state;
+                                                        $set('amount', $total * ($percentage / 100));
+                                                    })
+                                            ),
+                                        TextInput::make('amount')
+                                            ->label('Monto')
+                                            ->numeric()
+                                            ->suffixAction(
+                                                Action::make('calculatePercentage')
+                                                    ->icon('heroicon-m-calculator')
+                                                    ->action(function (Get $get, Set $set, $state) {
+                                                        $total = (float) $get('../../total');
+                                                        $amount = (float) $state;
+                                                        if ($total > 0) {
+                                                            $set('percentage', ($amount / $total) * 100);
+                                                        }
+                                                    })
+                                            ),
+                                        TextInput::make('description')
+                                            ->label('Descripción')
+                                            ->columnSpan(2),
+                                    ])
+                                    ->columns(2)
+                                    ->live()
+                                    ->columnSpanFull(),
+                            ]),
+
                         Placeholder::make('to_pay')
                             ->label('Por Pagar')
                             ->content(function (Get $get): string {
-                                $total = collect($get('payments'))->sum(function($item) {
+                                $totalPayments = collect($get('payments'))->sum(function($item) {
                                     $exchange = (float) ($item['exchange'] ?? 1);
                                     $amount = (float) ($item['amount'] ?? 0);
                                     $currencyId = (int) ($item['currency_id'] ?? 0);
@@ -158,8 +199,13 @@ class EntryResource extends Resource
 
                                     return $currencyId === 1 ? $amount : $amount / $exchange;
                                 });
+
+                                $totalDiscounts = collect($get('discounts'))->sum(function($item) {
+                                    return (float) ($item['amount'] ?? 0);
+                                });
+
                                 $pay = (float) $get('total');
-                                return (string) ($pay - $total);
+                                return number_format($pay - $totalPayments - $totalDiscounts, 2) . ' $';
                             }),
                     ]),
 

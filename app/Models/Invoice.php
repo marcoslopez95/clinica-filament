@@ -83,6 +83,11 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(InvoiceDiscount::class);
+    }
+
     public function inventories()
     {
         return $this->hasManyThrough(
