@@ -74,16 +74,22 @@ class InvoiceResource extends Resource
                         $set('type_document', $patient->typeDocument->name);
                     }),
 
+                Placeholder::make('status')
+                    ->label('Estado')
+                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->value : ($record?->status ?? InvoiceStatus::OPEN->value)),
+
                 TextInput::make('full_name')
                     ->label('Nombre'),
 
                 TextInput::make('dni')
                     ->label('Documento'),
 
-                Hidden::make('type_document_id'),
-                TextInput::make('type_document')
+                Select::make('type_document_id')
                     ->label('Tipo de Documento')
-                    ->disabled(),
+                    ->options(fn() => TypeDocument::all()->pluck('name','id'))
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
 
                 DatePicker::make('date')
                     ->label('Fecha')->default(now()->format('Y-m-d')),
@@ -271,7 +277,10 @@ class InvoiceResource extends Resource
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
                 TextColumn::make('total')->label('Total'),
                 TextColumn::make('to_pay')->label('Por Pagar'),
-                TextColumn::make('status')->label('Estado')->searchable()->sortable(),
+                TextColumn::make('status')
+                    ->label('Estado')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),

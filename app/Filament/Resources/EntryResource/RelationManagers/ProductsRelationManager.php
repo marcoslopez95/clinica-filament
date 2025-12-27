@@ -20,6 +20,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action as FormAction;
+use App\Models\Warehouse;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -125,7 +126,7 @@ class ProductsRelationManager extends RelationManager
                             'product_category_id' => $data['product_category_id'],
                         ]);
 
-                        $warehouseId = \App\Models\Warehouse::where('name', 'Bodega')->first()?->id;
+                        $warehouseId = Warehouse::where('name', 'Bodega')->first()?->id;
 
                         Inventory::create([
                             'product_id' => $product->id,

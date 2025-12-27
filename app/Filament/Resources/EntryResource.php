@@ -67,6 +67,10 @@ class EntryResource extends Resource
                         $set('dni', $supplier->rif);
                     }),
 
+                Placeholder::make('status')
+                    ->label('Estado')
+                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->value : ($record?->status ?? InvoiceStatus::OPEN->value)),
+
                 TextInput::make('invoice_number')
                     ->label('Número de factura')
                     ->columnSpan(2),
@@ -85,6 +89,10 @@ class EntryResource extends Resource
 
                 DatePicker::make('date')
                     ->label('Fecha de factura')->default(now()->format('Y-m-d')),
+
+                DatePicker::make('credit_date')
+                    ->label('Fecha de crédito')
+                    ->nullable(),
 
                 Select::make('currency_id')
                     ->label('Moneda')
@@ -228,10 +236,6 @@ class EntryResource extends Resource
                             })
                     ),
 
-                DatePicker::make('credit_date')
-                    ->label('Fecha de crédito')
-                    ->nullable(),
-
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
                     ->content(fn(?Invoice $record): string => $record?->created_at?->diffForHumans() ?? '-'),
@@ -254,7 +258,10 @@ class EntryResource extends Resource
                 TextColumn::make('currency.name')->label('Moneda'),
                 TextColumn::make('exchange')->label('Tasa de cambio'),
                 TextColumn::make('to_pay')->label('Por Pagar'),
-                TextColumn::make('status')->label('Estado')->searchable()->sortable(),
+                TextColumn::make('status')
+                    ->label('Estado')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
