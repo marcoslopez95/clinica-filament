@@ -25,6 +25,11 @@ class InvoiceDetail extends Model
         return $this->hasMany(InvoiceDetailTax::class);
     }
 
+    public function batchDetails(): HasMany
+    {
+        return $this->hasMany(ProductBatchDetail::class);
+    }
+
     protected static function booted(): void
     {
         static::created(function (InvoiceDetail $detail) {

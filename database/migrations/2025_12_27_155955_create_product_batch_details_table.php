@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoice_detail_taxes', function (Blueprint $table) {
+        Schema::create('product_batch_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_detail_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->decimal('percentage', 10, 2);
-            $table->decimal('amount', 10, 2);
+            $table->date('expiration_date')->nullable();
+            $table->string('batch_number')->nullable();
+            $table->decimal('quantity', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoice_detail_taxes');
+        Schema::dropIfExists('product_batch_details');
     }
 };
