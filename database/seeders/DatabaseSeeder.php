@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ExpenseCategorySeeder::class,
             TypeDocumentSeeder::class,
             ProductCategorySeeder::class,
+            WarehouseSeeder::class,
         ]);
     }
 }

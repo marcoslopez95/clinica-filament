@@ -125,8 +125,11 @@ class ProductsRelationManager extends RelationManager
                             'product_category_id' => $data['product_category_id'],
                         ]);
 
+                        $warehouseId = \App\Models\Warehouse::where('name', 'Bodega')->first()?->id;
+
                         Inventory::create([
                             'product_id' => $product->id,
+                            'warehouse_id' => $warehouseId,
                             'stock_min' => 0,
                             'amount' => 0,
                         ]);

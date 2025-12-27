@@ -26,6 +26,12 @@ class InventoryRelationManager extends RelationManager
                     ->numeric()
                     ->required(),
 
+                Forms\Components\Select::make('warehouse_id')
+                    ->label('Almacén')
+                    ->relationship('warehouse', 'name')
+                    ->searchable()
+                    ->preload(),
+
                 Forms\Components\TextInput::make('stock_min')
                     ->label('Stock Mínimo')
                     ->numeric()
@@ -50,6 +56,10 @@ class InventoryRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Producto')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('warehouse.name')
+                    ->label('Almacén')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')

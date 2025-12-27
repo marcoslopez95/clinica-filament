@@ -10,4 +10,15 @@ class Warehouse extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'location',
+        'description',
+    ];
+
+    public function inventories(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
 }

@@ -46,6 +46,12 @@ class InventoryResource extends Resource
                     ->relationship('product', 'name')
                     ->required(),
 
+                Select::make('warehouse_id')
+                    ->label('Almacén')
+                    ->relationship('warehouse', 'name')
+                    ->searchable()
+                    ->preload(),
+
                 TextInput::make('stock_min')
                     ->label('Stock Minimo')
                     ->required()
@@ -80,6 +86,11 @@ class InventoryResource extends Resource
             ->columns([
                 TextColumn::make('product.name')
                     ->label('Producto')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('warehouse.name')
+                    ->label('Almacén')
                     ->searchable()
                     ->sortable(),
 
