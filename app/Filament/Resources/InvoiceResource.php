@@ -77,7 +77,7 @@ class InvoiceResource extends Resource
 
                 TextInput::make('dni')
                     ->label('Documento'),
-                    
+
                 Hidden::make('type_document_id'),
                 TextInput::make('type_document')
                     ->label('Tipo de Documento')

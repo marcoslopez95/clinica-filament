@@ -36,6 +36,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use App\Filament\Resources\EntryResource\RelationManagers\ProductsRelationManager;
+
 class EntryResource extends Resource
 {
     protected static ?string $model = Invoice::class;
@@ -63,12 +65,16 @@ class EntryResource extends Resource
                         $set('dni', $supplier->rif);
                     }),
 
+                TextInput::make('invoice_number')
+                    ->label('Número de factura')
+                    ->columnSpan(2),
+
                 TextInput::make('full_name')
                     ->label('Nombre'),
 
                 TextInput::make('dni')
                     ->label('Documento'),
-                    
+
                 Select::make('type_document_id')
                     ->label('Tipo de Documento')
                     ->options(fn() => TypeDocument::all()->pluck('name','id'))
@@ -76,119 +82,34 @@ class EntryResource extends Resource
                     ->required(),
 
                 DatePicker::make('date')
-                    ->label('Fecha')->default(now()->format('Y-m-d')),
+                    ->label('Fecha de factura')->default(now()->format('Y-m-d')),
 
-                Section::make('')
-                    ->label('Detalles')
-                    ->description('Productos asociados a la factura')
-                    ->schema([
-                        Repeater::make('details')->label('Detalles')
-                            ->relationship()
-                            ->schema([
-                                Select::make('product_id')
-                                    ->relationship(
-                                        name: 'product',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn ($query) => $query->whereHas('inventory')
-                                    )
-                                    ->label('Producto')
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set, ?int $state, Get $get) {
-                                        $product = Product::with('inventory')->find($state);
+                Select::make('currency_id')
+                    ->label('Moneda')
+                    ->relationship('currency', 'name')
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, ?int $state) {
+                        $currency = Currency::find($state);
+                        $set('exchange', $currency->exchange ?? null);
+                    }),
 
-                                        if ($product?->inventory) {
-                                            $set('price', $product->sell_price ?? 0);
-                                            $set('quantity', null);
-                                        }
-                                    }),
-                                    
-                                TextInput::make('price')
-                                    ->label('Precio')
-                                    ->type('number')
-                                    ->disabled()
-                                    ->required()
-                                    ->dehydrated(),
-
-                                TextInput::make('quantity')
-                                    ->label('Cantidad')
-                                    ->type('number')
-                                    ->required()
-                                    ->disabled(fn(Get $get) => !$get('product_id'))
-                                    ->live(),
-                            ])
-                            ->columns(3)->columnSpan(2)
-                            ->afterStateUpdated(function (Set $set, mixed $state){
-                                $total = collect($state)->sum(fn($item) => $item['quantity'] * $item['price']);
-                                $set('total', $total);
-                            })
-                            ,
-                    ]),
+                TextInput::make('exchange')
+                    ->label('Tasa de cambio')
+                    ->numeric()
+                    ->required(),
 
                 TextInput::make('total')
                     ->label('Total')
-                    ->type('number')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated()
-                    ->columnSpan(2),
+                    ->numeric()
+                    ->default(0)
+                    ->readOnly()
+                    ->dehydrated(),
 
-                Section::make('')
-                    ->label('Pagos')
-                    ->description('Pagos Asignados a la factura')
-                    ->schema([
-                        Repeater::make('payments')->label('Pagos')
-                            ->relationship()
-                            ->schema([
-                                Select::make('payment_method_id')
-                                    ->relationship('paymentMethod', 'name')
-                                    ->label('Método de Pago')
-                                    ->required()
-                                    ->live(),
+                DatePicker::make('credit_date')
+                    ->label('Fecha de crédito')
+                    ->nullable(),
 
-                                Select::make('currency_id')
-                                    ->relationship('currency', 'name',
-                                        modifyQueryUsing: fn (Get $get,Builder $query) => $query
-                                            ->whereRelation(
-                                                'paymentMethods',
-                                                'payment_methods.id',$get('payment_method_id')
-                                            )
-                                    )
-                                    ->label('Moneda')
-                                    ->disabled(fn(Get $get) => !$get('payment_method_id'))
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set, mixed $state){
-                                        $currency = Currency::find($state);
-                                        $set('exchange', $currency->exchange ?? 0);
-                                    }),
-
-                                TextInput::make('amount')
-                                    ->label('Monto')
-                                    ->type('number')
-                                    ->required()
-                                    ->disabled(fn(Get $get) => !$get('currency_id'))
-                                    ->live(debounce: 500),
-
-                                TextInput::make('exchange')
-                                    ->label('Tasa de Cambio')
-                                    ->disabled()
-                                    ->dehydrated(),
-                            ])
-                            ->columns(3)->columnSpan(2)
-                        ,
-                        Placeholder::make('to_pay')
-                            ->label('Por Pagar')
-                            ->content(function (Get $get): string {
-                                $total = collect($get('payments'))->sum(function($item) {
-                                    $exchange = $item['exchange'] ?? 1;
-                                    $amount = $item['amount'] ?? 0;
-                                    return $item['currency_id'] === 1 ? $amount : $amount/$exchange;
-                                });
-                                $pay = +$get('total');
-                                return $pay - $total;
-                            }),
-                    ]),
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
                     ->content(fn(?Invoice $record): string => $record?->created_at?->diffForHumans() ?? '-'),
@@ -208,6 +129,8 @@ class EntryResource extends Resource
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
                 TextColumn::make('total')->label('Total'),
+                TextColumn::make('currency.name')->label('Moneda'),
+                TextColumn::make('exchange')->label('Tasa de cambio'),
                 TextColumn::make('to_pay')->label('Por Pagar'),
                 TextColumn::make('status')->label('Estado')->searchable()->sortable(),
             ])
@@ -232,6 +155,13 @@ class EntryResource extends Resource
                     ForceDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ProductsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,15 +23,37 @@ class InvoiceDetail extends Model
     {
         static::created(function (InvoiceDetail $detail) {
             $amount = $detail->product->inventory->amount;
-            $detail->product->inventory->update(['amount' => $amount - $detail->quantity]);
+            $quantity = $detail->quantity;
+
+            if ($detail->invoice->invoice_type === InvoiceType::INVENTORY->value) {
+                $detail->product->inventory->update(['amount' => $amount + $quantity]);
+            } else {
+                $detail->product->inventory->update(['amount' => $amount - $quantity]);
+            }
         });
 
         static::updating(function (InvoiceDetail $detail) {
             $oldQuantity = $detail->getOriginal('quantity');
             $newQuantity = +$detail->quantity;
-            $totalToDiscount = $newQuantity - $oldQuantity;
+            $diff = $newQuantity - $oldQuantity;
             $amountInInventory = $detail->product->inventory->amount;
-            $detail->product->inventory->update(['amount' => $amountInInventory - $totalToDiscount]);
+
+            if ($detail->invoice->invoice_type === InvoiceType::INVENTORY->value) {
+                $detail->product->inventory->update(['amount' => $amountInInventory + $diff]);
+            } else {
+                $detail->product->inventory->update(['amount' => $amountInInventory - $diff]);
+            }
+        });
+
+        static::deleted(function (InvoiceDetail $detail) {
+            $amount = $detail->product->inventory->amount;
+            $quantity = $detail->quantity;
+
+            if ($detail->invoice->invoice_type === InvoiceType::INVENTORY->value) {
+                $detail->product->inventory->update(['amount' => $amount - $quantity]);
+            } else {
+                $detail->product->inventory->update(['amount' => $amount + $quantity]);
+            }
         });
     }
 }
