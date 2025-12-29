@@ -34,17 +34,8 @@ class EditInvoice extends EditRecord
         ];
     }
 
-    #[NoReturn]
     protected function afterSave():void
     {
-        /**
-         * @var $invoice Invoice
-         */
-        $invoice = $this->getRecord();
-        if($invoice->isComplete()){
-            $invoice->status = InvoiceStatus::CLOSED->value;
-            $invoice->save();
-        }
-
+        $this->getRecord()->updateStatusIfPaid();
     }
 }

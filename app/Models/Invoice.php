@@ -73,7 +73,6 @@ class Invoice extends Model
     {
         $total = (float) $this->total;
 
-        // Si no hay productos, no puede estar pagada (sería un abono/pago parcial si hay pagos)
         if ($total <= 0) {
             return false;
         }
@@ -93,6 +92,15 @@ class Invoice extends Model
             return;
         }
 
+        if ($this->invoice_type === InvoiceType::INVENTORY) {
+            $this->updateInventoryStatus();
+        } else {
+            $this->updateInvoiceStatus();
+        }
+    }
+
+    protected function updateInventoryStatus(): void
+    {
         $total = (float) $this->total;
         $totalPaid = (float) $this->total_paid;
         $totalDiscounts = (float) $this->discounts->sum('amount');
@@ -103,15 +111,36 @@ class Invoice extends Model
             return;
         }
 
-        // Si no está completa (isComplete es false), determinamos si es PARTIAL o OPEN
-
-        // Caso: Tiene pagos o descuentos (ya sea con total 0 o total > 0 pero insuficiente)
         if ($hasMoney) {
             $this->update(['status' => InvoiceStatus::PARTIAL]);
             return;
         }
 
-        // Caso: No tiene pagos ni descuentos, se queda o vuelve a Por pagar
+        $this->update(['status' => InvoiceStatus::OPEN]);
+    }
+
+    protected function updateInvoiceStatus(): void
+    {
+        $total = (float) $this->total;
+        $totalPaid = (float) $this->total_paid;
+        $totalDiscounts = (float) $this->discounts->sum('amount');
+        $sumPaymentsAndDiscounts = $totalPaid + $totalDiscounts;
+
+        if ($total > 0 && $sumPaymentsAndDiscounts >= ($total - 0.01)) {
+            $this->update(['status' => InvoiceStatus::CLOSED]);
+            return;
+        }
+
+        if ($total > 0 && $sumPaymentsAndDiscounts > 0 && $sumPaymentsAndDiscounts < ($total - 0.01)) {
+            $this->update(['status' => InvoiceStatus::PARTIAL]);
+            return;
+        }
+
+        if ($total <= 0 && $sumPaymentsAndDiscounts > 0) {
+            $this->update(['status' => InvoiceStatus::PARTIAL]);
+            return;
+        }
+
         $this->update(['status' => InvoiceStatus::OPEN]);
     }
 
@@ -121,10 +150,6 @@ class Invoice extends Model
             if(!$invoice->status){
                 $invoice->status = InvoiceStatus::OPEN;
             }
-
-            // Si al crear ya tiene pagos o descuentos (aunque Filament suele guardarlos después)
-            // se marcará como Pago parcial si no está completa.
-            // Pero como las relaciones se guardan después, esto es mayormente para seguridad.
         });
 
         static::created(function(Invoice $invoice){
@@ -132,7 +157,6 @@ class Invoice extends Model
         });
 
         static::updated(function(Invoice $invoice){
-            // Evitar bucle infinito si solo se actualiza el status
             if ($invoice->isDirty('status') && count($invoice->getDirty()) === 1) {
                 return;
             }

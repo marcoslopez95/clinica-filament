@@ -22,14 +22,7 @@ class CreateInvoice extends CreateRecord
 
     protected function afterCreate():void
     {
-        /**
-         * @var $invoice Invoice
-         */
-        $invoice = $this->getRecord();
-        if($invoice->isComplete()){
-            $invoice->status = InvoiceStatus::CLOSED->value;
-            $invoice->save();
-        }
+        $this->getRecord()->updateStatusIfPaid();
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

@@ -45,6 +45,8 @@ class InvoiceDetail extends Model
             } else {
                 $detail->product->inventory->update(['amount' => $amount - $quantity]);
             }
+
+            $detail->invoice->updateStatusIfPaid();
         });
 
         static::updating(function (InvoiceDetail $detail) {
@@ -60,6 +62,10 @@ class InvoiceDetail extends Model
             }
         });
 
+        static::updated(function (InvoiceDetail $detail) {
+            $detail->invoice->updateStatusIfPaid();
+        });
+
         static::deleted(function (InvoiceDetail $detail) {
             $amount = $detail->product->inventory->amount;
             $quantity = $detail->quantity;
@@ -69,6 +75,8 @@ class InvoiceDetail extends Model
             } else {
                 $detail->product->inventory->update(['amount' => $amount + $quantity]);
             }
+
+            $detail->invoice->updateStatusIfPaid();
         });
     }
 }

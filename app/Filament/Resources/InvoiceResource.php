@@ -71,18 +71,10 @@ class InvoiceResource extends Resource
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        if (!$state) {
-                            $set('full_name', null);
-                            $set('dni', null);
-                            $set('type_document_id', null);
-                            return;
-                        }
-                        $patient = Patient::find($state);
-                        if ($patient) {
-                            $set('full_name', $patient->first_name.' '.$patient->last_name);
-                            $set('dni', $patient->full_document);
-                            $set('type_document_id', $patient->typeDocument->id);
-                        }
+                        $patient = $state ? Patient::find($state) : null;
+                        $set('full_name', $patient ? $patient->first_name.' '.$patient->last_name : null);
+                        $set('dni', $patient?->full_document);
+                        $set('type_document_id', $patient?->typeDocument?->id);
                     }),
 
                 TextInput::make('full_name')
