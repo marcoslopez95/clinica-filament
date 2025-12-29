@@ -136,7 +136,7 @@ class EntryResource extends Resource
                 Section::make('Pagos')
                     ->description('Pagos Asignados a la Entrada')
                     ->collapsible()
-                    ->collapsed(fn (?Invoice $record) => $record === null)
+                    ->visible(fn (?Invoice $record) => $record !== null)
                     ->schema([
                         Repeater::make('payments')->label('Pagos')
                             ->relationship()
@@ -177,51 +177,7 @@ class EntryResource extends Resource
                                     ->disabled()
                                     ->dehydrated(),
                             ])
-                            ->columns(3)->columnSpan(2)
-                        ,
-
-                        Section::make('Descuentos')
-                            ->collapsible()
-                            ->collapsed(fn (?Invoice $record) => $record === null)
-                            ->schema([
-                                Repeater::make('discounts')
-                                    ->relationship()
-                                    ->defaultItems(0)
-                                    ->schema([
-                                        TextInput::make('percentage')
-                                            ->label('Porcentaje (%)')
-                                            ->numeric()
-                                            ->suffixAction(
-                                                Action::make('calculateAmount')
-                                                    ->icon('heroicon-m-calculator')
-                                                    ->action(function (Get $get, Set $set, $state) {
-                                                        $total = (float) $get('../../total');
-                                                        $percentage = (float) $state;
-                                                        $set('amount', $total * ($percentage / 100));
-                                                    })
-                                            ),
-                                        TextInput::make('amount')
-                                            ->label('Monto')
-                                            ->numeric()
-                                            ->suffixAction(
-                                                Action::make('calculatePercentage')
-                                                    ->icon('heroicon-m-calculator')
-                                                    ->action(function (Get $get, Set $set, $state) {
-                                                        $total = (float) $get('../../total');
-                                                        $amount = (float) $state;
-                                                        if ($total > 0) {
-                                                            $set('percentage', ($amount / $total) * 100);
-                                                        }
-                                                    })
-                                            ),
-                                        TextInput::make('description')
-                                            ->label('Descripción')
-                                            ->columnSpan(2),
-                                    ])
-                                    ->columns(2)
-                                    ->live()
-                                    ->columnSpanFull(),
-                            ]),
+                            ->columns(3)->columnSpan(2),
 
                         Placeholder::make('to_pay')
                             ->label('Por Pagar')
@@ -245,6 +201,49 @@ class EntryResource extends Resource
                                 $pay = (float) $get('total');
                                 return number_format($pay - $totalPayments - $totalDiscounts, 2) . ' $';
                             }),
+                    ]),
+
+                Section::make('Descuentos')
+                    ->collapsible()
+                    ->visible(fn (?Invoice $record) => $record !== null)
+                    ->schema([
+                        Repeater::make('discounts')
+                            ->relationship()
+                            ->defaultItems(0)
+                            ->schema([
+                                TextInput::make('percentage')
+                                    ->label('Porcentaje (%)')
+                                    ->numeric()
+                                    ->suffixAction(
+                                        Action::make('calculateAmount')
+                                            ->icon('heroicon-m-calculator')
+                                            ->action(function (Get $get, Set $set, $state) {
+                                                $total = (float) $get('../../total');
+                                                $percentage = (float) $state;
+                                                $set('amount', $total * ($percentage / 100));
+                                            })
+                                    ),
+                                TextInput::make('amount')
+                                    ->label('Monto')
+                                    ->numeric()
+                                    ->suffixAction(
+                                        Action::make('calculatePercentage')
+                                            ->icon('heroicon-m-calculator')
+                                            ->action(function (Get $get, Set $set, $state) {
+                                                $total = (float) $get('../../total');
+                                                $amount = (float) $state;
+                                                if ($total > 0) {
+                                                    $set('percentage', ($amount / $total) * 100);
+                                                }
+                                            })
+                                    ),
+                                TextInput::make('description')
+                                    ->label('Descripción')
+                                    ->columnSpan(2),
+                            ])
+                            ->columns(2)
+                            ->live()
+                            ->columnSpanFull(),
                     ]),
 
                 TextInput::make('total')

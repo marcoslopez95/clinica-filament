@@ -179,7 +179,7 @@ class InvoiceResource extends Resource
                     ->label('Pagos')
                     ->description('Pagos Asignados a la factura')
                     ->collapsible()
-                    ->collapsed(fn (?Invoice $record) => $record === null)
+                    ->visible(fn (?Invoice $record) => $record !== null)
                     ->schema([
                         Repeater::make('payments')->label('Pagos')
                             ->relationship()
