@@ -71,16 +71,9 @@ class EntryResource extends Resource
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        if (!$state) {
-                            $set('full_name', null);
-                            $set('dni', null);
-                            return;
-                        }
-                        $supplier = Supplier::find($state);
-                        if ($supplier) {
-                            $set('full_name', $supplier->name);
-                            $set('dni', $supplier->rif);
-                        }
+                        $supplier = $state ? Supplier::find($state) : null;
+                        $set('full_name', $supplier?->name);
+                        $set('dni', $supplier?->rif);
                     }),
 
                 TextInput::make('invoice_number')

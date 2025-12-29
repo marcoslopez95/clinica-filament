@@ -19,6 +19,11 @@ class CreateEntry extends CreateRecord
         ];
     }
 
+    protected function afterCreate(): void
+    {
+        $this->getRecord()->updateStatusIfPaid();
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['invoiceable_type'] = Supplier::class;

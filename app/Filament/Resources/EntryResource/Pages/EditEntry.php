@@ -52,5 +52,6 @@ class EditEntry extends EditRecord
     protected function afterSave(): void
     {
         $this->refreshTotal();
+        $this->getRecord()->updateStatusIfPaid();
     }
 }
