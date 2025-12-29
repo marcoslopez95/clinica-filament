@@ -2,10 +2,19 @@
 
 namespace App\Enums;
 
-enum InvoiceType: string
+enum InvoiceType: int
 {
-	case DEFAULT = 'Default';
-	case INVENTORY = 'Inventory';
-	case LABORATORY = 'Laboratory';
+	case DEFAULT = 1;
+	case INVENTORY = 2;
+	case LABORATORY = 3;
+
+	public function getName(): string
+	{
+		return match ($this) {
+			self::DEFAULT => 'Factura',
+			self::INVENTORY => 'Factura de Entrada',
+			self::LABORATORY => 'Laboratorio'
+		};
+	}
 }
 

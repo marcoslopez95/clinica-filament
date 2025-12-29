@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -41,9 +42,14 @@ class Invoice extends Model
         return new Attribute($get);
     }
 
-    public function toPay(): Attribute
+    public function balance(): Attribute
     {
         return new Attribute(fn() => $this->total - $this->total_paid);
+    }
+
+    public function toPayWithDiscounts(): Attribute
+    {
+        return new Attribute(fn() => $this->balance - $this->discounts->sum('amount'));
     }
 
     public function isComplete(): bool

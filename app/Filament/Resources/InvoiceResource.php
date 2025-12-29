@@ -59,6 +59,9 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
+                Placeholder::make('status')
+                    ->label('Estado')
+                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->getName() : ($record?->status ? (InvoiceStatus::tryFrom($record->status)?->getName() ?? $record->status) : InvoiceStatus::OPEN->getName())),
 
                 Select::make('invoiceable_id')
                     ->label('Paciente')
@@ -73,10 +76,6 @@ class InvoiceResource extends Resource
                         $set('type_document_id', $patient->typeDocument->id);
                         $set('type_document', $patient->typeDocument->name);
                     }),
-
-                Placeholder::make('status')
-                    ->label('Estado')
-                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->value : ($record?->status ?? InvoiceStatus::OPEN->value)),
 
                 TextInput::make('full_name')
                     ->label('Nombre'),
@@ -194,46 +193,6 @@ class InvoiceResource extends Resource
                             ->columns(3)->columnSpan(2)
                         ,
 
-                        Section::make('Descuentos')
-                            ->schema([
-                                Repeater::make('discounts')
-                                    ->relationship()
-                                    ->schema([
-                                        TextInput::make('percentage')
-                                            ->label('Porcentaje (%)')
-                                            ->numeric()
-                                            ->suffixAction(
-                                                Action::make('calculateAmount')
-                                                    ->icon('heroicon-m-calculator')
-                                                    ->action(function (Get $get, Set $set, $state) {
-                                                        $total = (float) $get('../../total');
-                                                        $percentage = (float) $state;
-                                                        $set('amount', $total * ($percentage / 100));
-                                                    })
-                                            ),
-                                        TextInput::make('amount')
-                                            ->label('Monto')
-                                            ->numeric()
-                                            ->suffixAction(
-                                                Action::make('calculatePercentage')
-                                                    ->icon('heroicon-m-calculator')
-                                                    ->action(function (Get $get, Set $set, $state) {
-                                                        $total = (float) $get('../../total');
-                                                        $amount = (float) $state;
-                                                        if ($total > 0) {
-                                                            $set('percentage', ($amount / $total) * 100);
-                                                        }
-                                                    })
-                                            ),
-                                        TextInput::make('description')
-                                            ->label('Descripción')
-                                            ->columnSpan(2),
-                                    ])
-                                    ->columns(2)
-                                    ->live()
-                                    ->columnSpanFull(),
-                            ]),
-
                         Placeholder::make('to_pay')
                             ->label('Por Pagar')
                             ->content(function (Get $get): string {
@@ -249,12 +208,8 @@ class InvoiceResource extends Resource
                                     return $currencyId === 1 ? $amount : $amount / $exchange;
                                 });
 
-                                $totalDiscounts = collect($get('discounts'))->sum(function($item) {
-                                    return (float) ($item['amount'] ?? 0);
-                                });
-
                                 $pay = (float) $get('total');
-                                return number_format($pay - $totalPayments - $totalDiscounts, 2) . ' $';
+                                return number_format($pay - $totalPayments, 2) . ' $';
                             }),
                     ]),
                 Placeholder::make('created_at')
@@ -276,19 +231,18 @@ class InvoiceResource extends Resource
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
                 TextColumn::make('total')->label('Total'),
-                TextColumn::make('to_pay')->label('Por Pagar'),
+                TextColumn::make('balance')->label('Por Pagar'),
                 TextColumn::make('status')
                     ->label('Estado')
+                    ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())
                     ->searchable()
                     ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
                 SelectFilter::make('Status')
-                ->options(collect(InvoiceStatus::cases())
-                    ->map(fn(InvoiceStatus $status) => $status->value)
-                    ->toArray()
-                )->attribute('status')
+                ->options(InvoiceStatus::class)
+                ->attribute('status')
             ])
             ->actions([
                 EditAction::make(),

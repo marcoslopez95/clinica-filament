@@ -55,6 +55,14 @@ class EntryResource extends Resource
     {
         return $form
             ->schema([
+                Placeholder::make('status')
+                    ->label('Estado')
+                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->getName() : ($record?->status ? (InvoiceStatus::tryFrom($record->status)?->getName() ?? $record->status) : InvoiceStatus::OPEN->getName())),
+
+                Placeholder::make('is_expired')
+                    ->label('Condición')
+                    ->content(fn(?Invoice $record): string => $record?->is_expired ? 'Vencida' : 'Sin vencer'),
+
                 Select::make('invoiceable_id')
                     ->label('Proveedor')
                     ->options(fn() => Supplier::all()->pluck('name', 'id'))
@@ -66,10 +74,6 @@ class EntryResource extends Resource
                         $set('full_name', $supplier->name);
                         $set('dni', $supplier->rif);
                     }),
-
-                Placeholder::make('status')
-                    ->label('Estado')
-                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->value : ($record?->status ?? InvoiceStatus::OPEN->value)),
 
                 TextInput::make('invoice_number')
                     ->label('Número de factura')
@@ -257,19 +261,22 @@ class EntryResource extends Resource
                 TextColumn::make('total')->label('Monto'),
                 TextColumn::make('currency.name')->label('Moneda'),
                 TextColumn::make('exchange')->label('Tasa de cambio'),
-                TextColumn::make('to_pay')->label('Por Pagar'),
+                TextColumn::make('to_pay_with_discounts')->label('Por Pagar'),
                 TextColumn::make('status')
                     ->label('Estado')
+                    ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('is_expired')
+                    ->label('Condición')
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Vencida' : 'Sin vencer')
                     ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
                 SelectFilter::make('Status')
-                ->options(collect(InvoiceStatus::cases())
-                    ->map(fn(InvoiceStatus $status) => $status->value)
-                    ->toArray()
-                )->attribute('status')
+                ->options(InvoiceStatus::class)
+                ->attribute('status')
             ])
             ->actions([
                 EditAction::make(),
