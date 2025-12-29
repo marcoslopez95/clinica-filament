@@ -69,6 +69,15 @@ class EntryResource extends Resource
                     ->options(fn() => Supplier::all()->pluck('name', 'id'))
                     ->searchable()
                     ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+                        TextInput::make('rif')
+                            ->label('RIF')
+                            ->required(),
+                    ])
+                    ->createOptionUsing(fn (array $data): int => Supplier::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $supplier = $state ? Supplier::find($state) : null;

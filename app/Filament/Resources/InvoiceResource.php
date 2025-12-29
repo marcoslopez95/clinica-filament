@@ -69,6 +69,26 @@ class InvoiceResource extends Resource
                     ->options(fn() => Patient::all()->pluck('full_name', 'id'))
                     ->searchable()
                     ->required()
+                    ->createOptionForm([
+                        TextInput::make('first_name')
+                            ->label('Nombre')
+                            ->required(),
+                        TextInput::make('last_name')
+                            ->label('Apellido'),
+                        Select::make('type_document_id')
+                            ->label('Tipo de Documento')
+                            ->options(fn() => TypeDocument::all()->pluck('name','id'))
+                            ->required(),
+                        TextInput::make('dni')
+                            ->label('Documento')
+                            ->required(),
+                        DatePicker::make('born_date')
+                            ->label('Fecha de Nacimiento'),
+                        TextInput::make('address')
+                            ->label('Dirección')
+                            ->required(),
+                    ])
+                    ->createOptionUsing(fn (array $data): int => Patient::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $patient = $state ? Patient::find($state) : null;
