@@ -214,6 +214,12 @@ class EntryResource extends Resource
                                 TextInput::make('percentage')
                                     ->label('Porcentaje (%)')
                                     ->numeric()
+                                    ->live(debounce: 500)
+                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                        $total = (float) $get('../../total');
+                                        $percentage = (float) $state;
+                                        $set('amount', $total * ($percentage / 100));
+                                    })
                                     ->suffixAction(
                                         Action::make('calculateAmount')
                                             ->icon('heroicon-m-calculator')
@@ -226,6 +232,14 @@ class EntryResource extends Resource
                                 TextInput::make('amount')
                                     ->label('Monto')
                                     ->numeric()
+                                    ->live(debounce: 500)
+                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                        $total = (float) $get('../../total');
+                                        $amount = (float) $state;
+                                        if ($total > 0) {
+                                            $set('percentage', ($amount / $total) * 100);
+                                        }
+                                    })
                                     ->suffixAction(
                                         Action::make('calculatePercentage')
                                             ->icon('heroicon-m-calculator')

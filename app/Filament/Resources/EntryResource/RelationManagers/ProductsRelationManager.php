@@ -279,6 +279,14 @@ class ProductsRelationManager extends RelationManager
                                     ->step(0.01)
                                     ->required()
                                     ->suffix('%')
+                                    ->live(debounce: 500)
+                                    ->afterStateUpdated(function ($state, $set, Model $record) {
+                                        $price = $record->price ?? 0;
+                                        $quantity = $record->quantity ?? 0;
+                                        $percentage = (float)$state;
+                                        $amount = ($price * $quantity) * ($percentage / 100);
+                                        $set('amount', $amount);
+                                    })
                                     ->suffixAction(
                                         FormAction::make('calculateAmount')
                                             ->label('Calcular')
@@ -294,7 +302,17 @@ class ProductsRelationManager extends RelationManager
                                 TextInput::make('amount')
                                     ->label('Monto')
                                     ->numeric()
-                                    ->required(),
+                                    ->required()
+                                    ->live(debounce: 500)
+                                    ->afterStateUpdated(function ($state, $set, Model $record) {
+                                        $price = $record->price ?? 0;
+                                        $quantity = $record->quantity ?? 0;
+                                        $total = $price * $quantity;
+                                        $amount = (float)$state;
+                                        if ($total > 0) {
+                                            $set('percentage', ($amount / $total) * 100);
+                                        }
+                                    }),
                             ])
                             ->columns(3)
                     ]),
