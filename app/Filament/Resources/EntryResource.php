@@ -73,8 +73,12 @@ class EntryResource extends Resource
                         TextInput::make('name')
                             ->label('Nombre')
                             ->required(),
-                        TextInput::make('rif')
-                            ->label('RIF')
+                        Select::make('type_document_id')
+                            ->label('Tipo de Documento')
+                            ->options(fn() => TypeDocument::all()->pluck('name','id'))
+                            ->required(),
+                        TextInput::make('document')
+                            ->label('Documento')
                             ->required(),
                     ])
                     ->createOptionUsing(fn (array $data): int => Supplier::create($data)->id)
@@ -82,7 +86,8 @@ class EntryResource extends Resource
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $supplier = $state ? Supplier::find($state) : null;
                         $set('full_name', $supplier?->name);
-                        $set('dni', $supplier?->rif);
+                        $set('dni', $supplier?->document);
+                        $set('type_document_id', $supplier?->type_document_id);
                     }),
 
                 TextInput::make('invoice_number')
@@ -98,7 +103,6 @@ class EntryResource extends Resource
                 Select::make('type_document_id')
                     ->label('Tipo de Documento')
                     ->options(fn() => TypeDocument::all()->pluck('name','id'))
-                    ->default(fn() => TypeDocument::where('code', 'RIF')->first()?->id)
                     ->required(),
 
                 DatePicker::make('date')

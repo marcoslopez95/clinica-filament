@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SupplierResource\Pages;
 use App\Filament\Resources\SupplierResource\RelationManagers;
 use App\Models\Supplier;
-use Filament\Forms;
+use App\Models\TypeDocument;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,12 +29,17 @@ class SupplierResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label('Nombre')
                     ->required(),
 
-                Forms\Components\TextInput::make('rif')
-                    ->label('RIF')
+                Select::make('type_document_id')
+                    ->label('Tipo de Documento')
+                    ->options(fn() => TypeDocument::all()->pluck('name','id'))
+                    ->required(),
+
+                TextInput::make('document')
+                    ->label('Documento')
                     ->required(),
             ]);
     }
@@ -45,8 +52,12 @@ class SupplierResource extends Resource
                     ->label('Nombre')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('rif')
-                    ->label('RIF')
+                Tables\Columns\TextColumn::make('typeDocument.name')
+                    ->label('Tipo de Documento')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('document')
+                    ->label('Documento')
                     ->sortable(),
             ])
             ->filters([
