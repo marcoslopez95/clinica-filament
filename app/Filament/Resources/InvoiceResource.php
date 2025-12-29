@@ -111,7 +111,9 @@ class InvoiceResource extends Resource
                     ->dehydrated(),
 
                 DatePicker::make('date')
-                    ->label('Fecha')->default(now()->format('Y-m-d')),
+                    ->label('Fecha')
+                    ->default(now()->format('Y-m-d'))
+                    ->required(),
 
                 Section::make('')
                     ->label('Detalles')

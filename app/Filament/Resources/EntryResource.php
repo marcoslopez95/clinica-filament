@@ -106,11 +106,13 @@ class EntryResource extends Resource
                     ->required(),
 
                 DatePicker::make('date')
-                    ->label('Fecha de factura')->default(now()->format('Y-m-d')),
+                    ->label('Fecha de factura')
+                    ->default(now()->format('Y-m-d'))
+                    ->required(),
 
                 DatePicker::make('credit_date')
                     ->label('Fecha de crédito')
-                    ->nullable(),
+                    ->required(),
 
                 Select::make('currency_id')
                     ->label('Moneda')
