@@ -71,11 +71,18 @@ class InvoiceResource extends Resource
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $patient = Patient::findOrFail($state);
-                        $set('full_name', $patient->first_name.' '.$patient->last_name);
-                        $set('dni', $patient->full_document);
-                        $set('type_document_id', $patient->typeDocument->id);
-                        $set('type_document', $patient->typeDocument->name);
+                        if (!$state) {
+                            $set('full_name', null);
+                            $set('dni', null);
+                            $set('type_document_id', null);
+                            return;
+                        }
+                        $patient = Patient::find($state);
+                        if ($patient) {
+                            $set('full_name', $patient->first_name.' '.$patient->last_name);
+                            $set('dni', $patient->full_document);
+                            $set('type_document_id', $patient->typeDocument->id);
+                        }
                     }),
 
                 TextInput::make('full_name')
@@ -111,6 +118,11 @@ class InvoiceResource extends Resource
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, ?int $state, Get $get) {
+                                        if (!$state) {
+                                            $set('price', 0);
+                                            $set('quantity', null);
+                                            return;
+                                        }
                                         $product = Product::with('inventory')->find($state);
 
                                         if ($product?->inventory) {
