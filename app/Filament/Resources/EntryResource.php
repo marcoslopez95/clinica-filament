@@ -116,9 +116,12 @@ class EntryResource extends Resource
 
                 Section::make('Pagos')
                     ->description('Pagos Asignados a la Entrada')
+                    ->collapsible()
+                    ->collapsed(fn (?Invoice $record) => $record === null)
                     ->schema([
                         Repeater::make('payments')->label('Pagos')
                             ->relationship()
+                            ->defaultItems(0)
                             ->schema([
                                 Select::make('payment_method_id')
                                     ->relationship('paymentMethod', 'name')
@@ -159,9 +162,12 @@ class EntryResource extends Resource
                         ,
 
                         Section::make('Descuentos')
+                            ->collapsible()
+                            ->collapsed(fn (?Invoice $record) => $record === null)
                             ->schema([
                                 Repeater::make('discounts')
                                     ->relationship()
+                                    ->defaultItems(0)
                                     ->schema([
                                         TextInput::make('percentage')
                                             ->label('Porcentaje (%)')

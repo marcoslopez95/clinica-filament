@@ -152,9 +152,12 @@ class InvoiceResource extends Resource
                 Section::make('')
                     ->label('Pagos')
                     ->description('Pagos Asignados a la factura')
+                    ->collapsible()
+                    ->collapsed(fn (?Invoice $record) => $record === null)
                     ->schema([
                         Repeater::make('payments')->label('Pagos')
                             ->relationship()
+                            ->defaultItems(0)
                             ->schema([
                                 Select::make('payment_method_id')
                                     ->relationship('paymentMethod', 'name')
