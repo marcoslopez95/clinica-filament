@@ -22,6 +22,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -279,6 +280,13 @@ class EntryResource extends Resource
                 ->attribute('status')
             ])
             ->actions([
+                TableAction::make('Cancel')
+                    ->label('Cancel')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(fn (Invoice $record) => $record->update(['status' => InvoiceStatus::CANCELLED]))
+                    ->hidden(fn (Invoice $record) => $record->status === InvoiceStatus::CANCELLED),
                 EditAction::make(),
                 DeleteAction::make(),
                 RestoreAction::make(),
