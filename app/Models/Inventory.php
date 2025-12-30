@@ -16,6 +16,11 @@ class Inventory extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
     protected function casts(): array
     {
         return [

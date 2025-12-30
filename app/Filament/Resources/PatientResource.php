@@ -50,8 +50,7 @@ class PatientResource extends Resource
 
                 Select::make('type_document_id')
                     ->label('Tipo de Documento')
-                    ->relationship('typeDocument', 'name')
-                    ->searchable(),
+                    ->relationship('typeDocument', 'name'),
 
                 TextInput::make('dni')
                 ->label('Número de Documento'),

@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use App\Filament\Resources\ProductResource\RelationManagers\InventoryRelationManager;
+
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
@@ -71,6 +73,12 @@ class ProductResource extends Resource
                     ->relationship('productCategory', 'name')
                     ->preload(),
 
+                Select::make('currency_id')
+                    ->label('Moneda')
+                    ->required()
+                    ->relationship('currency', 'name')
+                    ->preload(),
+
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
                     ->content(fn(?Product $record): string => $record?->created_at?->diffForHumans() ?? '-'),
@@ -110,6 +118,11 @@ class ProductResource extends Resource
                     ->label('Categoría')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('currency.name')
+                    ->label('Moneda')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -127,6 +140,13 @@ class ProductResource extends Resource
                     ForceDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            InventoryRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

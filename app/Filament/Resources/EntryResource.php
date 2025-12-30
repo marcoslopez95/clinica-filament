@@ -3,18 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Enums\InvoiceStatus;
-use App\Filament\Resources\InvoiceResource\Pages;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
+use App\Filament\Resources\EntryResource\Pages;
 use App\Models\Currency;
 use App\Models\Invoice;
-use App\Models\Patient;
+use App\Models\Supplier;
+use App\Models\TypeDocument;
 use App\Enums\InvoiceType;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder as FormPlaceholder;
-use App\Models\TypeDocument;
 use App\Models\Product;
 use Filament\Forms\Components\Actions\Action;
-use Faker\Provider\Text;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -35,26 +32,25 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
-class InvoiceResource extends Resource
+use App\Filament\Resources\EntryResource\RelationManagers\ProductsRelationManager;
+use App\Filament\Resources\EntryResource\RelationManagers\InventoryRelationManager;
+
+class EntryResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $slug = 'invoices';
+    protected static ?string $slug = 'entries';
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
-    protected static ?string $modelLabel = 'Factura';
-    protected static ?string $pluralModelLabel = 'Facturas';
-    protected static ?string $navigationLabel = 'Facturas';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'Entrada';
+    protected static ?string $pluralModelLabel = 'Entradas';
+    protected static ?string $navigationLabel = 'Entradas';
 
     public static function form(Form $form): Form
     {
@@ -64,38 +60,39 @@ class InvoiceResource extends Resource
                     ->label('Estado')
                     ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->getName() : ($record?->status ? (InvoiceStatus::tryFrom($record->status)?->getName() ?? $record->status) : InvoiceStatus::OPEN->getName())),
 
+                Placeholder::make('is_expired')
+                    ->label('Condición')
+                    ->content(fn(?Invoice $record): string => $record?->is_expired ? 'Vencida' : 'Sin vencer'),
+
                 Select::make('invoiceable_id')
-                    ->label('Paciente')
-                    ->options(fn() => Patient::all()->pluck('full_name', 'id'))
+                    ->label('Proveedor')
+                    ->options(fn() => Supplier::all()->pluck('name', 'id'))
                     ->searchable()
                     ->required()
                     ->createOptionForm([
-                        TextInput::make('first_name')
+                        TextInput::make('name')
                             ->label('Nombre')
                             ->required(),
-                        TextInput::make('last_name')
-                            ->label('Apellido'),
                         Select::make('type_document_id')
                             ->label('Tipo de Documento')
                             ->options(fn() => TypeDocument::all()->pluck('name','id'))
                             ->required(),
-                        TextInput::make('dni')
+                        TextInput::make('document')
                             ->label('Documento')
                             ->required(),
-                        DatePicker::make('born_date')
-                            ->label('Fecha de Nacimiento'),
-                        TextInput::make('address')
-                            ->label('Dirección')
-                            ->required(),
                     ])
-                    ->createOptionUsing(fn (array $data): int => Patient::create($data)->id)
+                    ->createOptionUsing(fn (array $data): int => Supplier::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $patient = $state ? Patient::find($state) : null;
-                        $set('full_name', $patient ? $patient->first_name.' '.$patient->last_name : null);
-                        $set('dni', $patient?->full_document);
-                        $set('type_document_id', $patient?->typeDocument?->id);
+                        $supplier = $state ? Supplier::find($state) : null;
+                        $set('full_name', $supplier?->name);
+                        $set('dni', $supplier?->document);
+                        $set('type_document_id', $supplier?->type_document_id);
                     }),
+
+                TextInput::make('invoice_number')
+                    ->label('Número de factura')
+                    ->columnSpan(2),
 
                 TextInput::make('full_name')
                     ->label('Nombre'),
@@ -106,106 +103,38 @@ class InvoiceResource extends Resource
                 Select::make('type_document_id')
                     ->label('Tipo de Documento')
                     ->options(fn() => TypeDocument::all()->pluck('name','id'))
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
+                    ->required(),
 
                 DatePicker::make('date')
-                    ->label('Fecha')
+                    ->label('Fecha de factura')
                     ->default(now()->format('Y-m-d'))
                     ->required(),
 
-                Section::make('')
-                    ->label('Detalles')
-                    ->description('Productos asociados a la factura')
-                    ->schema([
-                        Repeater::make('details')->label('Detalles')
-                            ->relationship()
-                            ->schema([
-                                Select::make('product_id')
-                                    ->relationship(
-                                        name: 'product',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn ($query) => $query->whereHas('inventory')
-                                    )
-                                    ->label('Producto')
-                                    ->required()
-                                    ->createOptionForm([
-                                        TextInput::make('name')
-                                            ->label('Nombre')
-                                            ->required(),
-                                        TextInput::make('buy_price')
-                                            ->label('Precio de Compra')
-                                            ->required()
-                                            ->numeric(),
-                                        TextInput::make('sell_price')
-                                            ->label('Precio de Venta')
-                                            ->required()
-                                            ->numeric(),
-                                        Select::make('unit_id')
-                                            ->label('Unidad')
-                                            ->required()
-                                            ->relationship('unit', 'name')
-                                            ->preload(),
-                                        Select::make('product_category_id')
-                                            ->label('Categoría')
-                                            ->required()
-                                            ->relationship('productCategory', 'name')
-                                            ->preload(),
-                                        Select::make('currency_id')
-                                            ->label('Moneda')
-                                            ->required()
-                                            ->relationship('currency', 'name')
-                                            ->preload(),
-                                    ])
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set, ?int $state, Get $get) {
-                                        if (!$state) {
-                                            $set('price', 0);
-                                            $set('quantity', null);
-                                            return;
-                                        }
-                                        $product = Product::with('inventory')->find($state);
+                DatePicker::make('credit_date')
+                    ->label('Fecha de crédito')
+                    ->required(),
 
-                                        if ($product?->inventory) {
-                                            $set('price', $product->sell_price ?? 0);
-                                            $set('quantity', null);
-                                        }
-                                    }),
-
-                                TextInput::make('price')
-                                    ->label('Precio')
-                                    ->type('number')
-                                    ->disabled()
-                                    ->required()
-                                    ->dehydrated(),
-
-                                TextInput::make('quantity')
-                                    ->label('Cantidad')
-                                    ->type('number')
-                                    ->required()
-                                    ->disabled(fn(Get $get) => !$get('product_id'))
-                                    ->live(),
-                            ])
-                            ->columns(3)->columnSpan(2)
-                            ->afterStateUpdated(function (Set $set, mixed $state){
-                                $total = collect($state)->sum(fn($item) => $item['quantity'] * $item['price']);
-                                $set('total', $total);
-                            })
-                            ,
-                    ]),
-
-                TextInput::make('total')
-                    ->label('Total')
-                    ->type('number')
+                Select::make('currency_id')
+                    ->label('Moneda')
+                    ->relationship('currency', 'name')
                     ->required()
-                    ->disabled()
-                    ->dehydrated()
-                    ->columnSpan(2),
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, ?int $state) {
+                        if (!$state) {
+                            $set('exchange', null);
+                            return;
+                        }
+                        $currency = Currency::find($state);
+                        $set('exchange', $currency->exchange ?? null);
+                    }),
 
-                Section::make('')
-                    ->label('Pagos')
-                    ->description('Pagos Asignados a la factura')
+                TextInput::make('exchange')
+                    ->label('Tasa de cambio')
+                    ->numeric()
+                    ->required(),
+
+                Section::make('Pagos')
+                    ->description('Pagos Asignados a la Entrada')
                     ->collapsible()
                     ->visible(fn (?Invoice $record) => $record !== null)
                     ->schema([
@@ -238,7 +167,7 @@ class InvoiceResource extends Resource
 
                                 TextInput::make('amount')
                                     ->label('Monto')
-                                    ->type('number')
+                                    ->numeric()
                                     ->required()
                                     ->disabled(fn(Get $get) => !$get('currency_id'))
                                     ->live(debounce: 500),
@@ -248,8 +177,7 @@ class InvoiceResource extends Resource
                                     ->disabled()
                                     ->dehydrated(),
                             ])
-                            ->columns(3)->columnSpan(2)
-                        ,
+                            ->columns(3)->columnSpan(2),
 
                         Placeholder::make('to_pay')
                             ->label('Por Pagar')
@@ -266,10 +194,91 @@ class InvoiceResource extends Resource
                                     return $currencyId === 1 ? $amount : $amount / $exchange;
                                 });
 
+                                $totalDiscounts = collect($get('discounts'))->sum(function($item) {
+                                    return (float) ($item['amount'] ?? 0);
+                                });
+
                                 $pay = (float) $get('total');
-                                return number_format($pay - $totalPayments, 2) . ' $';
+                                return number_format($pay - $totalPayments - $totalDiscounts, 2) . ' $';
                             }),
                     ]),
+
+                Section::make('Descuentos')
+                    ->collapsible()
+                    ->visible(fn (?Invoice $record) => $record !== null)
+                    ->schema([
+                        Repeater::make('discounts')
+                            ->relationship()
+                            ->defaultItems(0)
+                            ->schema([
+                                TextInput::make('percentage')
+                                    ->label('Porcentaje (%)')
+                                    ->numeric()
+                                    ->live(debounce: 500)
+                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                        $total = (float) $get('../../total');
+                                        $percentage = (float) $state;
+                                        $set('amount', $total * ($percentage / 100));
+                                    })
+                                    ->suffixAction(
+                                        Action::make('calculateAmount')
+                                            ->icon('heroicon-m-calculator')
+                                            ->action(function (Get $get, Set $set, $state) {
+                                                $total = (float) $get('../../total');
+                                                $percentage = (float) $state;
+                                                $set('amount', $total * ($percentage / 100));
+                                            })
+                                    ),
+                                TextInput::make('amount')
+                                    ->label('Monto')
+                                    ->numeric()
+                                    ->live(debounce: 500)
+                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                        $total = (float) $get('../../total');
+                                        $amount = (float) $state;
+                                        if ($total > 0) {
+                                            $set('percentage', ($amount / $total) * 100);
+                                        }
+                                    })
+                                    ->suffixAction(
+                                        Action::make('calculatePercentage')
+                                            ->icon('heroicon-m-calculator')
+                                            ->action(function (Get $get, Set $set, $state) {
+                                                $total = (float) $get('../../total');
+                                                $amount = (float) $state;
+                                                if ($total > 0) {
+                                                    $set('percentage', ($amount / $total) * 100);
+                                                }
+                                            })
+                                    ),
+                                TextInput::make('description')
+                                    ->label('Descripción')
+                                    ->columnSpan(2),
+                            ])
+                            ->columns(2)
+                            ->live()
+                            ->columnSpanFull(),
+                    ]),
+
+                TextInput::make('total')
+                    ->label('Monto')
+                    ->numeric()
+                    ->default(0)
+                    ->readOnly()
+                    ->dehydrated()
+                    ->suffixAction(
+                        Action::make('calculateTotal')
+                            ->icon('heroicon-m-calculator')
+                            ->label('Calcular')
+                            ->action(function (Set $set, ?Invoice $record) {
+                                if ($record) {
+                                    $total = $record->details()->sum('subtotal');
+                                    $record->update(['total' => $total]);
+                                    $set('total', $total);
+                                }
+                            })
+                    ),
+
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
                     ->content(fn(?Invoice $record): string => $record?->created_at?->diffForHumans() ?? '-'),
@@ -288,12 +297,18 @@ class InvoiceResource extends Resource
                 TextColumn::make('full_name')->sortable()->searchable(),
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
-                TextColumn::make('total')->label('Total'),
-                TextColumn::make('balance')->label('Por Pagar'),
+                TextColumn::make('total')->label('Monto'),
+                TextColumn::make('currency.name')->label('Moneda'),
+                TextColumn::make('exchange')->label('Tasa de cambio'),
+                TextColumn::make('to_pay_with_discounts')->label('Por Pagar'),
                 TextColumn::make('status')
                     ->label('Estado')
                     ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('is_expired')
+                    ->label('Condición')
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Vencida' : 'Sin vencer')
                     ->sortable(),
             ])
             ->filters([
@@ -324,19 +339,20 @@ class InvoiceResource extends Resource
             ]);
     }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListInvoices::route('/'),
-            'create' => Pages\CreateInvoice::route('/create'),
-            'edit' => Pages\EditInvoice::route('/{record}/edit'),
-        ];
-    }
-
     public static function getRelations(): array
     {
         return [
-            RelationManagers\InventoryRelationManager::class,
+            ProductsRelationManager::class,
+            InventoryRelationManager::class,
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListEntries::route('/'),
+            'create' => Pages\CreateEntry::route('/create'),
+            'edit' => Pages\EditEntry::route('/{record}/edit'),
         ];
     }
 
@@ -345,7 +361,8 @@ class InvoiceResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ])->where('invoice_type', InvoiceType::DEFAULT->value);
+            ])
+            ->where('invoice_type', InvoiceType::INVENTORY->value);
     }
 
     public static function getGloballySearchableAttributes(): array
