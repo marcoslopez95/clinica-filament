@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EntryResource\RelationManagers;
 
+use App\Models\Currency;
 use App\Models\Product;
 use App\Models\Unit;
 use App\Models\ProductCategory;
@@ -112,6 +113,12 @@ class ProductsRelationManager extends RelationManager
                             ->options(fn() => ProductCategory::pluck('name', 'id'))
                             ->searchable(),
 
+                        Select::make('currency_id')
+                            ->label('Moneda')
+                            ->required()
+                            ->options(fn() => Currency::pluck('name', 'id'))
+                            ->searchable(),
+
                         TextInput::make('quantity')
                             ->label('Cantidad')
                             ->numeric()
@@ -124,6 +131,7 @@ class ProductsRelationManager extends RelationManager
                             'sell_price' => $data['sell_price'],
                             'unit_id' => $data['unit_id'],
                             'product_category_id' => $data['product_category_id'],
+                            'currency_id' => $data['currency_id'],
                         ]);
 
                         $warehouseId = Warehouse::where('name', 'Bodega')->first()?->id;
@@ -180,6 +188,7 @@ class ProductsRelationManager extends RelationManager
                                         $set('sell_price', $product->sell_price);
                                         $set('unit_id', $product->unit_id);
                                         $set('product_category_id', $product->product_category_id);
+                                        $set('currency_id', $product->currency_id);
                                     }
                                 }),
 
@@ -209,6 +218,12 @@ class ProductsRelationManager extends RelationManager
                                 ->options(fn() => ProductCategory::pluck('name', 'id'))
                                 ->searchable(),
 
+                            Select::make('currency_id')
+                                ->label('Moneda')
+                                ->required()
+                                ->options(fn() => Currency::pluck('name', 'id'))
+                                ->searchable(),
+
                             TextInput::make('price')
                                 ->label('Precio de compra (Entrada)')
                                 ->numeric()
@@ -227,6 +242,7 @@ class ProductsRelationManager extends RelationManager
                             $data['sell_price'] = $record->product->sell_price;
                             $data['unit_id'] = $record->product->unit_id;
                             $data['product_category_id'] = $record->product->product_category_id;
+                            $data['currency_id'] = $record->product->currency_id;
                         }
                         return $data;
                     })
@@ -237,6 +253,7 @@ class ProductsRelationManager extends RelationManager
                             'sell_price' => $data['sell_price'],
                             'unit_id' => $data['unit_id'],
                             'product_category_id' => $data['product_category_id'],
+                            'currency_id' => $data['currency_id'],
                         ]);
 
                         $record->update([

@@ -44,7 +44,35 @@ class InventoryResource extends Resource
                 Select::make('product_id')
                     ->label('Producto')
                     ->relationship('product', 'name')
-                    ->required(),
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+                        TextInput::make('buy_price')
+                            ->label('Precio de Compra')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('sell_price')
+                            ->label('Precio de Venta')
+                            ->required()
+                            ->numeric(),
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->required()
+                            ->relationship('unit', 'name')
+                            ->preload(),
+                        Select::make('product_category_id')
+                            ->label('Categoría')
+                            ->required()
+                            ->relationship('productCategory', 'name')
+                            ->preload(),
+                        Select::make('currency_id')
+                            ->label('Moneda')
+                            ->required()
+                            ->relationship('currency', 'name')
+                            ->preload(),
+                    ]),
 
                 Select::make('warehouse_id')
                     ->label('Almacén')

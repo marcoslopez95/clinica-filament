@@ -73,6 +73,12 @@ class ProductResource extends Resource
                     ->relationship('productCategory', 'name')
                     ->preload(),
 
+                Select::make('currency_id')
+                    ->label('Moneda')
+                    ->required()
+                    ->relationship('currency', 'name')
+                    ->preload(),
+
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
                     ->content(fn(?Product $record): string => $record?->created_at?->diffForHumans() ?? '-'),
@@ -110,6 +116,11 @@ class ProductResource extends Resource
 
                 TextColumn::make('productCategory.name')
                     ->label('Categoría')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('currency.name')
+                    ->label('Moneda')
                     ->searchable()
                     ->sortable(),
             ])

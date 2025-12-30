@@ -14,6 +14,7 @@ use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Currency;
 use App\Models\Product;
 use App\Models\Unit;
 use App\Models\ProductCategory;
@@ -55,6 +56,12 @@ class ProductsRelationManager extends RelationManager
                 ->options(fn() => ProductCategory::pluck('name', 'id'))
                 ->searchable()
                 ->required(),
+
+            Select::make('currency_id')
+                ->label('Moneda')
+                ->required()
+                ->options(fn() => Currency::pluck('name', 'id'))
+                ->searchable(),
 
             TextInput::make('quantity')
                 ->label('Cantidad')
@@ -107,6 +114,12 @@ class ProductsRelationManager extends RelationManager
                             ->searchable()
                             ->required(),
 
+                        Select::make('currency_id')
+                            ->label('Moneda')
+                            ->required()
+                            ->options(fn() => Currency::pluck('name', 'id'))
+                            ->searchable(),
+
                         TextInput::make('quantity')
                             ->label('Cantidad')
                             ->numeric()
@@ -119,6 +132,7 @@ class ProductsRelationManager extends RelationManager
                             'sell_price' => $data['sell_price'],
                             'unit_id' => $data['unit_id'],
                             'product_category_id' => $data['product_category_id'],
+                            'currency_id' => $data['currency_id'],
                         ]);
                         $owner = $livewire->getOwnerRecord();
                         $owner->productDetails()->create([
@@ -184,6 +198,12 @@ class ProductsRelationManager extends RelationManager
                             ->searchable()
                             ->required(),
 
+                        Select::make('currency_id')
+                            ->label('Moneda')
+                            ->required()
+                            ->options(fn() => Currency::pluck('name', 'id'))
+                            ->searchable(),
+
                         TextInput::make('quantity')
                             ->label('Cantidad')
                             ->numeric()
@@ -196,6 +216,7 @@ class ProductsRelationManager extends RelationManager
                             $data['sell_price'] = $record->product->sell_price;
                             $data['unit_id'] = $record->product->unit_id;
                             $data['product_category_id'] = $record->product->product_category_id;
+                            $data['currency_id'] = $record->product->currency_id;
                         }
                         $data['quantity'] = $record->quantity;
                         return $data;
@@ -208,6 +229,7 @@ class ProductsRelationManager extends RelationManager
                                 'sell_price' => $data['sell_price'],
                                 'unit_id' => $data['unit_id'],
                                 'product_category_id' => $data['product_category_id'],
+                                'currency_id' => $data['currency_id'],
                             ]);
                         }
                         $record->update([
