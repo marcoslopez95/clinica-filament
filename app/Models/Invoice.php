@@ -35,15 +35,30 @@ class Invoice extends Model
 
     public function totalPaid(): Attribute
     {
-        $get = fn() => $this->payments->sum(function($item) {
-            $exchange = (float) ($item->exchange ?? 1);
-            $amount = (float) ($item->amount ?? 0);
-            $currencyId = (int) ($item->currency_id ?? 0);
+        $get = function() {
+            $paymentsTotal = $this->payments->sum(function($item) {
+                $exchange = (float) ($item->exchange ?? 1);
+                $amount = (float) ($item->amount ?? 0);
+                $currencyId = (int) ($item->currency_id ?? 0);
 
-            if ($exchange <= 0) $exchange = 1;
+                if ($exchange <= 0) $exchange = 1;
 
-            return $currencyId === 1 ? $amount : $amount / $exchange;
-        });
+                return $currencyId === 1 ? $amount : $amount / $exchange;
+            });
+
+            $refundsTotal = $this->payments()->whereHas('refund')->get()->sum(function($payment) {
+                $item = $payment->refund;
+                $exchange = (float) ($item->exchange ?? 1);
+                $amount = (float) ($item->amount ?? 0);
+                $currencyId = (int) ($item->currency_id ?? 0);
+
+                if ($exchange <= 0) $exchange = 1;
+
+                return $currencyId === 1 ? $amount : $amount / $exchange;
+            });
+
+            return $paymentsTotal - $refundsTotal;
+        };
         return new Attribute($get);
     }
 
@@ -190,6 +205,11 @@ class Invoice extends Model
     public function discounts(): HasMany
     {
         return $this->hasMany(InvoiceDiscount::class);
+    }
+
+    public function refunds(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(Refund::class, Payment::class);
     }
 
     public function inventories()

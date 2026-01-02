@@ -42,6 +42,7 @@ use App\Filament\Resources\EntryResource\RelationManagers\ProductsRelationManage
 use App\Filament\Resources\EntryResource\RelationManagers\InventoryRelationManager;
 use App\Filament\Resources\EntryResource\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\EntryResource\RelationManagers\DiscountsRelationManager;
+use App\Filament\Resources\EntryResource\RelationManagers\RefundsRelationManager;
 
 class EntryResource extends Resource
 {
@@ -228,6 +229,7 @@ class EntryResource extends Resource
             InventoryRelationManager::class,
             PaymentsRelationManager::class,
             DiscountsRelationManager::class,
+            RefundsRelationManager::class,
         ];
     }
 
