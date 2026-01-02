@@ -40,6 +40,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 use App\Filament\Resources\EntryResource\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\EntryResource\RelationManagers\InventoryRelationManager;
+use App\Filament\Resources\EntryResource\RelationManagers\PaymentsRelationManager;
+use App\Filament\Resources\EntryResource\RelationManagers\DiscountsRelationManager;
 
 class EntryResource extends Resource
 {
@@ -133,133 +135,6 @@ class EntryResource extends Resource
                     ->numeric()
                     ->required(),
 
-                Section::make('Pagos')
-                    ->description('Pagos Asignados a la Entrada')
-                    ->collapsible()
-                    ->visible(fn (?Invoice $record) => $record !== null)
-                    ->schema([
-                        Repeater::make('payments')->label('Pagos')
-                            ->relationship()
-                            ->defaultItems(0)
-                            ->schema([
-                                Select::make('payment_method_id')
-                                    ->relationship('paymentMethod', 'name')
-                                    ->label('Método de Pago')
-                                    ->required()
-                                    ->live(),
-
-                                Select::make('currency_id')
-                                    ->relationship('currency', 'name',
-                                        modifyQueryUsing: fn (Get $get,Builder $query) => $query
-                                            ->whereRelation(
-                                                'paymentMethods',
-                                                'payment_methods.id',$get('payment_method_id')
-                                            )
-                                    )
-                                    ->label('Moneda')
-                                    ->disabled(fn(Get $get) => !$get('payment_method_id'))
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set, mixed $state){
-                                        $currency = Currency::find($state);
-                                        $set('exchange', $currency->exchange ?? 0);
-                                    }),
-
-                                TextInput::make('amount')
-                                    ->label('Monto')
-                                    ->numeric()
-                                    ->required()
-                                    ->disabled(fn(Get $get) => !$get('currency_id'))
-                                    ->live(debounce: 500),
-
-                                TextInput::make('exchange')
-                                    ->label('Tasa de Cambio')
-                                    ->disabled()
-                                    ->dehydrated(),
-                            ])
-                            ->columns(3)->columnSpan(2),
-
-                        Placeholder::make('to_pay')
-                            ->label('Por Pagar')
-                            ->content(function (Get $get): string {
-                                $totalPayments = collect($get('payments'))->sum(function($item) {
-                                    $exchange = (float) ($item['exchange'] ?? 1);
-                                    $amount = (float) ($item['amount'] ?? 0);
-                                    $currencyId = (int) ($item['currency_id'] ?? 0);
-
-                                    if ($exchange <= 0) {
-                                        $exchange = 1;
-                                    }
-
-                                    return $currencyId === 1 ? $amount : $amount / $exchange;
-                                });
-
-                                $totalDiscounts = collect($get('discounts'))->sum(function($item) {
-                                    return (float) ($item['amount'] ?? 0);
-                                });
-
-                                $pay = (float) $get('total');
-                                return number_format($pay - $totalPayments - $totalDiscounts, 2) . ' $';
-                            }),
-                    ]),
-
-                Section::make('Descuentos')
-                    ->collapsible()
-                    ->visible(fn (?Invoice $record) => $record !== null)
-                    ->schema([
-                        Repeater::make('discounts')
-                            ->relationship()
-                            ->defaultItems(0)
-                            ->schema([
-                                TextInput::make('percentage')
-                                    ->label('Porcentaje (%)')
-                                    ->numeric()
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
-                                        $total = (float) $get('../../total');
-                                        $percentage = (float) $state;
-                                        $set('amount', $total * ($percentage / 100));
-                                    })
-                                    ->suffixAction(
-                                        Action::make('calculateAmount')
-                                            ->icon('heroicon-m-calculator')
-                                            ->action(function (Get $get, Set $set, $state) {
-                                                $total = (float) $get('../../total');
-                                                $percentage = (float) $state;
-                                                $set('amount', $total * ($percentage / 100));
-                                            })
-                                    ),
-                                TextInput::make('amount')
-                                    ->label('Monto')
-                                    ->numeric()
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
-                                        $total = (float) $get('../../total');
-                                        $amount = (float) $state;
-                                        if ($total > 0) {
-                                            $set('percentage', ($amount / $total) * 100);
-                                        }
-                                    })
-                                    ->suffixAction(
-                                        Action::make('calculatePercentage')
-                                            ->icon('heroicon-m-calculator')
-                                            ->action(function (Get $get, Set $set, $state) {
-                                                $total = (float) $get('../../total');
-                                                $amount = (float) $state;
-                                                if ($total > 0) {
-                                                    $set('percentage', ($amount / $total) * 100);
-                                                }
-                                            })
-                                    ),
-                                TextInput::make('description')
-                                    ->label('Descripción')
-                                    ->columnSpan(2),
-                            ])
-                            ->columns(2)
-                            ->live()
-                            ->columnSpanFull(),
-                    ]),
-
                 TextInput::make('total')
                     ->label('Monto')
                     ->numeric()
@@ -278,6 +153,13 @@ class EntryResource extends Resource
                                 }
                             })
                     ),
+
+                Placeholder::make('to_pay')
+                    ->label('Por Pagar')
+                    ->content(function (?Invoice $record): string {
+                        if (!$record) return '0.00 $';
+                        return number_format($record->to_pay_with_discounts, 2) . ' $';
+                    }),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')
@@ -344,6 +226,8 @@ class EntryResource extends Resource
         return [
             ProductsRelationManager::class,
             InventoryRelationManager::class,
+            PaymentsRelationManager::class,
+            DiscountsRelationManager::class,
         ];
     }
 
