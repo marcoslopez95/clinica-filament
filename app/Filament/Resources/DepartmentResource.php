@@ -22,7 +22,6 @@ use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DepartmentResource\Schemas\DepartmentForm;
 use App\Filament\Resources\DepartmentResource\Tables\DepartmentsTable;
 
@@ -65,10 +64,7 @@ class DepartmentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+        return parent::getEloquentQuery();
     }
 
     public static function getGloballySearchableAttributes(): array

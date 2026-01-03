@@ -18,7 +18,6 @@ use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -63,10 +62,7 @@ class InvoiceResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ])->where('invoice_type', InvoiceType::DEFAULT->value);
+        return parent::getEloquentQuery()->where('invoice_type', InvoiceType::DEFAULT->value);
     }
 
     public static function getGloballySearchableAttributes(): array
