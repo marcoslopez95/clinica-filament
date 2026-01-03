@@ -31,26 +31,47 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $title = 'Detalles de Productos';
 
+    protected function getUsedContentIds(Model $owner, ?int $excludeRecordId = null): array
+    {
+        $query = $owner->details()->where('content_type', Product::class);
+        if ($excludeRecordId) {
+            $query->where('id', '!=', $excludeRecordId);
+        }
+        return $query->pluck('content_id')->toArray();
+    }
+
+    protected function getAvailableProducts(Model $owner, ?int $excludeRecordId = null)
+    {
+        $used = $this->getUsedContentIds($owner, $excludeRecordId);
+        return Product::whereHas('inventory')
+            ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+            ->pluck('name', 'id');
+    }
+
+    protected function resolveProductFromRecord(Model $record): ?Product
+    {
+        return $record->content_type === Product::class ? $record->content : ($record->product ?? null);
+    }
+
+    protected function fillPriceFromProduct($state, $set): void
+    {
+        $product = Product::find($state);
+        if ($product) {
+            $set('price', $product->buy_price);
+        }
+    }
+
     public function form(Form $form): Form
     {
         return $form->schema([
             Select::make('content_id')
                 ->label('Producto')
-                ->options(function () {
-                    $owner = $this->getOwnerRecord();
-                    $used = $owner->details()->where('content_type', Product::class)->pluck('content_id')->toArray();
-                    return Product::whereHas('inventory')
-                        ->whereNotIn('id', $used)
-                        ->pluck('name', 'id');
-                })
+                ->options(fn() => $this->getAvailableProducts($this->getOwnerRecord()))
                 ->searchable()
                 ->required()
                 ->reactive()
                 ->afterStateUpdated(function ($state, $set) {
-                    $product = Product::find($state);
-                    if ($product) {
-                        $set('price', $product->buy_price);
-                    }
+                    $this->fillPriceFromProduct($state, $set);
                 }),
 
             TextInput::make('price')
@@ -160,21 +181,12 @@ class ProductsRelationManager extends RelationManager
                     ->form([
                         Select::make('content_id')
                             ->label('Producto')
-                            ->options(function () {
-                                $owner = $this->getOwnerRecord();
-                                $used = $owner->details()->where('content_type', Product::class)->pluck('content_id')->toArray();
-                                return Product::whereHas('inventory')
-                                    ->whereNotIn('id', $used)
-                                    ->pluck('name', 'id');
-                            })
+                            ->options(fn() => $this->getAvailableProducts($this->getOwnerRecord()))
                             ->searchable()
                             ->required()
                             ->reactive()
                             ->afterStateUpdated(function ($state, $set) {
-                                $product = Product::find($state);
-                                if ($product) {
-                                    $set('price', $product->buy_price);
-                                }
+                                $this->fillPriceFromProduct($state, $set);
                             }),
 
                         TextInput::make('price')
@@ -206,15 +218,7 @@ class ProductsRelationManager extends RelationManager
                             Select::make('content_id')
                                 ->label('Producto')
                                 ->options(function (Model $record) {
-                                    $owner = $this->getOwnerRecord();
-                                    $used = $owner->details()
-                                        ->where('id', '!=', $record->id)
-                                        ->where('content_type', Product::class)
-                                        ->pluck('content_id')
-                                        ->toArray();
-                                    return Product::whereHas('inventory')
-                                        ->whereNotIn('id', $used)
-                                        ->pluck('name', 'id');
+                                    return $this->getAvailableProducts($this->getOwnerRecord(), $record->id ?? null);
                                 })
                                 ->searchable()
                                 ->required()
@@ -276,7 +280,7 @@ class ProductsRelationManager extends RelationManager
                         ]);
                     })
                     ->mutateRecordDataUsing(function (array $data, Model $record): array {
-                        $product = $record->content_type === Product::class ? $record->content : $record->product;
+                        $product = $this->resolveProductFromRecord($record);
                         if ($product) {
                             $data['name'] = $product->name;
                             $data['buy_price'] = $product->buy_price;
@@ -288,7 +292,7 @@ class ProductsRelationManager extends RelationManager
                         return $data;
                     })
                     ->action(function (Model $record, array $data, $livewire): void {
-                        $product = $record->content_type === Product::class ? $record->content : $record->product;
+                        $product = $this->resolveProductFromRecord($record);
                         if ($product) {
                             $product->update([
                                 'name' => $data['name'],
@@ -382,11 +386,13 @@ class ProductsRelationManager extends RelationManager
                     ->label('Lotes')
                     ->color('success')
                     ->icon('heroicon-m-archive-box')
-                    ->visible(fn (Model $record): bool =>
-                        ($record->content_type === Product::class ? $record->content : $record->product) &&
-                        (($record->content_type === Product::class ? $record->content : $record->product)->productCategory ?? null) &&
-                        strtolower((($record->content_type === Product::class ? $record->content : $record->product)->productCategory->name) ?? '') === 'medicina'
-                    )
+                    ->visible(function (Model $record): bool {
+                        $p = $this->resolveProductFromRecord($record);
+                        if (! $p || ! ($p->productCategory ?? null)) {
+                            return false;
+                        }
+                        return strtolower(($p->productCategory->name) ?? '') === 'medicina';
+                    })
                     ->modalHeading('Gestionar Lotes')
                     ->mountUsing(fn (Form $form, Model $record) => $form->fill([
                         'batches' => $record->batchDetails->toArray(),
