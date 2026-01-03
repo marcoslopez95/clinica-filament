@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UnitResource\Schemas;
 
 use App\Models\Unit;
 use Filament\Forms\Components\Placeholder;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
@@ -21,13 +22,7 @@ class UnitForm
                     ->label('Símbolo')
                     ->required(),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de creación')
-                    ->content(fn(?Unit $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha Última Modificación')
-                    ->content(fn(?Unit $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }

@@ -12,6 +12,7 @@ use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Filters\TrashedFilter;
 use App\Filament\Forms\Tables\SimpleTable;
+use App\Filament\Forms\Tables\TimestampTable;
 use Filament\Tables\Table;
 
 class PaymentMethodsTable
@@ -21,6 +22,7 @@ class PaymentMethodsTable
         return $table
             ->columns([
                 ...SimpleTable::columns(),
+                ...TimestampTable::columns(),
             ])
             ->filters([
                 TrashedFilter::make(),

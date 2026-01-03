@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SpecializationResource\Schemas;
 
 use App\Models\Specialization;
 use Filament\Forms\Components\Placeholder;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
@@ -20,13 +21,7 @@ class SpecializationForm
                 TextInput::make('code')
                     ->label('Código'),
 
-                Placeholder::make('created_at')
-                    ->label('Created Date')
-                    ->content(fn(?Specialization $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Last Modified Date')
-                    ->content(fn(?Specialization $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }

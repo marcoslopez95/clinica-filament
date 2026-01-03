@@ -6,6 +6,7 @@ use App\Models\Room;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Forms\Schemas\SimpleForm;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Form;
 
 class RoomForm
@@ -16,13 +17,7 @@ class RoomForm
             ->schema([
                 ...SimpleForm::schema(),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Room $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?Room $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }

@@ -234,13 +234,7 @@ class InvoiceForm
                                 return number_format($pay - $totalPayments, 2) . ' $';
                             }),
                     ]),
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Invoice $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?Invoice $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

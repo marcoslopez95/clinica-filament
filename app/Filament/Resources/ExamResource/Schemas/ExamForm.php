@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ExamResource\Schemas;
 
 use App\Models\Exam;
 use Filament\Forms\Components\Placeholder;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -54,13 +55,7 @@ class ExamForm
                             ->columns(3)
                     ]),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Exam $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?Exam $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }

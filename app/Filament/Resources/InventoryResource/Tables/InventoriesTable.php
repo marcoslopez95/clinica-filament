@@ -13,6 +13,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Table;
+use App\Filament\Forms\Tables\TimestampTable;
 
 class InventoriesTable
 {
@@ -45,6 +46,7 @@ class InventoriesTable
 
                 TextColumn::make('observation')
                     ->label('Observaciones'),
+                ...TimestampTable::columns(),
             ])
             ->filters([
                 TrashedFilter::make(),

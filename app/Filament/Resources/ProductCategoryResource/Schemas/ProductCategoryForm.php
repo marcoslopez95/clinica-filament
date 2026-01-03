@@ -6,6 +6,7 @@ use App\Models\ProductCategory;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Forms\Schemas\SimpleForm;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Form;
 
 class ProductCategoryForm
@@ -16,13 +17,7 @@ class ProductCategoryForm
             ->schema([
                 ...SimpleForm::schema(),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?ProductCategory $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?ProductCategory $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }

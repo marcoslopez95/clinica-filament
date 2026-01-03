@@ -1,12 +1,12 @@
 <?php
 
-namespace  App\Filament\Forms\Tables;
+namespace App\Filament\Forms\Tables;
 
 use Filament\Tables\Columns\TextColumn;
 
 class TimestampTable
 {
-    public static function schema(): array
+    public static function columns(): array
     {
         return [
             TextColumn::make('created_at')

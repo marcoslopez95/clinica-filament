@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProductResource\Schemas;
 
 use App\Models\Product;
 use Filament\Forms\Components\Placeholder;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -51,13 +52,7 @@ class ProductForm
                     ->relationship('currency', 'name')
                     ->preload(),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Product $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha Última Modificación')
-                    ->content(fn(?Product $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }

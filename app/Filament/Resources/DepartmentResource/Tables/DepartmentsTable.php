@@ -4,6 +4,7 @@ namespace App\Filament\Resources\DepartmentResource\Tables;
 
 use Filament\Tables\Filters\TrashedFilter;
 use App\Filament\Forms\Tables\SimpleTable;
+use App\Filament\Forms\Tables\TimestampTable;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -21,6 +22,7 @@ class DepartmentsTable
         return $table
             ->columns([
                 ...SimpleTable::columns(),
+                ...TimestampTable::columns(),
             ])
             ->filters([
                 TrashedFilter::make(),

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ReferenceValueResource\Schemas;
 
 use App\Models\ReferenceValue;
 use Filament\Forms\Components\Placeholder;
+use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -34,13 +35,7 @@ class ReferenceValueForm
                     ->required()
                     ->numeric(),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?ReferenceValue $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Actualización')
-                    ->content(fn(?ReferenceValue $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...TimestampForm::schema(),
             ]);
     }
 }
