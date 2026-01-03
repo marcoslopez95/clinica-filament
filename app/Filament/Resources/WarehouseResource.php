@@ -4,11 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\WarehouseResource\Pages;
 use App\Filament\Resources\WarehouseResource\RelationManagers;
+use App\Filament\Resources\WarehouseResource\Schemas\WarehouseForm;
+use App\Filament\Resources\WarehouseResource\Tables\WarehousesTable;
 use App\Models\Warehouse;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,52 +26,12 @@ class WarehouseResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                Forms\Components\TextInput::make('location')
-                    ->label('Ubicación')
-                    ->nullable(),
-
-                Forms\Components\Textarea::make('description')
-                    ->label('Descripción')
-                    ->nullable(),
-            ]);
+        return WarehouseForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nombre')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('location')
-                    ->label('Ubicación')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Descripción')
-                    ->limit(50),
-            ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+        return WarehousesTable::table($table);
     }
 
     public static function getRelations(): array

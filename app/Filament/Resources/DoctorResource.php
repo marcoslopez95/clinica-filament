@@ -24,6 +24,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\DoctorResource\Schemas\DoctorForm;
+use App\Filament\Resources\DoctorResource\Tables\DoctorsTable;
 
 class DoctorResource extends Resource
 {
@@ -39,90 +41,12 @@ class DoctorResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('first_name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('last_name')
-                    ->label('Apellido')
-                    ->required(),
-
-                Select::make('type_document_id')
-                    ->label('Tipo de Documento')
-                    ->relationship('typeDocument', 'name')
-                    ->searchable()
-                    ->required(),
-
-                TextInput::make('dni')
-                    ->label('DNI')
-                    ->required(),
-
-                DatePicker::make('born_date')
-                ->label('Fecha de Nacimiento'),
-
-                TextInput::make('cost')->label('Costo')
-                ->required()
-                ->numeric(),
-
-
-                Select::make('specialization_id')
-                    ->relationship('specialization', 'name')
-                    ->searchable()
-                    ->label('Especialización'),
-
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Doctor $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?Doctor $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
-            ]);
+        return DoctorForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('first_name')
-                ->label('Nombre'),
-
-                TextColumn::make('last_name')
-                ->label('Apellido'),
-
-                TextColumn::make('typeDocument.name')
-                    ->label('Tipo de Documento')
-                    ->sortable(),
-
-                TextColumn::make('dni')
-                ->label('Num. Documento'),
-
-                TextColumn::make('born_date')
-                    ->label('Fecha de Nacimiento')
-                    ->date(),
-
-                TextColumn::make('cost')->label('Costo'),
-
-                TextColumn::make('specialization.name')->label('Especialización'),
-            ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                ]),
-            ]);
+        return DoctorsTable::table($table);
     }
 
     public static function getPages(): array

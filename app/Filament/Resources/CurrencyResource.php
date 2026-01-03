@@ -22,6 +22,8 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\CurrencyResource\Schemas\CurrencyForm;
+use App\Filament\Resources\CurrencyResource\Tables\CurrenciesTable;
 
 class CurrencyResource extends Resource
 {
@@ -37,63 +39,12 @@ class CurrencyResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')->label('Nombre')
-                    ->required(),
-
-                TextInput::make('symbol')->label('Símbolo')
-                    ->required(),
-
-                TextInput::make('exchange')->label('Tasa de Cambio')
-                    ->required()
-                    ->numeric(),
-
-                Select::make('paymentMethods')
-                    ->label('Métodos de Pago')
-                    ->relationship('paymentMethods', 'name')
-                    ->multiple()
-                    ->preload(),
-
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Currency $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Última Modificación')
-                    ->content(fn(?Currency $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
-            ]);
+        return CurrencyForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('symbol')->label('Símbolo'),
-
-                TextColumn::make('exchange')->label('Tasa de Cambio'),
-            ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                ]),
-            ]);
+        return CurrenciesTable::table($table);
     }
 
     public static function getPages(): array
