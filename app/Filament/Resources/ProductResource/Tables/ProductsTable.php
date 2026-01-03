@@ -11,7 +11,7 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+
 use Filament\Tables\Table;
 
 class ProductsTable
@@ -51,9 +51,7 @@ class ProductsTable
                     ->searchable()
                     ->sortable(),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

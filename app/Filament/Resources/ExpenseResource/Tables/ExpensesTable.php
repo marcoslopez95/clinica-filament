@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ExpenseResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -40,9 +40,7 @@ class ExpensesTable
                     ->label('Tasa de Cambio')
                     ->sortable(),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

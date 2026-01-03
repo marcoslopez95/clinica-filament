@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\DoctorResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -28,9 +28,7 @@ class DoctorsTable
                 TextColumn::make('cost')->label('Costo'),
                 TextColumn::make('specialization.name')->label('Especialización'),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

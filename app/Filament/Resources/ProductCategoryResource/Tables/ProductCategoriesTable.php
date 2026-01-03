@@ -13,7 +13,7 @@ use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Forms\Tables\SimpleTable;
 use App\Filament\Forms\Tables\TimestampTable;
-use Filament\Tables\Filters\TrashedFilter;
+ 
 use Filament\Tables\Table;
 
 class ProductCategoriesTable
@@ -26,7 +26,7 @@ class ProductCategoriesTable
                 ...TimestampTable::columns(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                
             ])
             ->actions([
                 EditAction::make(),

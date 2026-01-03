@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\WarehouseResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -30,9 +30,7 @@ class WarehousesTable
                     ->label('Descripción')
                     ->limit(50),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

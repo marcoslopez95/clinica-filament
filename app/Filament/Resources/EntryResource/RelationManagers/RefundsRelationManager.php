@@ -97,9 +97,7 @@ class RefundsRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable(),
             ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-            ])
+            
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->after(function ($livewire) {

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\DepartmentResource\Tables;
 
-use Filament\Tables\Filters\TrashedFilter;
+ 
 use App\Filament\Forms\Tables\SimpleTable;
 use App\Filament\Forms\Tables\TimestampTable;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -24,9 +24,7 @@ class DepartmentsTable
                 ...SimpleTable::columns(),
                 ...TimestampTable::columns(),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

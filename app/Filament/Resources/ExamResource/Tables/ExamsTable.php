@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ExamResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -32,9 +32,6 @@ class ExamsTable
                 TextColumn::make('currency.name')
                     ->label('Moneda')
                     ->sortable(),
-            ])
-            ->filters([
-                TrashedFilter::make(),
             ])
             ->actions([
                 EditAction::make(),

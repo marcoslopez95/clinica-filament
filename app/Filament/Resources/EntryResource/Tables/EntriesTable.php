@@ -15,7 +15,6 @@ use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class EntriesTable
@@ -42,7 +41,6 @@ class EntriesTable
                     ->sortable(),
             ])
             ->filters([
-                TrashedFilter::make(),
                 SelectFilter::make('Status')
                     ->options(InvoiceStatus::class)
                     ->attribute('status')

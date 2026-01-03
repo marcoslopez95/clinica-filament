@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\InventoryResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+ 
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -48,9 +48,7 @@ class InventoriesTable
                     ->label('Observaciones'),
                 ...TimestampTable::columns(),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

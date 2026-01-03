@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CurrencyResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -24,9 +24,7 @@ class CurrenciesTable
                 TextColumn::make('symbol')->label('Símbolo'),
                 TextColumn::make('exchange')->label('Tasa de Cambio'),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
+            
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

@@ -12,7 +12,7 @@ use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
+ 
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action as TableAction;
 use App\Enums\InvoiceStatus;
@@ -35,12 +35,11 @@ class InvoicesTable
                     ->searchable()
                     ->sortable(),
             ])
-            ->filters([
-                TrashedFilter::make(),
-                SelectFilter::make('Status')
-                ->options(InvoiceStatus::class)
-                ->attribute('status')
-            ])
+                ->filters([
+                    SelectFilter::make('Status')
+                    ->options(InvoiceStatus::class)
+                    ->attribute('status')
+                ])
             ->actions([
                 TableAction::make('Cancel')
                     ->label('Cancel')
