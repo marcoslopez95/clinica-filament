@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Filament\Tables;
+namespace App\Filament\Forms\Tables;
 
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
 class SimpleTable
 {
-    public static function make(Table $table): Table
+    public static function columns(): array
     {
-        return $table->columns([
+        return [
             TextColumn::make('name')
                 ->label('Nombre')
-                ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->sortable(),
 
             TextColumn::make('description')
                 ->label('Descripción')
                 ->limit(50),
-        ]);
+        ];
     }
 }

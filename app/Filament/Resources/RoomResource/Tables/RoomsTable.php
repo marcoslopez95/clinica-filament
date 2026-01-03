@@ -11,7 +11,7 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Filters\TrashedFilter;
-use App\Filament\Forms\Schemas\SimpleTable;
+use App\Filament\Forms\Tables\SimpleTable;
 use Filament\Tables\Table;
 
 class RoomsTable
