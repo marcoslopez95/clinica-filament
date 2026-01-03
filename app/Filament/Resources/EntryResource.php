@@ -52,7 +52,8 @@ class EntryResource extends Resource
 
     protected static ?string $slug = 'entries';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Contabilidad';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $modelLabel = 'Entrada';
     protected static ?string $pluralModelLabel = 'Entradas';
     protected static ?string $navigationLabel = 'Entradas';

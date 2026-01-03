@@ -20,7 +20,7 @@ class InventoryResource extends Resource
     protected static ?string $slug = 'inventories';
 
     protected static ?string $navigationGroup = 'Almacén';
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $modelLabel = 'Inventario';
     protected static ?string $pluralModelLabel = 'Inventarios';
     protected static ?string $navigationLabel = 'Inventarios';

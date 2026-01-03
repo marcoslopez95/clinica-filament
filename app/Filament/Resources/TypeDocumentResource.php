@@ -19,7 +19,7 @@ class TypeDocumentResource extends Resource
     protected static ?string $slug = 'type-documents';
 
     protected static ?string $navigationGroup = 'Configuración';
-    protected static ?string $navigationIcon = 'heroicon-o-flag';
+    protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $modelLabel = 'Tipo de Documento';
     protected static ?string $pluralModelLabel = 'Tipos de Documentos';
     protected static ?string $navigationLabel = 'Tipos de Documentos';

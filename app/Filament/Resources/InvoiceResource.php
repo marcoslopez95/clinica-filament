@@ -28,7 +28,8 @@ class InvoiceResource extends Resource
 
     protected static ?string $slug = 'invoices';
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+    protected static ?string $navigationGroup = 'Contabilidad';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $modelLabel = 'Factura';
     protected static ?string $pluralModelLabel = 'Facturas';
     protected static ?string $navigationLabel = 'Facturas';
