@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\DepartmentResource\Tables;
 
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use App\Filament\Forms\Schemas\SimpleTable;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -20,8 +20,7 @@ class DepartmentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Nombre')->searchable()->sortable(),
-                TextColumn::make('description')->label('Descripción'),
+                ...SimpleTable::columns(),
             ])
             ->filters([
                 TrashedFilter::make(),

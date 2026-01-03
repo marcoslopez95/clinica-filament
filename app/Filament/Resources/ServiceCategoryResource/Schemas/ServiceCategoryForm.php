@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ServiceCategoryResource\Schemas;
 
 use App\Models\ServiceCategory;
 use Filament\Forms\Components\Placeholder;
+use App\Filament\Forms\Schemas\SimpleForm;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
@@ -13,12 +14,7 @@ class ServiceCategoryForm
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('description')
-                    ->label('Descripción'),
+                ...SimpleForm::schema(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')

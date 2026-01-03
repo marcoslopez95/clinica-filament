@@ -3,27 +3,21 @@
 namespace App\Filament\Resources\WarehouseResource\Schemas;
 
 use App\Models\Warehouse;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use App\Filament\Forms\Schemas\SimpleForm;
 use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
 
 class WarehouseForm
 {
     public static function configure(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
+        return $form->schema([
+            ...SimpleForm::schema(),
 
-                TextInput::make('location')
-                    ->label('Ubicación')
-                    ->nullable(),
-
-                Textarea::make('description')
-                    ->label('Descripción')
-                    ->nullable(),
-            ]);
+            TextInput::make('location')
+                ->label('Ubicación')
+                ->nullable(),
+        ]);
     }
 }
+

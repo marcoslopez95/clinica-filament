@@ -5,6 +5,7 @@ namespace App\Filament\Resources\RoomResource\Schemas;
 use App\Models\Room;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
+use App\Filament\Forms\Schemas\SimpleForm;
 use Filament\Forms\Form;
 
 class RoomForm
@@ -13,12 +14,7 @@ class RoomForm
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('description')
-                    ->label('Descripción'),
+                ...SimpleForm::schema(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')

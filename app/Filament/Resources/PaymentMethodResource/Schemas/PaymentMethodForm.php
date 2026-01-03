@@ -6,6 +6,7 @@ use App\Models\PaymentMethod;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use App\Filament\Forms\Schemas\SimpleForm;
 use Filament\Forms\Form;
 
 class PaymentMethodForm
@@ -14,12 +15,7 @@ class PaymentMethodForm
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('description')
-                    ->label('Descripción'),
+                ...SimpleForm::schema(),
 
                 Select::make('currencies')
                     ->label('Moneda')

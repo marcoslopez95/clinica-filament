@@ -5,6 +5,7 @@ namespace App\Filament\Resources\DepartmentResource\Schemas;
 use App\Models\Department;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
+use App\Filament\Forms\Schemas\SimpleForm;
 use Filament\Forms\Form;
 
 class DepartmentForm
@@ -13,12 +14,7 @@ class DepartmentForm
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('description')
-                    ->label('Descripción'),
+                ...SimpleForm::schema(),
 
                 Placeholder::make('created_at')
                     ->label('Fecha de Creación')

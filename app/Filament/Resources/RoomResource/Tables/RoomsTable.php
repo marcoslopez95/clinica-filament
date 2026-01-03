@@ -10,8 +10,8 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use App\Filament\Forms\Schemas\SimpleTable;
 use Filament\Tables\Table;
 
 class RoomsTable
@@ -20,13 +20,7 @@ class RoomsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('description')
-                    ->label('Descripción'),
+                ...SimpleTable::columns(),
             ])
             ->filters([
                 TrashedFilter::make(),
