@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources\RefundResource\Schemas;
 
-    use Filament\Forms\Form;
+use Filament\Forms\Form;
 
-    class RefundForm {
-        public static function configure(Form $form): Form
-        {
+class RefundForm
+{
+    public static function configure(Form $form): Form
+    {
         return $form
-        ->schema([
-        ]);
-        }
+            ->schema([
+            ]);
     }
+}

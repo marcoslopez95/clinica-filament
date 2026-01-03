@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources\RefundResource\Pages;
 
-    use App\Filament\Resources\RefundResource;
-    use Filament\Actions\CreateAction;
-    use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\RefundResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 
-    class ListRefunds extends ListRecords {
-        protected static string $resource = RefundResource::class;
+class ListRefunds extends ListRecords
+{
+    protected static string $resource = RefundResource::class;
 
-        protected function getHeaderActions(): array {
+    protected function getHeaderActions(): array
+    {
         return [
-        CreateAction::make(),
+            CreateAction::make(),
         ];
-        }
     }
+}
