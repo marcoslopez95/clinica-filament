@@ -55,11 +55,13 @@ class InvoiceForm
                     ->createOptionUsing(fn (array $data): int => Patient::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $patient = $state ? Patient::find($state) : null;
-                        $set('full_name', $patient ? $patient->first_name.' '.$patient->last_name : null);
-                        $set('dni', $patient?->full_document);
-                        $set('type_document_id', $patient?->typeDocument?->id);
+                        $patient = Patient::find($state);
+
+                        $set('full_name', $patient->first_name . ' ' . ($patient->last_name ?? ''));
+                        $set('dni', $patient->full_document);
+                        $set('type_document_id', $patient->typeDocument->id);
                     }),
+
 
                 TextInput::make('full_name')
                     ->label('Nombre'),

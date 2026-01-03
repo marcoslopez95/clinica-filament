@@ -10,14 +10,6 @@ class Refund extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'payment_id',
-        'currency_id',
-        'payment_method_id',
-        'amount',
-        'exchange',
-    ];
-
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);

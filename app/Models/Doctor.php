@@ -16,16 +16,16 @@ class Doctor extends Model
         return $this->belongsTo(TypeDocument::class);
     }
 
+    public function specialization(): BelongsTo
+    {
+        return $this->belongsTo(Specialization::class);
+    }
+
     protected function casts(): array
     {
         return [
             'born_date' => 'date',
         ];
-    }
-
-    public function specialization(): BelongsTo
-    {
-        return $this->belongsTo(Specialization::class);
     }
 
     public function fullName():Attribute

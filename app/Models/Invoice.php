@@ -16,11 +16,6 @@ class Invoice extends Model
 {
     use SoftDeletes;
 
-    public function invoiceable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
     protected function casts(): array
     {
         return [
@@ -181,6 +176,10 @@ class Invoice extends Model
         parent::booting();
     }
 
+    public function invoiceable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     public function currency(): BelongsTo
     {
