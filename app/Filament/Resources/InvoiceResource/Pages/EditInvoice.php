@@ -18,6 +18,18 @@ class EditInvoice extends EditRecord
 {
     protected static string $resource = InvoiceResource::class;
 
+    protected $listeners = [
+        'refreshTotal' => 'refreshTotal',
+    ];
+
+    public function refreshTotal(): void
+    {
+        $this->record->refresh();
+        $total = $this->record->details()->sum('subtotal');
+        $this->record->update(['total' => $total]);
+        $this->data['total'] = $total;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

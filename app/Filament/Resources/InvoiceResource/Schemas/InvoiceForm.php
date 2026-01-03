@@ -91,7 +91,12 @@ class InvoiceForm
                     ->dehydrated()
                     ->columnSpan(2),
 
-                
+                Placeholder::make('to_pay')
+                    ->label('Por Pagar')
+                    ->content(function (?Invoice $record): string {
+                        if (!$record) return '0.00 $';
+                        return number_format($record->to_pay_with_discounts, 2) . ' $';
+                    }),
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }

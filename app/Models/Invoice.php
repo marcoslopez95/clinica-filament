@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Models\Currency;
+use App\Models\Inventory;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -213,13 +215,15 @@ class Invoice extends Model
 
     public function inventories()
     {
-        return $this->hasManyThrough(
+        $relation = $this->hasManyThrough(
             Inventory::class,
             InvoiceDetail::class,
-            'invoice_id',
-            'product_id',
-            'id',
-            'product_id'
+            'invoice_id', // Foreign key on InvoiceDetail referencing Invoice
+            'product_id', // Foreign key on Inventory referencing Product
+            'id', // Local key on Invoice
+            'content_id' // Local key on InvoiceDetail that stores the product id for product items
         );
+
+        return $relation->where((new InvoiceDetail())->getTable() . '.content_type', Product::class);
     }
 }
