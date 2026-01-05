@@ -8,6 +8,8 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
+use App\Enums\InvoiceStatus;
+use App\Filament\Resources\InvoiceResource;
 
 class EditCotizacion extends EditRecord
 {
@@ -33,15 +35,17 @@ class EditCotizacion extends EditRecord
                 ->color('danger')
                 ->icon('heroicon-o-x-circle')
                 ->requiresConfirmation()
-                ->hidden(fn () => $this->record->status === null),
+                ->action(fn () => $this->record->update(['status' => InvoiceStatus::CANCELLED]))
+                ->hidden(fn () => $this->record->status === InvoiceStatus::CANCELLED),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];
     }
 
-    protected function afterSave(): void
+    protected function afterSave():void
     {
+        $this->refreshTotal();
         $this->getRecord()->updateStatusIfPaid();
     }
 }

@@ -69,19 +69,12 @@ class InvoiceForm
                 TextInput::make('dni')
                     ->label('Documento'),
 
-                Select::make('type_document_id')
-                    ->label('Tipo de Documento')
-                    ->options(fn() => TypeDocument::all()->pluck('name','id'))
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
+                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
 
                 DatePicker::make('date')
                     ->label('Fecha')
                     ->default(now()->format('Y-m-d'))
                     ->required(),
-
-                
 
                 TextInput::make('total')
                     ->label('Total')
@@ -91,12 +84,8 @@ class InvoiceForm
                     ->dehydrated()
                     ->columnSpan(2),
 
-                Placeholder::make('to_pay')
-                    ->label('Por Pagar')
-                    ->content(function (?Invoice $record): string {
-                        if (!$record) return '0.00 $';
-                        return number_format($record->to_pay_with_discounts, 2) . ' $';
-                    }),
+                \App\Filament\Forms\Component\ToPay::make(),
+                
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }

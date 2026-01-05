@@ -13,7 +13,14 @@ class CreateCotizacion extends CreateRecord
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            // Add any header actions here
+        ];
+    }
+
+    protected function afterCreate():void
+    {
+        $this->getRecord()->updateStatusIfPaid();
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
