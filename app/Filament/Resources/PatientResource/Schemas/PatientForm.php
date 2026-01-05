@@ -23,7 +23,7 @@ class PatientForm
                 TextInput::make('last_name')
                     ->label('Apellido'),
 
-                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
+                \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
                 TextInput::make('dni')
                     ->label('Número de Documento'),

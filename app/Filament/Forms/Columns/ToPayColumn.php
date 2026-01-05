@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Forms\column;
+namespace App\Filament\Forms\columns;
 
 use Filament\Tables\Columns\TextColumn;
 

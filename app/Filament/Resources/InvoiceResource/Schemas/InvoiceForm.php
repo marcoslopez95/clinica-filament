@@ -69,7 +69,7 @@ class InvoiceForm
                 TextInput::make('dni')
                     ->label('Documento'),
 
-                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
+                \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
                 DatePicker::make('date')
                     ->label('Fecha')
@@ -84,7 +84,7 @@ class InvoiceForm
                     ->dehydrated()
                     ->columnSpan(2),
 
-                \App\Filament\Forms\Component\ToPay::make(),
+                \App\Filament\Forms\Components\ToPay::make(),
                 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

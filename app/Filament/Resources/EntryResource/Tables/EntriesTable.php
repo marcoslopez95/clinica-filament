@@ -29,7 +29,7 @@ class EntriesTable
                 TextColumn::make('total')->label('Monto'),
                 TextColumn::make('currency.name')->label('Moneda'),
                 TextColumn::make('exchange')->label('Tasa de cambio'),
-                \App\Filament\Forms\column\ToPayColumn::make(),
+                \App\Filament\Forms\columns\ToPayColumn::make(),
                 TextColumn::make('status')
                     ->label('Estado')
                     ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Forms\Component;
+namespace App\Filament\Forms\Components;
 
 use App\Models\Invoice;
 use Filament\Forms\Components\Placeholder;

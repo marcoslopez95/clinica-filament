@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Forms\Component;
+namespace App\Filament\Forms\Components;
 
 use Filament\Forms\Components\Select;
 use App\Models\TypeDocument;

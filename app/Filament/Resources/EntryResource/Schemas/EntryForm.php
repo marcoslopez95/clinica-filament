@@ -39,7 +39,7 @@ class EntryForm
                         TextInput::make('name')
                             ->label('Nombre')
                             ->required(),
-                            \App\Filament\Forms\Component\TypeDocumentSelect::make(),
+                            \App\Filament\Forms\Components\TypeDocumentSelect::make(),
                         TextInput::make('document')
                             ->label('Documento')
                             ->required(),
@@ -63,7 +63,7 @@ class EntryForm
                 TextInput::make('dni')
                     ->label('Documento'),
 
-                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
+                \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
                 DatePicker::make('date')
                     ->label('Fecha de factura')
@@ -112,7 +112,7 @@ class EntryForm
                             })
                     ),
 
-                \App\Filament\Forms\Component\ToPay::make(),
+                \App\Filament\Forms\Components\ToPay::make(),
 
                 ...TimestampForm::schema(),
             ]);

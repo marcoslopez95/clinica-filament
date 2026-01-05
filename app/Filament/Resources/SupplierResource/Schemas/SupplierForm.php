@@ -18,7 +18,7 @@ class SupplierForm
                     ->label('Nombre')
                     ->required(),
 
-                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
+                \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
                 TextInput::make('document')
                     ->label('Documento')
