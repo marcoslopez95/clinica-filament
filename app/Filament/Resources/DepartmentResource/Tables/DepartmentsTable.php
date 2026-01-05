@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\DepartmentResource\Tables;
 
- 
-use App\Filament\Forms\Tables\SimpleTable;
-use App\Filament\Forms\Tables\TimestampTable;
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -21,8 +19,8 @@ class DepartmentsTable
     {
         return $table
             ->columns([
-                ...SimpleTable::columns(),
-                ...TimestampTable::columns(),
+                ...\App\Filament\Forms\Tables\SimpleTable::columns(),
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

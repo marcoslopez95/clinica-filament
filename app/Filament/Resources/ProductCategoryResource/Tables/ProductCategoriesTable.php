@@ -10,9 +10,7 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use App\Filament\Forms\Tables\SimpleTable;
-use App\Filament\Forms\Tables\TimestampTable;
+
  
 use Filament\Tables\Table;
 
@@ -22,8 +20,8 @@ class ProductCategoriesTable
     {
         return $table
             ->columns([
-                ...SimpleTable::columns(),
-                ...TimestampTable::columns(),
+                ...\App\Filament\Forms\Tables\SimpleTable::columns(),
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             ->filters([
                 
