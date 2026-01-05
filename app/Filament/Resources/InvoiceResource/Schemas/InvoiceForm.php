@@ -24,9 +24,8 @@ class InvoiceForm
     {
         return $form
             ->schema([
-                Placeholder::make('status')
-                    ->label('Estado')
-                    ->content(fn(?Invoice $record): string => $record?->status instanceof InvoiceStatus ? $record->status->getName() : ($record?->status ? (InvoiceStatus::tryFrom($record->status)?->getName() ?? $record->status) : InvoiceStatus::OPEN->getName())),
+                \App\Filament\Forms\Components\StatusPlaceholder::make(),
+
 
                 Select::make('invoiceable_id')
                     ->label('Paciente')
