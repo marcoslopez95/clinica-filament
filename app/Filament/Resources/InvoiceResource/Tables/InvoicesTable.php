@@ -28,7 +28,7 @@ class InvoicesTable
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
                 TextColumn::make('total')->label('Total'),
-                TextColumn::make('balance')->label('Por Pagar'),
+                \App\Filament\Forms\column\ToPayColumn::make('balance'),
                 TextColumn::make('status')
                     ->label('Estado')
                     ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())

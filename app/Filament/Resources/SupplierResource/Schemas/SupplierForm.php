@@ -18,10 +18,7 @@ class SupplierForm
                     ->label('Nombre')
                     ->required(),
 
-                Select::make('type_document_id')
-                    ->label('Tipo de Documento')
-                    ->relationship('typeDocument', 'name')
-                    ->required(),
+                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
 
                 TextInput::make('document')
                     ->label('Documento')

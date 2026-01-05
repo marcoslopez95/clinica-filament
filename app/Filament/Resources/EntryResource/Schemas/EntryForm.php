@@ -39,10 +39,7 @@ class EntryForm
                         TextInput::make('name')
                             ->label('Nombre')
                             ->required(),
-                        Select::make('type_document_id')
-                            ->label('Tipo de Documento')
-                            ->options(fn() => TypeDocument::all()->pluck('name','id'))
-                            ->required(),
+                            \App\Filament\Forms\Component\TypeDocumentSelect::make(),
                         TextInput::make('document')
                             ->label('Documento')
                             ->required(),
@@ -66,10 +63,7 @@ class EntryForm
                 TextInput::make('dni')
                     ->label('Documento'),
 
-                Select::make('type_document_id')
-                    ->label('Tipo de Documento')
-                    ->options(fn() => TypeDocument::all()->pluck('name','id'))
-                    ->required(),
+                \App\Filament\Forms\Component\TypeDocumentSelect::make(),
 
                 DatePicker::make('date')
                     ->label('Fecha de factura')
@@ -118,12 +112,7 @@ class EntryForm
                             })
                     ),
 
-                Placeholder::make('to_pay')
-                    ->label('Por Pagar')
-                    ->content(function (?Invoice $record): string {
-                        if (!$record) return '0.00 $';
-                        return number_format($record->to_pay_with_discounts, 2) . ' $';
-                    }),
+                \App\Filament\Forms\Component\ToPay::make(),
 
                 ...TimestampForm::schema(),
             ]);
