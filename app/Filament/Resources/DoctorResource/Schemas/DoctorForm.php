@@ -27,7 +27,7 @@ class DoctorForm
                 \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
                 TextInput::make('dni')
-                    ->label('DNI')
+                    ->label('Documento')
                     ->required(),
 
                 DatePicker::make('born_date')
@@ -41,6 +41,8 @@ class DoctorForm
                 Select::make('specialization_id')
                     ->relationship('specialization', 'name')
                     ->searchable()
+                    ->preload()
+                    ->required()
                     ->label('Especialización'),
 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema()

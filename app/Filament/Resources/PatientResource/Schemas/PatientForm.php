@@ -30,7 +30,6 @@ class PatientForm
                 ->label('Dirección')
                 ->required(),
 
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
         ];
     }
 

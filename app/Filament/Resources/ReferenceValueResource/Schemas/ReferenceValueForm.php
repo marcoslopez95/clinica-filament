@@ -11,11 +11,6 @@ class ReferenceValueForm
     public static function schema(): array
     {
         return [
-            Select::make('exam_id')
-                ->label('Examen')
-                ->relationship('exam', 'name')
-                ->required()
-                ->preload(),
 
             TextInput::make('name')
                 ->label('Nombre')
@@ -36,7 +31,15 @@ class ReferenceValueForm
     public static function configure(Form $form): Form
     {
         return $form->schema([
+
+            Select::make('exam_id')
+                ->label('Examen')
+                ->relationship('exam', 'name')
+                ->required()
+                ->preload(),
+
             ...self::schema(),
+            
             ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
