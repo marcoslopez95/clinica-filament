@@ -10,19 +10,26 @@ use Filament\Forms\Form;
 
 class SupplierForm
 {
+    public static function schema(): array
+    {
+        return [
+            TextInput::make('name')
+                ->label('Nombre')
+                ->required(),
+
+            \App\Filament\Forms\Components\TypeDocumentSelect::make(),
+
+            TextInput::make('document')
+                ->label('Documento')
+                ->required(),
+        ];
+    }
+
     public static function configure(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                \App\Filament\Forms\Components\TypeDocumentSelect::make(),
-
-                TextInput::make('document')
-                    ->label('Documento')
-                    ->required(),
-            ]);
+        return $form->schema([
+            ...self::schema(),
+            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+        ]);
     }
 }

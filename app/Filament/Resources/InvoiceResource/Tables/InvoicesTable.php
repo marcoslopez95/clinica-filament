@@ -28,12 +28,16 @@ class InvoicesTable
                 TextColumn::make('dni')->sortable()->searchable(),
                 TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
                 TextColumn::make('total')->label('Total'),
+                
                 \App\Filament\Forms\columns\ToPayColumn::make('balance'),
+
                 TextColumn::make('status')
                     ->label('Estado')
                     ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())
                     ->searchable()
                     ->sortable(),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
                 ->filters([
                     SelectFilter::make('Status')

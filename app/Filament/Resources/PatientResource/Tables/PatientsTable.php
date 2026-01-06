@@ -40,6 +40,8 @@ class PatientsTable
 
                 TextColumn::make('address')
                     ->label('Dirección'),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

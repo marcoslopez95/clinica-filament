@@ -34,10 +34,10 @@ class PatientForm
 
     public static function configure(Form $form): Form
     {
-        return $form->schema(
-            self::schema(),
+        return $form->schema([
+            ...self::schema(),
             ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
-        );
-}
+        ]);
+    }
 
 }

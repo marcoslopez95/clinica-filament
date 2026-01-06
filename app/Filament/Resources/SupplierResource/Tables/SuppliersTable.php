@@ -32,6 +32,8 @@ class SuppliersTable
                 TextColumn::make('document')
                     ->label('Documento')
                     ->sortable(),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

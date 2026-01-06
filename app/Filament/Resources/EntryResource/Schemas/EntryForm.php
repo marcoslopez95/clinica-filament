@@ -33,15 +33,7 @@ class EntryForm
                     ->options(fn() => Supplier::all()->pluck('name', 'id'))
                     ->searchable()
                     ->required()
-                    ->createOptionForm([
-                        TextInput::make('name')
-                            ->label('Nombre')
-                            ->required(),
-                            \App\Filament\Forms\Components\TypeDocumentSelect::make(),
-                        TextInput::make('document')
-                            ->label('Documento')
-                            ->required(),
-                    ])
+                    ->createOptionForm(\App\Filament\Resources\SupplierResource\Schemas\SupplierForm::schema())
                     ->createOptionUsing(fn (array $data): int => Supplier::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
