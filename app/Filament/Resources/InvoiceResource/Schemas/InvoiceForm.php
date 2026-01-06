@@ -26,41 +26,22 @@ class InvoiceForm
             ->schema([
                 \App\Filament\Forms\Components\StatusPlaceholder::make(),
 
-
                 Select::make('invoiceable_id')
                     ->label('Paciente')
                     ->options(fn() => Patient::all()->pluck('full_name', 'id'))
                     ->searchable()
                     ->required()
-                    ->createOptionForm([
-                        TextInput::make('first_name')
-                            ->label('Nombre')
-                            ->required(),
-                        TextInput::make('last_name')
-                            ->label('Apellido'),
-                        Select::make('type_document_id')
-                            ->label('Tipo de Documento')
-                            ->options(fn() => TypeDocument::all()->pluck('name','id'))
-                            ->required(),
-                        TextInput::make('dni')
-                            ->label('Documento')
-                            ->required(),
-                        DatePicker::make('born_date')
-                            ->label('Fecha de Nacimiento'),
-                        TextInput::make('address')
-                            ->label('Dirección')
-                            ->required(),
-                    ])
-                    ->createOptionUsing(fn (array $data): int => Patient::create($data)->id)
+                    ->createOptionForm(\App\Filament\Resources\PatientResource\Schemas\PatientForm::schema())
+                    ->createOptionUsing(fn (array $data) => Patient::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $patient = Patient::find($state);
+                        $patient = $state ? Patient::find($state) : null;
 
-                        $set('full_name', $patient->first_name . ' ' . ($patient->last_name ?? ''));
-                        $set('dni', $patient->full_document);
-                        $set('type_document_id', $patient->typeDocument->id);
+                        $set('full_name', $patient ? $patient->first_name 
+                        . ($patient->last_name ? ' ' . $patient->last_name : '') : null);
+                        $set('dni', $patient?->full_document ?? null);
+                        $set('type_document_id', $patient?->typeDocument->id ?? null);
                     }),
-
 
                 TextInput::make('full_name')
                     ->label('Nombre'),
@@ -84,7 +65,7 @@ class InvoiceForm
                     ->columnSpan(2),
 
                 \App\Filament\Forms\Components\ToPay::make(),
-                
+
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }

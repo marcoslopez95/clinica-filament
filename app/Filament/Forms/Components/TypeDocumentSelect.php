@@ -11,7 +11,7 @@ class TypeDocumentSelect
     {
         return Select::make('type_document_id')
             ->label('Tipo de Documento')
-            ->relationship('typeDocument', 'name')
+            ->options(fn() => TypeDocument::all()->pluck('name', 'id'))
             ->required();
     }
 }
