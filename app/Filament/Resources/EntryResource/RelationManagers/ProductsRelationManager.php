@@ -22,7 +22,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use App\Models\Warehouse;
-use Illuminate\Validation\ValidationException;
+use Filament\Notifications\Notification;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -326,6 +326,17 @@ class ProductsRelationManager extends RelationManager
                         'taxes' => $record->taxes->toArray(),
                     ]))
                     ->action(function (Model $record, array $data): void {
+                        $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
+                        $taxesSum = collect($data['taxes'] ?? [])->pluck('amount')->sum();
+                        
+                        if ($taxesSum > $subtotal) {
+                            Notification::make()
+                                ->body("El monto de los impuestos no pueden superar al subtotal del producto")
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        
                         $record->taxes()->delete();
                         $taxes = collect($data['taxes'])->map(function ($tax) {
                             unset($tax['id']);
@@ -386,38 +397,17 @@ class ProductsRelationManager extends RelationManager
                             ])
                             ->columns(3),
                         
-                        TextInput::make('taxes_sum')
-                            ->label('Total de Impuestos')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->live()
-                            ->formatStateUsing(function ($state, $get, Model $record) {
-                                $taxes = $get('taxes') ?? [];
-                                $sum = collect($taxes)->pluck('amount')->sum();
-                                return round($sum, 2);
-                            }),
+                        // TextInput::make('taxes_sum')
+                        //     ->label('Total de Impuestos')
+                        //     ->disabled()
+                        //     ->dehydrated(false)
+                        //     ->live()
+                        //     ->formatStateUsing(function ($state, $get, Model $record) {
+                        //         $taxes = $get('taxes') ?? [];
+                        //         $sum = collect($taxes)->pluck('amount')->sum();
+                        //         return round($sum, 2);
+                        //     }),
                         
-                        TextInput::make('taxes_error')
-                            ->label(' ')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->visible(function ($get, Model $record) {
-                                $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
-                                $taxes = $get('taxes') ?? [];
-                                $taxesSum = collect($taxes)->pluck('amount')->sum();
-                                return $taxesSum > $subtotal;
-                            })
-                            ->default(' ')
-                            ->formatStateUsing(function ($state, $get, Model $record) {
-                                $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
-                                $taxes = $get('taxes') ?? [];
-                                $taxesSum = collect($taxes)->pluck('amount')->sum();
-                                return " La suma de impuestos ($taxesSum) no puede exceder el subtotal ($subtotal)";
-                            })
-                            ->helperText(' ')
-                            ->extraAttributes([
-                                'class' => '!text-red-600 !font-semibold',
-                            ]),
                     ]),
                 Action::make('batches')
                     ->label('Lotes')
