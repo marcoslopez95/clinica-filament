@@ -27,6 +27,8 @@ class UnitsTable
 
                 TextColumn::make('symbol')
                     ->label('Símbolo'),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

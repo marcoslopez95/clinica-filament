@@ -59,7 +59,7 @@ class EntriesTable
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             ->filters([
-                StatusFilter::make(),
+                
             ])
             ->actions([
                 CancelInvoiceAction::make(),

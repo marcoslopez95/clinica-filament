@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\ServiceResource\Schemas;
 
-use App\Models\Service;
-use Filament\Forms\Components\Placeholder;
 use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -41,7 +39,7 @@ class ServiceForm
                     ->relationship('serviceCategory', 'name')
                     ->preload(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

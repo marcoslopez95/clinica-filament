@@ -29,6 +29,8 @@ class WarehousesTable
                 TextColumn::make('description')
                     ->label('Descripción')
                     ->limit(50),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

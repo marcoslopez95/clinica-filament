@@ -29,6 +29,8 @@ class PatientForm
             TextInput::make('address')
                 ->label('Dirección')
                 ->required(),
+
+            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
         ];
     }
 

@@ -27,6 +27,8 @@ class TypeDocumentsTable
 
                 TextColumn::make('code')
                     ->label('Código'),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

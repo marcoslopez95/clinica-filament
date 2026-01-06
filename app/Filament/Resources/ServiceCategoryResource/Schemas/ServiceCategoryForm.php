@@ -2,11 +2,6 @@
 
 namespace App\Filament\Resources\ServiceCategoryResource\Schemas;
 
-use App\Models\ServiceCategory;
-use Filament\Forms\Components\Placeholder;
-use App\Filament\Forms\Schemas\SimpleForm;
-use App\Filament\Forms\Schemas\TimestampForm;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
 class ServiceCategoryForm
@@ -15,9 +10,9 @@ class ServiceCategoryForm
     {
         return $form
             ->schema([
-                ...SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

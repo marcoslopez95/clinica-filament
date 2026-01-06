@@ -22,6 +22,7 @@ class EntryForm
     {
         return $form
             ->schema([
+
                 \App\Filament\Forms\Components\StatusPlaceholder::make(),
 
                 Placeholder::make('is_expired')
@@ -42,6 +43,7 @@ class EntryForm
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $supplier = $state ? Supplier::find($state) : null;
+                        
                         $set('full_name', $supplier?->name);
                         $set('dni', $supplier?->document);
                         $set('type_document_id', $supplier?->type_document_id);

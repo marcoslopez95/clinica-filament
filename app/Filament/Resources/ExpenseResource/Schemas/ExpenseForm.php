@@ -25,35 +25,15 @@ class ExpenseForm
                     ->required()
                     ->numeric(),
 
-                Select::make('currency_id')
-                    ->label('Moneda')
-                    ->relationship('currency', 'name')
-                    ->required()
-                    ->reactive()
-                    ->preload()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        $set('exchange', Currency::find($state)?->exchange ?? 0);
-                    }),
-
                 Select::make('expense_category_id')
                     ->label('Categoría')
                     ->relationship('category', 'name')
                     ->required()
                     ->preload(),
 
-                TextInput::make('exchange')
-                    ->label('Tasa de Cambio')
-                    ->readOnly()
-                    ->numeric()
-                    ->required(),
+                ...\App\Filament\Forms\Schemas\CurrencyForm::schema(),
 
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Expense $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha Última Modificación')
-                    ->content(fn(?Expense $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

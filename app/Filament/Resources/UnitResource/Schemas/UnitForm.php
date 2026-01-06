@@ -2,9 +2,6 @@
 
 namespace App\Filament\Resources\UnitResource\Schemas;
 
-use App\Models\Unit;
-use Filament\Forms\Components\Placeholder;
-use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
@@ -22,7 +19,7 @@ class UnitForm
                     ->label('Símbolo')
                     ->required(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

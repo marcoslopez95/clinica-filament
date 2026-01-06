@@ -2,9 +2,6 @@
 
 namespace App\Filament\Resources\SpecializationResource\Schemas;
 
-use App\Models\Specialization;
-use Filament\Forms\Components\Placeholder;
-use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
@@ -21,7 +18,7 @@ class SpecializationForm
                 TextInput::make('code')
                     ->label('Código'),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

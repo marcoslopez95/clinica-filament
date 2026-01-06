@@ -45,6 +45,7 @@ class InventoriesTable
 
                 TextColumn::make('observation')
                     ->label('Observaciones'),
+                    
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             

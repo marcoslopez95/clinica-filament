@@ -2,11 +2,6 @@
 
 namespace App\Filament\Resources\ProductCategoryResource\Schemas;
 
-use App\Models\ProductCategory;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\TextInput;
-use App\Filament\Forms\Schemas\SimpleForm;
-use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Form;
 
 class ProductCategoryForm
@@ -15,9 +10,9 @@ class ProductCategoryForm
     {
         return $form
             ->schema([
-                ...SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

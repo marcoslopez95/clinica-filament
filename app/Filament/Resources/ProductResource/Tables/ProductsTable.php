@@ -50,6 +50,8 @@ class ProductsTable
                     ->label('Moneda')
                     ->searchable()
                     ->sortable(),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

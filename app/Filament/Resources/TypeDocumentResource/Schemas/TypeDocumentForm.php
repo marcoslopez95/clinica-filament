@@ -2,9 +2,6 @@
 
 namespace App\Filament\Resources\TypeDocumentResource\Schemas;
 
-use App\Models\TypeDocument;
-use Filament\Forms\Components\Placeholder;
-use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
@@ -22,7 +19,7 @@ class TypeDocumentForm
                     ->label('Código')
                     ->required(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

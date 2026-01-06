@@ -39,6 +39,8 @@ class ExpensesTable
                 TextColumn::make('exchange')
                     ->label('Tasa de Cambio')
                     ->sortable(),
+
+            ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

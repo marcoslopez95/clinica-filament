@@ -2,11 +2,6 @@
 
 namespace App\Filament\Resources\RoomResource\Schemas;
 
-use App\Models\Room;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\TextInput;
-use App\Filament\Forms\Schemas\SimpleForm;
-use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Form;
 
 class RoomForm
@@ -15,9 +10,9 @@ class RoomForm
     {
         return $form
             ->schema([
-                ...SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }
