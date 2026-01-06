@@ -22,6 +22,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use App\Models\Warehouse;
+use Illuminate\Validation\ValidationException;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -335,6 +336,7 @@ class ProductsRelationManager extends RelationManager
                     ->form([
                         Repeater::make('taxes')
                             ->label('Impuestos')
+                            ->live()
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Nombre')
@@ -351,8 +353,9 @@ class ProductsRelationManager extends RelationManager
                                         $quantity = $record->quantity ?? 0;
                                         $percentage = (float)$state;
                                         $amount = ($price * $quantity) * ($percentage / 100);
-                                        $set('amount', $amount);
+                                        $set('amount', round($amount, 2));
                                     })
+                                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null)
                                     ->suffixAction(
                                         FormAction::make('calculateAmount')
                                             ->label('Calcular')
@@ -362,7 +365,7 @@ class ProductsRelationManager extends RelationManager
                                                 $quantity = $record->quantity ?? 0;
                                                 $percentage = (float)$state;
                                                 $amount = ($price * $quantity) * ($percentage / 100);
-                                                $set('amount', $amount);
+                                                $set('amount', round($amount, 2));
                                             })
                                     ),
                                 TextInput::make('amount')
@@ -376,11 +379,45 @@ class ProductsRelationManager extends RelationManager
                                         $total = $price * $quantity;
                                         $amount = (float)$state;
                                         if ($total > 0) {
-                                            $set('percentage', ($amount / $total) * 100);
+                                            $set('percentage', round(($amount / $total) * 100, 2));
                                         }
-                                    }),
+                                    })
+                                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null),
                             ])
-                            ->columns(3)
+                            ->columns(3),
+                        
+                        TextInput::make('taxes_sum')
+                            ->label('Total de Impuestos')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->live()
+                            ->formatStateUsing(function ($state, $get, Model $record) {
+                                $taxes = $get('taxes') ?? [];
+                                $sum = collect($taxes)->pluck('amount')->sum();
+                                return round($sum, 2);
+                            }),
+                        
+                        TextInput::make('taxes_error')
+                            ->label(' ')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->visible(function ($get, Model $record) {
+                                $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
+                                $taxes = $get('taxes') ?? [];
+                                $taxesSum = collect($taxes)->pluck('amount')->sum();
+                                return $taxesSum > $subtotal;
+                            })
+                            ->default(' ')
+                            ->formatStateUsing(function ($state, $get, Model $record) {
+                                $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
+                                $taxes = $get('taxes') ?? [];
+                                $taxesSum = collect($taxes)->pluck('amount')->sum();
+                                return " La suma de impuestos ($taxesSum) no puede exceder el subtotal ($subtotal)";
+                            })
+                            ->helperText(' ')
+                            ->extraAttributes([
+                                'class' => '!text-red-600 !font-semibold',
+                            ]),
                     ]),
                 Action::make('batches')
                     ->label('Lotes')
