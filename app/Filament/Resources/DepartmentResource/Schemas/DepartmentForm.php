@@ -5,7 +5,6 @@ namespace App\Filament\Resources\DepartmentResource\Schemas;
 use App\Models\Department;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
-use App\Filament\Forms\Schemas\SimpleForm;
 use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Form;
 
@@ -15,9 +14,8 @@ class DepartmentForm
     {
         return $form
             ->schema([
-                ...SimpleForm::schema(),
-
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

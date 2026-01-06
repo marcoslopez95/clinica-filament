@@ -32,30 +32,17 @@ class ExamForm
                     ->required(),
 
                 Section::make('')
-                    ->label('Valores Referenciales')
                     ->description('Agrega o selecciona valores referenciales para este examen')
                     ->schema([
-                        Repeater::make('reference_values')
+                        Repeater::make('Valores referenciales')
+                            ->label('Valores Referenciales')
                             ->relationship('referenceValues')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label('Nombre')
-                                    ->required(),
-
-                                TextInput::make('min_value')
-                                    ->label('Valor mínimo')
-                                    ->numeric()
-                                    ->required(),
-
-                                TextInput::make('max_value')
-                                    ->label('Valor máximo')
-                                    ->numeric()
-                                    ->required(),
-                            ])
+                            ->schema(\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema())
                             ->columns(3)
+                            ->default([]),                          
                     ]),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

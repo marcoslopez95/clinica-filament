@@ -26,7 +26,11 @@ class EntryForm
 
                 Placeholder::make('is_expired')
                     ->label('Condición')
-                    ->content(fn(?Invoice $record): string => $record?->is_expired ? 'Vencida' : 'Sin vencer'),
+                    ->content(fn(?Invoice $record): string =>
+                        $record?->is_expired === null
+                            ? 'Sin Condición'
+                            : ($record->is_expired ? 'Vencida' : 'Sin vencer')
+                    ),
 
                 Select::make('invoiceable_id')
                     ->label('Proveedor')
@@ -64,47 +68,19 @@ class EntryForm
                     ->label('Fecha de crédito')
                     ->required(),
 
-                Select::make('currency_id')
-                    ->label('Moneda')
-                    ->relationship('currency', 'name')
-                    ->required()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set, ?int $state) {
-                        if (!$state) {
-                            $set('exchange', null);
-                            return;
-                        }
-                        $currency = Currency::find($state);
-                        $set('exchange', $currency->exchange ?? null);
-                    }),
-
-                TextInput::make('exchange')
-                    ->label('Tasa de cambio')
-                    ->numeric()
-                    ->required(),
+                ...\App\Filament\Forms\Schemas\CurrencyForm::schema(),
 
                 TextInput::make('total')
-                    ->label('Monto')
-                    ->numeric()
+                    ->label('Total')
+                    ->type('number')
                     ->default(0)
-                    ->readOnly()
+                    ->disabled()
                     ->dehydrated()
-                    ->suffixAction(
-                        Action::make('calculateTotal')
-                            ->icon('heroicon-m-calculator')
-                            ->label('Calcular')
-                            ->action(function (Set $set, ?Invoice $record) {
-                                if ($record) {
-                                    $total = $record->details()->sum('subtotal');
-                                    $record->update(['total' => $total]);
-                                    $set('total', $total);
-                                }
-                            })
-                    ),
+                    ->columnSpan(2),
 
                 \App\Filament\Forms\Components\ToPay::make(),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

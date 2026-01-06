@@ -55,6 +55,8 @@ class EntriesTable
                     ->label('Condición')
                     ->formatStateUsing(fn(bool $state): string => $state ? 'Vencida' : 'Sin vencer')
                     ->sortable(),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             ->filters([
                 StatusFilter::make(),

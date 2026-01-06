@@ -20,13 +20,30 @@ class DoctorsTable
     {
         return $table
             ->columns([
-                TextColumn::make('first_name')->label('Nombre'),
-                TextColumn::make('last_name')->label('Apellido'),
-                TextColumn::make('typeDocument.name')->label('Tipo de Documento')->sortable(),
-                TextColumn::make('dni')->label('Num. Documento'),
-                TextColumn::make('born_date')->label('Fecha de Nacimiento')->date(),
-                TextColumn::make('cost')->label('Costo'),
-                TextColumn::make('specialization.name')->label('Especialización'),
+                TextColumn::make('first_name')
+                    ->label('Nombre'),
+
+                TextColumn::make('last_name')
+                    ->label('Apellido'),
+
+                TextColumn::make('typeDocument.name')
+                    ->label('Tipo de Documento')
+                    ->sortable(),
+
+                TextColumn::make('dni')
+                    ->label('Num. Documento'),
+
+                TextColumn::make('born_date')
+                    ->label('Fecha de Nacimiento')
+                    ->date(),
+                    
+                TextColumn::make('cost')
+                    ->label('Costo'),
+                    
+                TextColumn::make('specialization.name')
+                    ->label('Especialización'),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

@@ -15,12 +15,19 @@ class CurrencyForm
     {
         return $form
             ->schema([
-                TextInput::make('name')->label('Nombre')->required(),
+                TextInput::make('name')
+                    ->label('Nombre')
+                    ->required(),
 
-                TextInput::make('symbol')->label('Símbolo')->required(),
+                TextInput::make('symbol')
+                    ->label('Símbolo')
+                    ->required(),
 
-                TextInput::make('exchange')->label('Tasa de Cambio')->required()->numeric(),
-
+                TextInput::make('exchange')
+                    ->label('Tasa de Cambio')
+                    ->required()
+                    ->numeric(),
+                    
                 Select::make('paymentMethods')
                     ->label('Métodos de Pago')
                     ->relationship('paymentMethods', 'name')

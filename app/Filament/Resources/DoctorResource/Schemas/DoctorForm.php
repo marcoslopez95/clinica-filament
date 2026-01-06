@@ -24,11 +24,7 @@ class DoctorForm
                     ->label('Apellido')
                     ->required(),
 
-                Select::make('type_document_id')
-                    ->label('Tipo de Documento')
-                    ->relationship('typeDocument', 'name')
-                    ->searchable()
-                    ->required(),
+                \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
                 TextInput::make('dni')
                     ->label('DNI')
@@ -47,7 +43,7 @@ class DoctorForm
                     ->searchable()
                     ->label('Especialización'),
 
-                ...TimestampForm::schema(),
+                ...\App\Filament\Forms\Schemas\TimestampForm::schema()
             ]);
     }
 }

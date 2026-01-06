@@ -37,6 +37,8 @@ class ReferenceValuesTable
                 TextColumn::make('max_value')
                     ->label('Max Value')
                     ->sortable(),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             
             ->actions([

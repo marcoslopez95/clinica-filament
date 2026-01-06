@@ -32,6 +32,8 @@ class ExamsTable
                 TextColumn::make('currency.name')
                     ->label('Moneda')
                     ->sortable(),
+
+            ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             ->actions([
                 EditAction::make(),
