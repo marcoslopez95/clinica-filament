@@ -2,20 +2,10 @@
 
 namespace App\Filament\Resources\InvoiceResource\Schemas;
 
-use App\Enums\InvoiceStatus;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\Patient;
-use App\Models\Product;
-use App\Models\TypeDocument;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Supplier;
 

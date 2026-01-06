@@ -4,7 +4,7 @@ namespace App\Filament\Resources\EntryResource\Tables;
 
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
-use Filament\Tables\Actions\Action as TableAction;
+use App\Filament\Filters\StatusFilter;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -16,6 +16,7 @@ use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use App\Filament\Actions\CancelInvoiceAction;
 
 class EntriesTable
 {
@@ -23,36 +24,43 @@ class EntriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')->sortable()->searchable(),
-                TextColumn::make('dni')->sortable()->searchable(),
-                TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
-                TextColumn::make('total')->label('Monto'),
-                TextColumn::make('currency.name')->label('Moneda'),
-                TextColumn::make('exchange')->label('Tasa de cambio'),
-                \App\Filament\Forms\columns\ToPayColumn::make(),
-                TextColumn::make('status')
-                    ->label('Estado')
-                    ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('full_name')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('dni')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('date')
+                    ->label('Fecha')
+                    ->date()
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('total')
+                    ->label('Monto'),
+
+                TextColumn::make('currency.name')
+                    ->label('Moneda'),
+
+                TextColumn::make('exchange')
+                    ->label('Tasa de cambio'),
+
+                \App\Filament\Forms\Columns\ToPayColumn::make(),
+
+                \App\Filament\Forms\Columns\StatusColumn::make(),
+
                 TextColumn::make('is_expired')
                     ->label('Condición')
                     ->formatStateUsing(fn(bool $state): string => $state ? 'Vencida' : 'Sin vencer')
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('Status')
-                    ->options(InvoiceStatus::class)
-                    ->attribute('status')
+                StatusFilter::make(),
             ])
             ->actions([
-                TableAction::make('Cancel')
-                    ->label('Cancel')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->action(fn (Invoice $record) => $record->update(['status' => InvoiceStatus::CANCELLED]))
-                    ->hidden(fn (Invoice $record) => $record->status === InvoiceStatus::CANCELLED),
+                CancelInvoiceAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
                 RestoreAction::make(),

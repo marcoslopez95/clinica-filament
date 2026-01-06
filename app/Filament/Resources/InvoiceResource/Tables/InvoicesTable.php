@@ -10,13 +10,11 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
+use App\Filament\Actions\CancelInvoiceAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
- 
+use App\Filament\Filters\StatusFilter;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action as TableAction;
 use App\Enums\InvoiceStatus;
-use App\Models\Invoice;
 
 class InvoicesTable
 {
@@ -24,34 +22,34 @@ class InvoicesTable
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')->sortable()->searchable(),
-                TextColumn::make('dni')->sortable()->searchable(),
-                TextColumn::make('date')->label('Fecha')->date()->sortable()->searchable(),
-                TextColumn::make('total')->label('Total'),
-                
-                \App\Filament\Forms\columns\ToPayColumn::make('balance'),
+                TextColumn::make('full_name')
+                    ->sortable()
+                    ->searchable(),
 
-                TextColumn::make('status')
-                    ->label('Estado')
-                    ->formatStateUsing(fn(InvoiceStatus $state): string => $state->getName())
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('dni')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('date')
+                    ->label('Fecha')
+                    ->date()
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('total')
+                    ->label('Total'),
+
+                \App\Filament\Forms\Columns\ToPayColumn::make('balance'),
+
+                \App\Filament\Forms\Columns\StatusColumn::make(),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-                ->filters([
-                    SelectFilter::make('Status')
-                    ->options(InvoiceStatus::class)
-                    ->attribute('status')
-                ])
+            ->filters([
+                StatusFilter::make(),
+            ])
             ->actions([
-                TableAction::make('Cancel')
-                    ->label('Cancel')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->action(fn (Invoice $record) => $record->update(['status' => InvoiceStatus::CANCELLED]))
-                    ->hidden(fn (Invoice $record) => $record->status === InvoiceStatus::CANCELLED),
+                CancelInvoiceAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
                 RestoreAction::make(),
