@@ -48,7 +48,6 @@ class CotizacionResource extends Resource
     {
         return [
             \App\Filament\Resources\InvoiceResource\RelationManagers\ProductsRelationManager::class,
-            \App\Filament\Resources\InvoiceResource\RelationManagers\InventoryRelationManager::class,
         ];
     }
 

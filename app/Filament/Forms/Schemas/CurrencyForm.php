@@ -14,7 +14,7 @@ class CurrencyForm
         return [
             Select::make('currency_id')
                 ->label('Moneda')
-                ->relationship('currency', 'name')
+                ->options(fn() => Currency::pluck('name', 'id'))
                 ->required()
                 ->live()
                 ->afterStateUpdated(function (Set $set, ?int $state) {

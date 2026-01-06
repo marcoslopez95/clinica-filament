@@ -18,7 +18,6 @@ class DiscountResource extends Resource
 
     protected static ?string $slug = 'discounts';
 
-    protected static ?string $navigationGroup = 'Contabilidad';
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
     protected static ?string $modelLabel = 'Descuento';
     protected static ?string $pluralModelLabel = 'Descuentos';
@@ -62,4 +61,10 @@ class DiscountResource extends Resource
     {
         return [];
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
 }

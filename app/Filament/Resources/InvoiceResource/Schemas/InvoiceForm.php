@@ -7,7 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
-use App\Models\Supplier;
+use App\Models\Patient;
 
 class InvoiceForm
 {
@@ -18,19 +18,19 @@ class InvoiceForm
                 \App\Filament\Forms\Components\StatusPlaceholder::make(),
 
                 Select::make('invoiceable_id')
-                    ->label('Proveedor')
-                    ->options(fn() => Supplier::all()->pluck('name', 'id'))
+                    ->label('Paciente')
+                    ->options(fn() => Patient::all()->pluck('full_name', 'id'))
                     ->searchable()
                     ->required()
-                    ->createOptionForm(\App\Filament\Resources\SupplierResource\Schemas\SupplierForm::schema())
-                    ->createOptionUsing(fn (array $data) => Supplier::create($data)->id)
+                    ->createOptionForm(\App\Filament\Resources\PatientResource\Schemas\PatientForm::schema())
+                    ->createOptionUsing(fn (array $data) => Patient::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $supplier = $state ? Supplier::find($state) : null;
+                        $patient = $state ? Patient::find($state) : null;
 
-                        $set('full_name', $supplier?->name ?? null);
-                        $set('dni', $supplier?->document ?? null);
-                        $set('type_document_id', $supplier?->type_document_id ?? null);
+                        $set('full_name', $patient ? $patient->first_name . ($patient->last_name ? ' ' . $patient->last_name : '') : null );
+                        $set('dni', $patient?->full_document ?? null);
+                        $set('type_document_id', $patient?->typeDocument?->id ?? null);
                     }),
 
                 TextInput::make('full_name')

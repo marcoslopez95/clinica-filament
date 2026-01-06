@@ -43,11 +43,7 @@ class ProductForm
                 ->relationship('productCategory', 'name')
                 ->preload(),
 
-            Select::make('currency_id')
-                ->label('Moneda')
-                ->required()
-                ->relationship('currency', 'name')
-                ->preload(),
+            \App\Filament\Forms\Components\CurrencySelect::make(),
         ];
     }
 

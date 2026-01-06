@@ -15,11 +15,7 @@ class PaymentMethodForm
             ->schema([
                 ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
 
-                Select::make('currencies')
-                    ->label('Moneda')
-                    ->relationship(name: 'currencies', titleAttribute: 'name')
-                    ->multiple()
-                    ->preload(),
+                \App\Filament\Forms\Components\CurrencySelect::make(),
 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

@@ -75,4 +75,10 @@ class ReferenceValueResource extends Resource
 
         return $details;
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
 }

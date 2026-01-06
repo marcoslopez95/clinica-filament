@@ -4,7 +4,7 @@ namespace App\Filament\Resources\LaboratorioResource\Pages;
 
 use App\Enums\InvoiceType;
 use App\Filament\Resources\LaboratorioResource;
-use App\Models\Invoice;
+use App\Models\Patient;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateLaboratorio extends CreateRecord
@@ -18,7 +18,7 @@ class CreateLaboratorio extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['invoiceable_type'] = \App\Models\Patient::class;
+        $data['invoiceable_type'] = Patient::class;
         $data['invoice_type'] = InvoiceType::LABORATORY->value;
         return $data;
     }

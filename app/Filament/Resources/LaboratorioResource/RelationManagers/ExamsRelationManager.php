@@ -107,43 +107,33 @@ class ExamsRelationManager extends RelationManager
 
                 CreateAction::make('create_exam')
                     ->label('Crear examen')
-                    ->form([
-                        TextInput::make('name')->label('Nombre')->required(),
-                        TextInput::make('price')->label('Precio')->numeric()->required()->default(0),
-                        Repeater::make('reference_values')
-                            ->label('Valores referenciales')
-                            ->schema([
-                                TextInput::make('name')->label('Nombre')->required(),
-                                TextInput::make('min_value')->label('Valor Mínimo')->numeric()->required(),
-                                TextInput::make('max_value')->label('Valor Máximo')->numeric()->required(),
-                            ])
-                                ->addActionLabel('Añadir valor referencial')
-                            ->columns(1)
-                            ->collapsed(false),
-                    ])
+                    ->modalHeading('Formulario de examen')
+                    ->form(\App\Filament\Resources\ExamResource\Schemas\ExamForm::schema())
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
+
                         $exam = Exam::create([
                             'name' => $data['name'],
                             'price' => $data['price'],
+                            'currency_id' => $data['currency_id'] ?? null,
                         ]);
 
-                        if (!empty($data['reference_values']) && is_array($data['reference_values'])) {
-                            foreach ($data['reference_values'] as $rv) {
-                                ReferenceValue::create([
-                                    'exam_id' => $exam->id,
-                                    'name' => $rv['name'] ?? null,
-                                    'min_value' => $rv['min_value'] ?? null,
-                                    'max_value' => $rv['max_value'] ?? null,
+                        if (!empty($data['referenceValues']) && is_array($data['referenceValues'])) {
+                            foreach ($data['referenceValues'] as $rv) {
+
+                                $exam->referenceValues()->create([
+                                    'name'      => $rv['name'],
+                                    'min_value' => $rv['min_value'],
+                                    'max_value' => $rv['max_value'],
                                 ]);
                             }
                         }
 
                         $owner->details()->create([
-                            'content_id' => $exam->id,
+                            'content_id'   => $exam->id,
                             'content_type' => Exam::class,
-                            'price' => $data['price'],
-                            'quantity' => 1,
+                            'price'        => $data['price'],
+                            'quantity'     => 0,
                         ]);
 
                         $livewire->dispatch('refreshTotal');
@@ -223,22 +213,6 @@ class ExamsRelationManager extends RelationManager
                     ->requiresConfirmation(false)
                     ->modalWidth('lg'),
                 EditAction::make()
-                    ->form(function (Form $form) {
-                        return $form->schema([
-                            Select::make('content_id')
-                                ->label('Examen')
-                                ->options(function (Model $record) {
-                                    return $this->getAvailableExams($this->getOwnerRecord(), $record->id ?? null);
-                                })
-                                ->searchable()
-                                ->required(),
-
-                            TextInput::make('price')
-                                ->label('Precio')
-                                ->numeric()
-                                ->required(),
-                        ]);
-                    })
                     ->action(function (Model $record, array $data, $livewire): void {
                         $record->update([
                             'content_id' => $data['content_id'],

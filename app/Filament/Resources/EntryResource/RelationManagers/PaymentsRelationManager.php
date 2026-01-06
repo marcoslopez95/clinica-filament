@@ -11,7 +11,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -23,13 +24,13 @@ class PaymentsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('payment_method_id')
+                Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
                     ->required()
                     ->live(),
 
-                Forms\Components\Select::make('currency_id')
+                Select::make('currency_id')
                     ->relationship(
                         'currency',
                         'name',
@@ -49,14 +50,14 @@ class PaymentsRelationManager extends RelationManager
                         $set('exchange', $currency->exchange ?? 0);
                     }),
 
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->label('Monto')
                     ->numeric()
                     ->required()
                     ->disabled(fn(Get $get) => !$get('currency_id'))
                     ->live(debounce: 500),
 
-                Forms\Components\TextInput::make('exchange')
+                TextInput::make('exchange')
                     ->label('Tasa de Cambio')
                     ->disabled()
                     ->dehydrated(),
