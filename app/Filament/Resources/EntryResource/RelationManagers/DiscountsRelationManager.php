@@ -2,15 +2,18 @@
 
 namespace App\Filament\Resources\EntryResource\RelationManagers;
 
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Components\TextInput;
+use App\Filament\Actions\RefreshTotalCreateAction;
+use App\Filament\Actions\RefreshTotalEditAction;
+use App\Filament\Actions\RefreshTotalDeleteAction;
 
 class DiscountsRelationManager extends RelationManager
 {
@@ -22,7 +25,7 @@ class DiscountsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('percentage')
+                TextInput::make('percentage')
                     ->label('Porcentaje (%)')
                     ->numeric()
                     ->live(debounce: 500)
@@ -31,7 +34,8 @@ class DiscountsRelationManager extends RelationManager
                         $percentage = (float) $state;
                         $set('amount', $total * ($percentage / 100));
                     }),
-                Forms\Components\TextInput::make('amount')
+
+                TextInput::make('amount')
                     ->label('Monto')
                     ->numeric()
                     ->required()
@@ -43,7 +47,8 @@ class DiscountsRelationManager extends RelationManager
                             $set('percentage', ($amount / $total) * 100);
                         }
                     }),
-                Forms\Components\TextInput::make('description')
+
+                TextInput::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
             ]);
@@ -54,37 +59,28 @@ class DiscountsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->columns([
-                Tables\Columns\TextColumn::make('percentage')
+                TextColumn::make('percentage')
                     ->label('Porcentaje')
                     ->suffix('%'),
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Monto')
                     ->money('USD'),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('Descripción'),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
+                RefreshTotalCreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
-                Tables\Actions\DeleteAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
+                RefreshTotalEditAction::make(),
+                RefreshTotalDeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
