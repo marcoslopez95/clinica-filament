@@ -7,13 +7,13 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Forms\Components\TextInput;
 use App\Filament\Actions\RefreshTotalCreateAction;
 use App\Filament\Actions\RefreshTotalEditAction;
 use App\Filament\Actions\RefreshTotalDeleteAction;
+use App\Filament\Resources\DiscountResource\Schemas\DiscountForm;
+use App\Filament\Resources\DiscountResource\Tables\DiscountsTable;
 
 class DiscountsRelationManager extends RelationManager
 {
@@ -23,56 +23,44 @@ class DiscountsRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('percentage')
-                    ->label('Porcentaje (%)')
-                    ->numeric()
-                    ->live(debounce: 500)
-                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+        $schema = DiscountForm::schema();
+
+        foreach ($schema as $i => $component) {
+            if (method_exists($component, 'getName')) {
+                $name = $component->getName();
+
+                if ($name === 'percentage') {
+                    $schema[$i] = $component->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $total = (float) $this->getOwnerRecord()->total;
                         $percentage = (float) $state;
                         $set('amount', $total * ($percentage / 100));
-                    }),
+                    });
+                }
 
-                TextInput::make('amount')
-                    ->label('Monto')
-                    ->numeric()
-                    ->required()
-                    ->live(debounce: 500)
-                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                if ($name === 'amount') {
+                    $schema[$i] = $component->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $total = (float) $this->getOwnerRecord()->total;
                         $amount = (float) $state;
                         if ($total > 0) {
                             $set('percentage', ($amount / $total) * 100);
                         }
-                    }),
+                    });
+                }
+            }
+        }
 
-                TextInput::make('description')
-                    ->label('Descripción')
-                    ->columnSpanFull(),
-            ]);
+        return $form->schema([
+            ...$schema,
+        ]);
     }
 
     public function table(Table $table): Table
     {
-        return $table
+        return DiscountsTable::table($table)
             ->recordTitleAttribute('description')
-            ->columns([
-                TextColumn::make('percentage')
-                    ->label('Porcentaje')
-                    ->suffix('%'),
-                TextColumn::make('amount')
-                    ->label('Monto')
-                    ->money('USD'),
-                TextColumn::make('description')
-                    ->label('Descripción'),
-            ])
-            ->filters([
-                //
-            ])
+
             ->headerActions([
-                RefreshTotalCreateAction::make(),
+                RefreshTotalCreateAction::make()->label('Nuevo ' . static::$title),
             ])
             ->actions([
                 RefreshTotalEditAction::make(),

@@ -10,6 +10,8 @@ class RefreshTotalCreateAction extends CreateAction
     {
         parent::setUp();
 
+        $this->label('Nuevo descuento');
+
         $this->after(function ($livewire) {
             $livewire->dispatch('refreshTotal');
         });
