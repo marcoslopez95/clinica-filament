@@ -19,6 +19,8 @@ class DiscountsRelationManager extends RelationManager
 {
     protected static string $relationship = 'discounts';
 
+    protected static ?string $modelLabel = 'Descuento';
+    protected static ?string $pluralModelLabel = 'Descuentos';
     protected static ?string $title = 'Descuentos';
 
     public function form(Form $form): Form
@@ -60,7 +62,8 @@ class DiscountsRelationManager extends RelationManager
             ->recordTitleAttribute('description')
 
             ->headerActions([
-                RefreshTotalCreateAction::make()->label('Nuevo ' . static::$title),
+                RefreshTotalCreateAction::make()
+                    ->label('Nuevo ' . static::$modelLabel),
             ])
             ->actions([
                 RefreshTotalEditAction::make(),
