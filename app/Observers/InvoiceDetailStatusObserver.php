@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\InvoiceDetail;
+use App\Services\InvoiceStatusService;
 
 class InvoiceDetailStatusObserver
 {
@@ -23,6 +24,7 @@ class InvoiceDetailStatusObserver
 
     protected function updateInvoiceStatus(InvoiceDetail $detail): void
     {
-        $detail->invoice->updateStatusIfPaid();
+        $service = new InvoiceStatusService();
+        $service->updateStatus($detail->invoice);
     }
 }

@@ -98,63 +98,10 @@ class Invoice extends Model
 
     public function updateStatusIfPaid(): void
     {
-        $this->refresh();
-
-        if ($this->status === InvoiceStatus::CANCELLED) {
-            return;
-        }
-
-        if ($this->invoice_type === InvoiceType::INVENTORY) {
-            $this->updateInventoryStatus();
-        } else {
-            $this->updateInvoiceStatus();
-        }
+        (new \App\Services\InvoiceStatusService())->updateStatus($this);
     }
 
-    protected function updateInventoryStatus(): void
-    {
-        $total = (float) $this->total;
-        $totalPaid = (float) $this->total_paid;
-        $totalDiscounts = (float) $this->discounts->sum('amount');
-        $hasMoney = $totalPaid > 0 || $totalDiscounts > 0;
-
-        if ($this->isComplete()) {
-            $this->update(['status' => InvoiceStatus::CLOSED]);
-            return;
-        }
-
-        if ($hasMoney) {
-            $this->update(['status' => InvoiceStatus::PARTIAL]);
-            return;
-        }
-
-        $this->update(['status' => InvoiceStatus::OPEN]);
-    }
-
-    protected function updateInvoiceStatus(): void
-    {
-        $total = (float) $this->total;
-        $totalPaid = (float) $this->total_paid;
-        $totalDiscounts = (float) $this->discounts->sum('amount');
-        $sumPaymentsAndDiscounts = $totalPaid + $totalDiscounts;
-
-        if ($total > 0 && $sumPaymentsAndDiscounts >= ($total - 0.01)) {
-            $this->update(['status' => InvoiceStatus::CLOSED]);
-            return;
-        }
-
-        if ($total > 0 && $sumPaymentsAndDiscounts > 0 && $sumPaymentsAndDiscounts < ($total - 0.01)) {
-            $this->update(['status' => InvoiceStatus::PARTIAL]);
-            return;
-        }
-
-        if ($total <= 0 && $sumPaymentsAndDiscounts > 0) {
-            $this->update(['status' => InvoiceStatus::PARTIAL]);
-            return;
-        }
-
-        $this->update(['status' => InvoiceStatus::OPEN]);
-    }
+    // Status calculation and updates moved to \App\Services\InvoiceStatusService
 
     protected static function booting()
     {
