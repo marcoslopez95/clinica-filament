@@ -17,14 +17,20 @@ class ReferenceValueForm
                 ->required(),
 
             TextInput::make('min_value')
-                ->label('Valor Mínimo')
+                ->label(false)
+                ->prefix('<') 
                 ->required()
-                ->numeric(),
+                ->numeric()
+                ->placeholder('mínimo')
+                ->extraAttributes(['class' => 'text-center']),
 
             TextInput::make('max_value')
-                ->label('Valor Máximo')
+                ->label(false)
+                ->prefix('>') 
                 ->required()
-                ->numeric(),
+                ->numeric()
+                ->placeholder('máximo')
+                ->extraAttributes(['class' => 'text-center']),
         ];
     }
 
