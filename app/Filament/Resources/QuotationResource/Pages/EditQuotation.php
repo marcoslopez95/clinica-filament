@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\CotizacionResource\Pages;
+namespace App\Filament\Resources\QuotationResource\Pages;
 
-use App\Filament\Resources\CotizacionResource;
+use App\Filament\Resources\QuotationResource;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Actions\CancelInvoiceAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
+use \App\Filament\Actions\MakeInvoiceAction;
 
-class EditCotizacion extends EditRecord
+class EditQuotation extends EditRecord
 {
-    protected static string $resource = CotizacionResource::class;
+    protected static string $resource = QuotationResource::class;
 
     protected $listeners = [
         'refreshTotal' => 'refreshTotal',
@@ -29,9 +27,7 @@ class EditCotizacion extends EditRecord
     {
         return [
             CancelInvoiceAction::makeForm(),
-            DeleteAction::make(),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
+            MakeInvoiceAction::makeForm(),
         ];
     }
 

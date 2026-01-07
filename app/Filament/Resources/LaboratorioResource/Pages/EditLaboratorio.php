@@ -31,9 +31,6 @@ class EditLaboratorio extends EditRecord
     {
         return [
             CancelInvoiceAction::makeForm(),
-            DeleteAction::make(),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
         ];
     }
 

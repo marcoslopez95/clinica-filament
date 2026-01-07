@@ -21,6 +21,7 @@ class CreateEntry extends CreateRecord
 
     protected function afterCreate(): void
     {
+        
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
