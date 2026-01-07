@@ -5,8 +5,8 @@ namespace App\Providers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use App\Models\InvoiceDetail;
-use App\Observers\InvoiceDetailObserver;
-use App\Observers\InvoiceDetailStatusObserver;
+use App\Observers\Invoice\InvoiceDetailInventoryObserver;
+use App\Observers\Invoice\InvoiceDetailStatusObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
 
-        InvoiceDetail::observe(InvoiceDetailObserver::class);
+        InvoiceDetail::observe(InvoiceDetailInventoryObserver::class);
         InvoiceDetail::observe(InvoiceDetailStatusObserver::class);
     }
 }
