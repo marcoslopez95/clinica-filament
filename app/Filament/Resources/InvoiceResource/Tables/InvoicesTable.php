@@ -10,11 +10,10 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
-use App\Filament\Actions\CancelInvoiceAction;
+
 use Filament\Tables\Columns\TextColumn;
-use App\Filament\Filters\StatusFilter;
 use Filament\Tables\Table;
-use App\Enums\InvoiceStatus;
+use \App\Filament\Actions\CancelInvoiceAction;
 
 class InvoicesTable
 {
@@ -49,7 +48,7 @@ class InvoicesTable
                 
             ])
             ->actions([
-                CancelInvoiceAction::make(),
+                CancelInvoiceAction::makeTable(),
                 EditAction::make(),
                 DeleteAction::make(),
                 RestoreAction::make(),
