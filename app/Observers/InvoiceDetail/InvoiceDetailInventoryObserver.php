@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers\Invoice;
+namespace App\Observers\InvoiceDetail;
 
 use App\Enums\InvoiceType;
 use App\Models\InvoiceDetail;

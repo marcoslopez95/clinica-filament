@@ -13,29 +13,36 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use \App\Services\InvoiceStatusService;
 
 class Invoice extends Model
 {
     use SoftDeletes;
 
+    /* -----------------------------------------------------------------
+     |  Casts
+     | ----------------------------------------------------------------- */
     protected function casts(): array
     {
         return [
-            'total' => 'float',
-            'exchange' => 'float',
-            'date' => 'date',
-            'status' => InvoiceStatus::class,
+            'total'        => 'float',
+            'exchange'     => 'float',
+            'date'         => 'date',
+            'status'       => InvoiceStatus::class,
             'invoice_type' => InvoiceType::class,
-            'is_expired' => 'boolean',
+            'is_expired'   => 'boolean',
         ];
     }
 
+    /* -----------------------------------------------------------------
+     |  Accessors / Attributes
+     | ----------------------------------------------------------------- */
     public function totalPaid(): Attribute
     {
-        $get = function() {
-            $paymentsTotal = $this->payments->sum(function($item) {
-                $exchange = (float) ($item->exchange ?? 1);
-                $amount = (float) ($item->amount ?? 0);
+        $get = function () {
+            $paymentsTotal = $this->payments->sum(function ($item) {
+                $exchange   = (float) ($item->exchange ?? 1);
+                $amount     = (float) ($item->amount ?? 0);
                 $currencyId = (int) ($item->currency_id ?? 0);
 
                 if ($exchange <= 0) $exchange = 1;
@@ -43,32 +50,39 @@ class Invoice extends Model
                 return $currencyId === 1 ? $amount : $amount / $exchange;
             });
 
-            $refundsTotal = $this->payments()->whereHas('refund')->get()->sum(function($payment) {
-                $item = $payment->refund;
-                $exchange = (float) ($item->exchange ?? 1);
-                $amount = (float) ($item->amount ?? 0);
-                $currencyId = (int) ($item->currency_id ?? 0);
+            $refundsTotal = $this->payments()
+                ->whereHas('refund')
+                ->get()
+                ->sum(function ($payment) {
+                    $item       = $payment->refund;
+                    $exchange   = (float) ($item->exchange ?? 1);
+                    $amount     = (float) ($item->amount ?? 0);
+                    $currencyId = (int) ($item->currency_id ?? 0);
 
-                if ($exchange <= 0) $exchange = 1;
+                    if ($exchange <= 0) $exchange = 1;
 
-                return $currencyId === 1 ? $amount : $amount / $exchange;
-            });
+                    return $currencyId === 1 ? $amount : $amount / $exchange;
+                });
 
             return $paymentsTotal - $refundsTotal;
         };
+
         return new Attribute($get);
     }
 
     public function balance(): Attribute
     {
-        return new Attribute(fn() => $this->total - $this->total_paid);
+        return new Attribute(fn () => $this->total - $this->total_paid);
     }
 
     public function toPayWithDiscounts(): Attribute
     {
-        return new Attribute(fn() => $this->balance - $this->discounts->sum('amount'));
+        return new Attribute(fn () => $this->balance - $this->discounts->sum('amount'));
     }
 
+    /* -----------------------------------------------------------------
+     |  Business Logic
+     | ----------------------------------------------------------------- */
     public function calculateSimpleBalance(): float
     {
         return (float) $this->total_paid - (float) $this->total;
@@ -76,8 +90,9 @@ class Invoice extends Model
 
     public function calculateBalanceWithDiscounts(): float
     {
-        $totalPaid = (float) $this->total_paid;
+        $totalPaid      = (float) $this->total_paid;
         $totalDiscounts = (float) $this->discounts->sum('amount');
+
         return ($totalPaid + $totalDiscounts) - (float) $this->total;
     }
 
@@ -96,35 +111,9 @@ class Invoice extends Model
         return $this->calculateSimpleBalance() >= -0.01;
     }
 
-    public function updateStatusIfPaid(): void
-    {
-        (new \App\Services\InvoiceStatusService())->updateStatus($this);
-    }
-
-    // Status calculation and updates moved to \App\Services\InvoiceStatusService
-
-    protected static function booting()
-    {
-        static::creating(function(Invoice $invoice){
-            if(!$invoice->status){
-                $invoice->status = InvoiceStatus::OPEN;
-            }
-        });
-
-        static::created(function(Invoice $invoice){
-            $invoice->updateStatusIfPaid();
-        });
-
-        static::updated(function(Invoice $invoice){
-            if ($invoice->isDirty('status') && count($invoice->getDirty()) === 1) {
-                return;
-            }
-            $invoice->updateStatusIfPaid();
-        });
-
-        parent::booting();
-    }
-
+    /* -----------------------------------------------------------------
+     |  Relationships
+     | ----------------------------------------------------------------- */
     public function invoiceable(): MorphTo
     {
         return $this->morphTo();
@@ -165,10 +154,10 @@ class Invoice extends Model
         $relation = $this->hasManyThrough(
             Inventory::class,
             InvoiceDetail::class,
-            'invoice_id', // Foreign key on InvoiceDetail referencing Invoice
-            'product_id', // Foreign key on Inventory referencing Product
-            'id', // Local key on Invoice
-            'content_id' // Local key on InvoiceDetail that stores the product id for product items
+            'invoice_id',   // Foreign key on InvoiceDetail referencing Invoice
+            'product_id',   // Foreign key on Inventory referencing Product
+            'id',           // Local key on Invoice
+            'content_id'    // Local key on InvoiceDetail that stores the product id
         );
 
         return $relation->where((new InvoiceDetail())->getTable() . '.content_type', Product::class);

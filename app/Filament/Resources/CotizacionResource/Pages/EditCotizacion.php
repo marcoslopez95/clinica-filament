@@ -46,6 +46,5 @@ class EditCotizacion extends EditRecord
     protected function afterSave():void
     {
         $this->refreshTotal();
-        $this->getRecord()->updateStatusIfPaid();
     }
 }

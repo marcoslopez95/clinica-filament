@@ -4,9 +4,13 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Invoice;
 use App\Models\InvoiceDetail;
-use App\Observers\Invoice\InvoiceDetailInventoryObserver;
-use App\Observers\Invoice\InvoiceDetailStatusObserver;
+use App\Observers\Invoice\InvoiceObserver;
+use App\Observers\Invoice\PaymentObserver;
+use App\Observers\Invoice\InvoiceDiscountObserver;
+use App\Observers\InvoiceDetail\InvoiceDetailInventoryObserver;
+use App\Observers\InvoiceDetail\InvoiceDetailStatusObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
 
+        Invoice::observe(InvoiceObserver::class);
+        \App\Models\Payment::observe(PaymentObserver::class);
+        \App\Models\InvoiceDiscount::observe(InvoiceDiscountObserver::class);
         InvoiceDetail::observe(InvoiceDetailInventoryObserver::class);
         InvoiceDetail::observe(InvoiceDetailStatusObserver::class);
     }
