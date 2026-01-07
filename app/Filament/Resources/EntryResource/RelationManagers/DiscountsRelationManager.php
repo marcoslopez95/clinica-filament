@@ -27,10 +27,10 @@ class DiscountsRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        return $form->schema($this->getDiscountSchema());
+        return $form->schema($this->discountSchema());
     }
 
-    protected function getDiscountSchema(): array
+    private function discountSchema(): array
     {
         $schema = DiscountForm::schema();
 
@@ -73,7 +73,7 @@ class DiscountsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Nuevo ' . static::$modelLabel)
-                    ->form($this->getDiscountSchema())
+                    ->form($this->discountSchema())
                     ->action(function (array $data, $livewire): void {
                         $total = (float) $livewire->getOwnerRecord()->total;
                         $discountsSum = $livewire->getOwnerRecord()->discounts()->sum('amount') + (float) ($data['amount'] ?? 0);
@@ -92,7 +92,7 @@ class DiscountsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
-                    ->form($this->getDiscountSchema())
+                    ->form($this->discountSchema())
                     ->action(function (Model $record, array $data, $livewire): void {
                         $total = (float) $livewire->getOwnerRecord()->total;
                         $otherDiscounts = $livewire->getOwnerRecord()->discounts()
