@@ -6,6 +6,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use App\Enums\InvoiceStatus;
 use Filament\Tables\Table;
 use \App\Filament\Actions\CancelInvoiceAction;
 
@@ -37,6 +38,8 @@ class InvoicesTable
                 \App\Filament\Forms\Columns\StatusColumn::make(),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
+
+                \App\Filament\Forms\columns\CancellationColumn::make(),
             ])
             ->filters([
                 
