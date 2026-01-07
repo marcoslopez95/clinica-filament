@@ -84,6 +84,8 @@ class EntryForm
 
                 \App\Filament\Forms\Components\ToPay::make(),
 
+                \App\Filament\Forms\Components\CancellationPlaceholder::make(),
+
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }

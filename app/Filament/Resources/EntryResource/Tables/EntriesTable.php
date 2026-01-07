@@ -53,6 +53,8 @@ class EntriesTable
                     ->sortable(),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
+
+                \App\Filament\Forms\columns\CancellationColumn::make(),
             ])
             ->filters([
                 
