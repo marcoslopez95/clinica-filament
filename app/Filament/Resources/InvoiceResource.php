@@ -58,7 +58,6 @@ class InvoiceResource extends Resource
         return [
             RelationManagers\ProductsRelationManager::class,
             RelationManagers\PaymentsRelationManager::class,
-            RelationManagers\InventoryRelationManager::class,
         ];
     }
 
