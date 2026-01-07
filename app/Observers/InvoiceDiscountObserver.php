@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers\Invoice;
+namespace App\Observers;
 
 use App\Models\InvoiceDiscount;
 use App\Services\InvoiceStatusService;

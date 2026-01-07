@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers\Invoice;
+namespace App\Observers;
 
 use App\Models\Payment;
 use App\Services\InvoiceStatusService;
