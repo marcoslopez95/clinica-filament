@@ -396,18 +396,7 @@ class ProductsRelationManager extends RelationManager
                                     ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null),
                             ])
                             ->columns(3),
-                        
-                        // TextInput::make('taxes_sum')
-                        //     ->label('Total de Impuestos')
-                        //     ->disabled()
-                        //     ->dehydrated(false)
-                        //     ->live()
-                        //     ->formatStateUsing(function ($state, $get, Model $record) {
-                        //         $taxes = $get('taxes') ?? [];
-                        //         $sum = collect($taxes)->pluck('amount')->sum();
-                        //         return round($sum, 2);
-                        //     }),
-                        
+
                     ]),
                 Action::make('batches')
                     ->label('Lotes')

@@ -9,11 +9,13 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
-use App\Filament\Actions\RefreshTotalCreateAction;
-use App\Filament\Actions\RefreshTotalEditAction;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 use App\Filament\Resources\DiscountResource\Schemas\DiscountForm;
 use App\Filament\Resources\DiscountResource\Tables\DiscountsTable;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 class DiscountsRelationManager extends RelationManager
 {
@@ -25,6 +27,11 @@ class DiscountsRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
+        return $form->schema($this->getDiscountSchema());
+    }
+
+    protected function getDiscountSchema(): array
+    {
         $schema = DiscountForm::schema();
 
         foreach ($schema as $i => $component) {
@@ -35,8 +42,10 @@ class DiscountsRelationManager extends RelationManager
                     $schema[$i] = $component->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $total = (float) $this->getOwnerRecord()->total;
                         $percentage = (float) $state;
-                        $set('amount', $total * ($percentage / 100));
-                    });
+                        $set('amount', round($total * ($percentage / 100), 2));
+                    })
+                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null)
+                    ->live();
                 }
 
                 if ($name === 'amount') {
@@ -44,16 +53,16 @@ class DiscountsRelationManager extends RelationManager
                         $total = (float) $this->getOwnerRecord()->total;
                         $amount = (float) $state;
                         if ($total > 0) {
-                            $set('percentage', ($amount / $total) * 100);
+                            $set('percentage', round(($amount / $total) * 100, 2));
                         }
-                    });
+                    })
+                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null)
+                    ->live();
                 }
             }
         }
 
-        return $form->schema([
-            ...$schema,
-        ]);
+        return $schema;
     }
 
     public function table(Table $table): Table
@@ -62,11 +71,46 @@ class DiscountsRelationManager extends RelationManager
             ->recordTitleAttribute('description')
 
             ->headerActions([
-                RefreshTotalCreateAction::make()
-                    ->label('Nuevo ' . static::$modelLabel),
+                CreateAction::make()
+                    ->label('Nuevo ' . static::$modelLabel)
+                    ->form($this->getDiscountSchema())
+                    ->action(function (array $data, $livewire): void {
+                        $total = (float) $livewire->getOwnerRecord()->total;
+                        $discountsSum = $livewire->getOwnerRecord()->discounts()->sum('amount') + (float) ($data['amount'] ?? 0);
+                        
+                        if ($discountsSum > $total) {
+                            Notification::make()
+                                ->body("El monto de los descuentos no pueden superar al total de la factura")
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        
+                        $livewire->getOwnerRecord()->discounts()->create($data);
+                        $livewire->dispatch('refreshTotal');
+                    }),
             ])
             ->actions([
-                RefreshTotalEditAction::make(),
+                EditAction::make()
+                    ->form($this->getDiscountSchema())
+                    ->action(function (Model $record, array $data, $livewire): void {
+                        $total = (float) $livewire->getOwnerRecord()->total;
+                        $otherDiscounts = $livewire->getOwnerRecord()->discounts()
+                            ->where('id', '!=', $record->id)
+                            ->sum('amount');
+                        $discountsSum = $otherDiscounts + (float) ($data['amount'] ?? 0);
+                        
+                        if ($discountsSum > $total) {
+                            Notification::make()
+                                ->body("El monto de los descuentos no pueden superar al total de la factura")
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        
+                        $record->update($data);
+                        $livewire->dispatch('refreshTotal');
+                    }),
                 RefreshTotalDeleteAction::make(),
             ])
             ->bulkActions([
