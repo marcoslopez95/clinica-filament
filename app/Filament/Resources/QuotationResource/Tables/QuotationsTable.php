@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\Tables;
+namespace App\Filament\Resources\QuotationResource\Tables;
 
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use \App\Filament\Actions\MakeInvoiceAction;
 use \App\Filament\Actions\CancelInvoiceAction;
 
-class InvoicesTable
+class QuotationsTable
 {
     public static function table(Table $table): Table
     {
@@ -32,17 +33,18 @@ class InvoicesTable
                 TextColumn::make('total')
                     ->label('Total'),
 
-                \App\Filament\Forms\Columns\ToPayColumn::make('balance'),
-
-                \App\Filament\Forms\Columns\StatusColumn::make(),
+                TextColumn::make('credit_date')
+                    ->label('Vigencia')
+                    ->date()
+                    ->sortable(),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             ->filters([
-                
             ])
             ->actions([
                 CancelInvoiceAction::makeTable(),
+                MakeInvoiceAction::makeTable(),
                 EditAction::make(),
             ])
             ->bulkActions([

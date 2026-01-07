@@ -3,8 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuotationResource\Pages;
-use App\Filament\Resources\InvoiceResource\Schemas\InvoiceForm;
-use App\Filament\Resources\InvoiceResource\Tables\InvoicesTable;
+use App\Filament\Resources\QuotationResource\Schemas\QuotationForm;
+use App\Filament\Resources\QuotationResource\Tables\QuotationsTable;
 use App\Models\Invoice;
 use App\Enums\InvoiceType;
 use Filament\Forms\Form;
@@ -29,17 +29,12 @@ class QuotationResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return InvoiceForm::configure($form);
+        return QuotationForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        $table = InvoicesTable::table($table);
-
-        return $table->actions([
-            ...$table->getActions(),
-            MakeInvoiceAction::makeTable(),
-        ]);
+        return QuotationsTable::table($table);
     }
 
     public static function getPages(): array
