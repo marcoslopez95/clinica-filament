@@ -51,6 +51,8 @@ class EntryForm
 
                 TextInput::make('invoice_number')
                     ->label('Número de factura')
+                    ->unique(ignoreRecord: true)
+                    ->required()
                     ->columnSpan(2),
 
                 TextInput::make('full_name')
