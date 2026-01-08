@@ -11,6 +11,7 @@ use App\Models\InvoiceDiscount;
 use App\Observers\InvoiceObserver;
 use App\Observers\PaymentObserver;
 use App\Observers\InvoiceDiscountObserver;
+use App\Observers\RefundObserver;
 use App\Observers\InvoiceDetail\InvoiceDetailInventoryObserver;
 use App\Observers\InvoiceDetail\InvoiceDetailStatusObserver;
 
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         Invoice::observe(InvoiceObserver::class);
         Payment::observe(PaymentObserver::class);
         InvoiceDiscount::observe(InvoiceDiscountObserver::class);
+        \App\Models\Refund::observe(RefundObserver::class);
         InvoiceDetail::observe(InvoiceDetailInventoryObserver::class);
         InvoiceDetail::observe(InvoiceDetailStatusObserver::class);
     }
