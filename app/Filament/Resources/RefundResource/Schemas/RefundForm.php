@@ -14,24 +14,21 @@ class RefundForm
             Select::make('payment_method_id')
                 ->label('Método de Pago')
                 ->relationship('paymentMethod', 'name')
-                ->required()
-                ->disabled()
-                ->dehydrated(),
+                ->required(),
 
             ...\App\Filament\Forms\Schemas\CurrencyForm::schema(),
 
             TextInput::make('amount')
                 ->label('Monto')
-                ->numeric()
-                ->required()
-                ->readOnly(),
+                ->numeric(True)
+                ->required(),
         ];
     }
 
     public static function configure(Form $form): Form
     {
         return $form->schema([
-            
+
             Select::make('invoice_id')
                 ->label('Factura')
                 ->relationship('invoice', 'id')

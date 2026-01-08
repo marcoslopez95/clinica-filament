@@ -50,11 +50,9 @@ class Invoice extends Model
                 return $currencyId === 1 ? $amount : $amount / $exchange;
             });
 
-            $refundsTotal = $this->payments()
-                ->whereHas('refund')
+                $refundsTotal = $this->refunds()
                 ->get()
-                ->sum(function ($payment) {
-                    $item       = $payment->refund;
+                ->sum(function ($item) {
                     $exchange   = (float) ($item->exchange ?? 1);
                     $amount     = (float) ($item->amount ?? 0);
                     $currencyId = (int) ($item->currency_id ?? 0);
