@@ -73,10 +73,13 @@ class ProductsRelationManager extends RelationManager
                     ->label('Producto')
                     ->sortable()
                     ->searchable(),
+                    
                 TextColumn::make('quantity')
                     ->label('Cantidad'),
+
                 TextColumn::make('price')
                     ->label('Precio'),
+
                 TextColumn::make('subtotal')
                     ->label('Subtotal')
                     ->money('USD')
@@ -189,7 +192,9 @@ class ProductsRelationManager extends RelationManager
                             $data['unit_id'] = $product->unit_id;
                             $data['product_category_id'] = $product->product_category_id;
                             $data['currency_id'] = $product->currency_id;
+                            $data['content_id'] = $product->id;
                         }
+
                         return $data;
                     })
                     ->action(function (Model $record, array $data, $livewire): void {
@@ -206,10 +211,10 @@ class ProductsRelationManager extends RelationManager
                         }
 
                         $record->update([
-                            'content_id' => $data['content_id'],
+                            'content_id' => $data['content_id'] ?? $record->content_id,
                             'content_type' => Product::class,
-                            'price' => $data['price'],
-                            'quantity' => $data['quantity'],
+                            'price' => $data['price'] ?? $record->price,
+                            'quantity' => $data['quantity'] ?? $record->quantity,
                         ]);
 
                         $livewire->dispatch('refreshTotal');
