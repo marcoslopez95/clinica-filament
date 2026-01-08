@@ -2,26 +2,26 @@
 
 namespace App\Models;
 
-use App\Enums\InvoiceType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany as HasManyRelation;
+use App\Models\ReferenceValueResult;
 
 class InvoiceDetail extends Model
 {
     use SoftDeletes;
-
-    protected $fillable = ['invoice_id', 'product_id', 'price', 'quantity'];
 
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
     }
 
-    public function product(): BelongsTo
+    public function content(): MorphTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->morphTo();
     }
 
     public function taxes(): HasMany
@@ -29,54 +29,13 @@ class InvoiceDetail extends Model
         return $this->hasMany(InvoiceDetailTax::class);
     }
 
+    public function referenceResults(): HasManyRelation
+    {
+        return $this->hasMany(ReferenceValueResult::class, 'invoice_detail_id');
+    }
+
     public function batchDetails(): HasMany
     {
         return $this->hasMany(ProductBatchDetail::class);
-    }
-
-    protected static function booted(): void
-    {
-        static::created(function (InvoiceDetail $detail) {
-            $amount = $detail->product->inventory->amount;
-            $quantity = $detail->quantity;
-
-            if ($detail->invoice->invoice_type === InvoiceType::INVENTORY->value) {
-                $detail->product->inventory->update(['amount' => $amount + $quantity]);
-            } else {
-                $detail->product->inventory->update(['amount' => $amount - $quantity]);
-            }
-
-            $detail->invoice->updateStatusIfPaid();
-        });
-
-        static::updating(function (InvoiceDetail $detail) {
-            $oldQuantity = $detail->getOriginal('quantity');
-            $newQuantity = +$detail->quantity;
-            $diff = $newQuantity - $oldQuantity;
-            $amountInInventory = $detail->product->inventory->amount;
-
-            if ($detail->invoice->invoice_type === InvoiceType::INVENTORY->value) {
-                $detail->product->inventory->update(['amount' => $amountInInventory + $diff]);
-            } else {
-                $detail->product->inventory->update(['amount' => $amountInInventory - $diff]);
-            }
-        });
-
-        static::updated(function (InvoiceDetail $detail) {
-            $detail->invoice->updateStatusIfPaid();
-        });
-
-        static::deleted(function (InvoiceDetail $detail) {
-            $amount = $detail->product->inventory->amount;
-            $quantity = $detail->quantity;
-
-            if ($detail->invoice->invoice_type === InvoiceType::INVENTORY->value) {
-                $detail->product->inventory->update(['amount' => $amount - $quantity]);
-            } else {
-                $detail->product->inventory->update(['amount' => $amount + $quantity]);
-            }
-
-            $detail->invoice->updateStatusIfPaid();
-        });
     }
 }

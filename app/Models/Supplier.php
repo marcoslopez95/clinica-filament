@@ -11,12 +11,6 @@ class Supplier extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'name',
-        'document',
-        'type_document_id',
-    ];
-
     public function typeDocument(): BelongsTo
     {
         return $this->belongsTo(TypeDocument::class, 'type_document_id');

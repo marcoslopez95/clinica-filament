@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Models\Currency;
+use App\Models\Inventory;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -15,11 +17,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Invoice extends Model
 {
     use SoftDeletes;
-
-    public function invoiceable(): MorphTo
-    {
-        return $this->morphTo();
-    }
 
     protected function casts(): array
     {
@@ -35,15 +32,30 @@ class Invoice extends Model
 
     public function totalPaid(): Attribute
     {
-        $get = fn() => $this->payments->sum(function($item) {
-            $exchange = (float) ($item->exchange ?? 1);
-            $amount = (float) ($item->amount ?? 0);
-            $currencyId = (int) ($item->currency_id ?? 0);
+        $get = function() {
+            $paymentsTotal = $this->payments->sum(function($item) {
+                $exchange = (float) ($item->exchange ?? 1);
+                $amount = (float) ($item->amount ?? 0);
+                $currencyId = (int) ($item->currency_id ?? 0);
 
-            if ($exchange <= 0) $exchange = 1;
+                if ($exchange <= 0) $exchange = 1;
 
-            return $currencyId === 1 ? $amount : $amount / $exchange;
-        });
+                return $currencyId === 1 ? $amount : $amount / $exchange;
+            });
+
+            $refundsTotal = $this->payments()->whereHas('refund')->get()->sum(function($payment) {
+                $item = $payment->refund;
+                $exchange = (float) ($item->exchange ?? 1);
+                $amount = (float) ($item->amount ?? 0);
+                $currencyId = (int) ($item->currency_id ?? 0);
+
+                if ($exchange <= 0) $exchange = 1;
+
+                return $currencyId === 1 ? $amount : $amount / $exchange;
+            });
+
+            return $paymentsTotal - $refundsTotal;
+        };
         return new Attribute($get);
     }
 
@@ -86,63 +98,10 @@ class Invoice extends Model
 
     public function updateStatusIfPaid(): void
     {
-        $this->refresh();
-
-        if ($this->status === InvoiceStatus::CANCELLED) {
-            return;
-        }
-
-        if ($this->invoice_type === InvoiceType::INVENTORY) {
-            $this->updateInventoryStatus();
-        } else {
-            $this->updateInvoiceStatus();
-        }
+        (new \App\Services\InvoiceStatusService())->updateStatus($this);
     }
 
-    protected function updateInventoryStatus(): void
-    {
-        $total = (float) $this->total;
-        $totalPaid = (float) $this->total_paid;
-        $totalDiscounts = (float) $this->discounts->sum('amount');
-        $hasMoney = $totalPaid > 0 || $totalDiscounts > 0;
-
-        if ($this->isComplete()) {
-            $this->update(['status' => InvoiceStatus::CLOSED]);
-            return;
-        }
-
-        if ($hasMoney) {
-            $this->update(['status' => InvoiceStatus::PARTIAL]);
-            return;
-        }
-
-        $this->update(['status' => InvoiceStatus::OPEN]);
-    }
-
-    protected function updateInvoiceStatus(): void
-    {
-        $total = (float) $this->total;
-        $totalPaid = (float) $this->total_paid;
-        $totalDiscounts = (float) $this->discounts->sum('amount');
-        $sumPaymentsAndDiscounts = $totalPaid + $totalDiscounts;
-
-        if ($total > 0 && $sumPaymentsAndDiscounts >= ($total - 0.01)) {
-            $this->update(['status' => InvoiceStatus::CLOSED]);
-            return;
-        }
-
-        if ($total > 0 && $sumPaymentsAndDiscounts > 0 && $sumPaymentsAndDiscounts < ($total - 0.01)) {
-            $this->update(['status' => InvoiceStatus::PARTIAL]);
-            return;
-        }
-
-        if ($total <= 0 && $sumPaymentsAndDiscounts > 0) {
-            $this->update(['status' => InvoiceStatus::PARTIAL]);
-            return;
-        }
-
-        $this->update(['status' => InvoiceStatus::OPEN]);
-    }
+    // Status calculation and updates moved to \App\Services\InvoiceStatusService
 
     protected static function booting()
     {
@@ -166,6 +125,10 @@ class Invoice extends Model
         parent::booting();
     }
 
+    public function invoiceable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     public function currency(): BelongsTo
     {
@@ -192,15 +155,22 @@ class Invoice extends Model
         return $this->hasMany(InvoiceDiscount::class);
     }
 
+    public function refunds(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(Refund::class, Payment::class);
+    }
+
     public function inventories()
     {
-        return $this->hasManyThrough(
+        $relation = $this->hasManyThrough(
             Inventory::class,
             InvoiceDetail::class,
-            'invoice_id',
-            'product_id',
-            'id',
-            'product_id'
+            'invoice_id', // Foreign key on InvoiceDetail referencing Invoice
+            'product_id', // Foreign key on Inventory referencing Product
+            'id', // Local key on Invoice
+            'content_id' // Local key on InvoiceDetail that stores the product id for product items
         );
+
+        return $relation->where((new InvoiceDetail())->getTable() . '.content_type', Product::class);
     }
 }

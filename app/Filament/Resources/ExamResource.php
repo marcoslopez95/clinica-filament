@@ -4,34 +4,20 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExamResource\Pages;
 use App\Filament\Resources\ExamResource\RelationManagers;
+use App\Filament\Resources\ExamResource\Schemas\ExamForm;
+use App\Filament\Resources\ExamResource\Tables\ExamsTable;
 use App\Models\Exam;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ForceDeleteAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ExamResource extends Resource
 {
     protected static ?string $model = Exam::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $navigationIcon = 'heroicon-o-document';
     protected static ?string $slug = 'exams';
     protected static ?string $navigationGroup = 'Configuración';
     protected static ?string $modelLabel = 'Examen';
@@ -40,89 +26,12 @@ class ExamResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('price')
-                    ->label('Precio')
-                    ->required()
-                    ->numeric(),
-
-                Select::make('currency_id')
-                    ->label('Moneda')
-                    ->relationship('currency', 'name')
-                    ->required(),
-
-                Section::make('')
-                    ->label('Valores Referenciales')
-                    ->description('Agrega o selecciona valores referenciales para este examen')
-                    ->schema([
-                        Repeater::make('reference_values')
-                            ->relationship('referenceValues')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label('Nombre')
-                                    ->required(),
-
-                                TextInput::make('min_value')
-                                    ->label('Valor mínimo')
-                                    ->numeric()
-                                    ->required(),
-
-                                TextInput::make('max_value')
-                                    ->label('Valor máximo')
-                                    ->numeric()
-                                    ->required(),
-                            ])
-                            ->columns(3)
-                    ]),
-
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Exam $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?Exam $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
-            ]);
+        return ExamForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Name')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('price')
-                    ->label('Price')
-                    ->sortable(),
-
-                TextColumn::make('currency.name')
-                    ->label('Moneda')
-                    ->sortable(),
-            ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                ]),
-            ]);
+        return ExamsTable::table($table);
     }
 
     public static function getRelations(): array
@@ -143,10 +52,7 @@ class ExamResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+        return parent::getEloquentQuery();
     }
 
     public static function getGlobalSearchEloquentQuery(): Builder

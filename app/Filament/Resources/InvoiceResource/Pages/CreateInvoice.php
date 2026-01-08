@@ -16,7 +16,7 @@ class CreateInvoice extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-
+            // Add any header actions here
         ];
     }
 

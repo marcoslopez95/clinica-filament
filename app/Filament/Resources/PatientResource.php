@@ -3,27 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PatientResource\Pages;
+use App\Filament\Resources\PatientResource\Schemas\PatientForm;
+use App\Filament\Resources\PatientResource\Tables\PatientsTable;
 use App\Models\Patient;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ForceDeleteAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PatientResource extends Resource
 {
@@ -39,80 +26,12 @@ class PatientResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('first_name')
-                    ->label('Nombre')
-                    ->required(),
-
-                TextInput::make('last_name')
-                ->label('Apellido'),
-
-                Select::make('type_document_id')
-                    ->label('Tipo de Documento')
-                    ->relationship('typeDocument', 'name'),
-
-                TextInput::make('dni')
-                ->label('Número de Documento'),
-
-                DatePicker::make('born_date')
-                ->label('Fecha de Nacimiento'),
-
-                TextInput::make('address')
-                    ->label('Dirección')
-                    ->required(),
-
-                Placeholder::make('created_at')
-                    ->label('Fecha de Creación')
-                    ->content(fn(?Patient $record): string => $record?->created_at?->diffForHumans() ?? '-'),
-
-                Placeholder::make('updated_at')
-                    ->label('Fecha de Última Modificación')
-                    ->content(fn(?Patient $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
-            ]);
+        return PatientForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('first_name')
-                ->label('Nombre'),
-
-                TextColumn::make('last_name')
-                ->label('Apellido'),
-
-                TextColumn::make('typeDocument.name')
-                    ->label('Tipo de Documento')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('dni')
-                ->label('Núm. Documento'),
-
-                TextColumn::make('born_date')
-                    ->label('Fecha de Nacimiento')
-                    ->date(),
-
-                TextColumn::make('address')
-                ->label('Dirección'),
-            ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                ]),
-            ]);
+        return PatientsTable::table($table);
     }
 
     public static function getPages(): array
@@ -126,10 +45,7 @@ class PatientResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+        return parent::getEloquentQuery();
     }
 
     public static function getGlobalSearchEloquentQuery(): Builder

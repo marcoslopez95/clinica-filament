@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Filament\Resources\EntryResource\Tables;
+
+use App\Enums\InvoiceStatus;
+use App\Models\Invoice;
+use App\Filament\Filters\StatusFilter;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ForceDeleteAction;
+use Filament\Tables\Actions\ForceDeleteBulkAction;
+use Filament\Tables\Actions\RestoreAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use App\Filament\Actions\CancelInvoiceAction;
+
+class EntriesTable
+{
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('full_name')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('dni')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('date')
+                    ->label('Fecha')
+                    ->date()
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('total')
+                    ->label('Monto'),
+
+                TextColumn::make('currency.name')
+                    ->label('Moneda'),
+
+                TextColumn::make('exchange')
+                    ->label('Tasa de cambio'),
+
+                \App\Filament\Forms\Columns\ToPayColumn::make(),
+
+                \App\Filament\Forms\Columns\StatusColumn::make(),
+
+                TextColumn::make('is_expired')
+                    ->label('Condición')
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Vencida' : 'Sin vencer')
+                    ->sortable(),
+
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
+            ])
+            ->filters([
+                
+            ])
+            ->actions([
+                CancelInvoiceAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
+                RestoreAction::make(),
+                ForceDeleteAction::make(),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}

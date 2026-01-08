@@ -22,6 +22,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use App\Models\Warehouse;
+use Filament\Notifications\Notification;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -31,26 +32,47 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $title = 'Detalles de Productos';
 
+    protected function getUsedContentIds(Model $owner, ?int $excludeRecordId = null): array
+    {
+        $query = $owner->details()->where('content_type', Product::class);
+        if ($excludeRecordId) {
+            $query->where('id', '!=', $excludeRecordId);
+        }
+        return $query->pluck('content_id')->toArray();
+    }
+
+    protected function getAvailableProducts(Model $owner, ?int $excludeRecordId = null)
+    {
+        $used = $this->getUsedContentIds($owner, $excludeRecordId);
+        return Product::whereHas('inventory')
+            ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+            ->pluck('name', 'id');
+    }
+
+    protected function resolveProductFromRecord(Model $record): ?Product
+    {
+        return $record->content_type === Product::class ? $record->content : ($record->product ?? null);
+    }
+
+    protected function fillPriceFromProduct($state, $set): void
+    {
+        $product = Product::find($state);
+        if ($product) {
+            $set('price', $product->buy_price);
+        }
+    }
+
     public function form(Form $form): Form
     {
         return $form->schema([
-            Select::make('product_id')
+            Select::make('content_id')
                 ->label('Producto')
-                ->options(function () {
-                    $owner = $this->getOwnerRecord();
-                    $used = $owner->details()->pluck('product_id')->toArray();
-                    return Product::whereHas('inventory')
-                        ->whereNotIn('id', $used)
-                        ->pluck('name', 'id');
-                })
+                ->options(fn() => $this->getAvailableProducts($this->getOwnerRecord()))
                 ->searchable()
                 ->required()
                 ->reactive()
                 ->afterStateUpdated(function ($state, $set) {
-                    $product = Product::find($state);
-                    if ($product) {
-                        $set('price', $product->buy_price);
-                    }
+                    $this->fillPriceFromProduct($state, $set);
                 }),
 
             TextInput::make('price')
@@ -69,7 +91,7 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('product.name')
+                TextColumn::make('content.name')
                     ->label('Producto')
                     ->sortable()
                     ->searchable(),
@@ -145,7 +167,8 @@ class ProductsRelationManager extends RelationManager
 
                         $owner = $livewire->getOwnerRecord();
                         $owner->details()->create([
-                            'product_id' => $product->id,
+                            'content_id' => $product->id,
+                            'content_type' => Product::class,
                             'quantity' => $data['quantity'],
                             'price' => $data['buy_price'],
                         ]);
@@ -153,10 +176,39 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
 
-                CreateAction::make()
+                CreateAction::make('add_existing')
                     ->label('Añadir producto existente')
                     ->modalHeading('Añadir producto existente a la entrada')
-                    ->after(function ($livewire) {
+                    ->form([
+                        Select::make('content_id')
+                            ->label('Producto')
+                            ->options(fn() => $this->getAvailableProducts($this->getOwnerRecord()))
+                            ->searchable()
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set) {
+                                $this->fillPriceFromProduct($state, $set);
+                            }),
+
+                        TextInput::make('price')
+                            ->label('Precio de compra')
+                            ->numeric()
+                            ->required(),
+
+                        TextInput::make('quantity')
+                            ->label('Cantidad')
+                            ->numeric()
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $owner = $livewire->getOwnerRecord();
+                        $owner->details()->create([
+                            'content_id' => $data['content_id'],
+                            'content_type' => Product::class,
+                            'price' => $data['price'],
+                            'quantity' => $data['quantity'],
+                        ]);
+
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
@@ -164,17 +216,10 @@ class ProductsRelationManager extends RelationManager
                 EditAction::make()
                     ->form(function (Form $form) {
                         return $form->schema([
-                            Select::make('product_id')
+                            Select::make('content_id')
                                 ->label('Producto')
                                 ->options(function (Model $record) {
-                                    $owner = $this->getOwnerRecord();
-                                    $used = $owner->details()
-                                        ->where('id', '!=', $record->id)
-                                        ->pluck('product_id')
-                                        ->toArray();
-                                    return Product::whereHas('inventory')
-                                        ->whereNotIn('id', $used)
-                                        ->pluck('name', 'id');
+                                    return $this->getAvailableProducts($this->getOwnerRecord(), $record->id ?? null);
                                 })
                                 ->searchable()
                                 ->required()
@@ -236,28 +281,33 @@ class ProductsRelationManager extends RelationManager
                         ]);
                     })
                     ->mutateRecordDataUsing(function (array $data, Model $record): array {
-                        if ($record->product) {
-                            $data['name'] = $record->product->name;
-                            $data['buy_price'] = $record->product->buy_price;
-                            $data['sell_price'] = $record->product->sell_price;
-                            $data['unit_id'] = $record->product->unit_id;
-                            $data['product_category_id'] = $record->product->product_category_id;
-                            $data['currency_id'] = $record->product->currency_id;
+                        $product = $this->resolveProductFromRecord($record);
+                        if ($product) {
+                            $data['name'] = $product->name;
+                            $data['buy_price'] = $product->buy_price;
+                            $data['sell_price'] = $product->sell_price;
+                            $data['unit_id'] = $product->unit_id;
+                            $data['product_category_id'] = $product->product_category_id;
+                            $data['currency_id'] = $product->currency_id;
                         }
                         return $data;
                     })
                     ->action(function (Model $record, array $data, $livewire): void {
-                        $record->product->update([
-                            'name' => $data['name'],
-                            'buy_price' => $data['buy_price'],
-                            'sell_price' => $data['sell_price'],
-                            'unit_id' => $data['unit_id'],
-                            'product_category_id' => $data['product_category_id'],
-                            'currency_id' => $data['currency_id'],
-                        ]);
+                        $product = $this->resolveProductFromRecord($record);
+                        if ($product) {
+                            $product->update([
+                                'name' => $data['name'],
+                                'buy_price' => $data['buy_price'],
+                                'sell_price' => $data['sell_price'],
+                                'unit_id' => $data['unit_id'],
+                                'product_category_id' => $data['product_category_id'],
+                                'currency_id' => $data['currency_id'],
+                            ]);
+                        }
 
                         $record->update([
-                            'product_id' => $data['product_id'],
+                            'content_id' => $data['content_id'],
+                            'content_type' => Product::class,
                             'price' => $data['price'],
                             'quantity' => $data['quantity'],
                         ]);
@@ -276,6 +326,17 @@ class ProductsRelationManager extends RelationManager
                         'taxes' => $record->taxes->toArray(),
                     ]))
                     ->action(function (Model $record, array $data): void {
+                        $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
+                        $taxesSum = collect($data['taxes'] ?? [])->pluck('amount')->sum();
+                        
+                        if ($taxesSum > $subtotal) {
+                            Notification::make()
+                                ->body("El monto de los impuestos no pueden superar al subtotal del producto")
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        
                         $record->taxes()->delete();
                         $taxes = collect($data['taxes'])->map(function ($tax) {
                             unset($tax['id']);
@@ -286,6 +347,7 @@ class ProductsRelationManager extends RelationManager
                     ->form([
                         Repeater::make('taxes')
                             ->label('Impuestos')
+                            ->live()
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Nombre')
@@ -302,8 +364,9 @@ class ProductsRelationManager extends RelationManager
                                         $quantity = $record->quantity ?? 0;
                                         $percentage = (float)$state;
                                         $amount = ($price * $quantity) * ($percentage / 100);
-                                        $set('amount', $amount);
+                                        $set('amount', round($amount, 2));
                                     })
+                                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null)
                                     ->suffixAction(
                                         FormAction::make('calculateAmount')
                                             ->label('Calcular')
@@ -313,7 +376,7 @@ class ProductsRelationManager extends RelationManager
                                                 $quantity = $record->quantity ?? 0;
                                                 $percentage = (float)$state;
                                                 $amount = ($price * $quantity) * ($percentage / 100);
-                                                $set('amount', $amount);
+                                                $set('amount', round($amount, 2));
                                             })
                                     ),
                                 TextInput::make('amount')
@@ -327,21 +390,25 @@ class ProductsRelationManager extends RelationManager
                                         $total = $price * $quantity;
                                         $amount = (float)$state;
                                         if ($total > 0) {
-                                            $set('percentage', ($amount / $total) * 100);
+                                            $set('percentage', round(($amount / $total) * 100, 2));
                                         }
-                                    }),
+                                    })
+                                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null),
                             ])
-                            ->columns(3)
+                            ->columns(3),
+
                     ]),
                 Action::make('batches')
                     ->label('Lotes')
                     ->color('success')
                     ->icon('heroicon-m-archive-box')
-                    ->visible(fn (Model $record): bool =>
-                        $record->product &&
-                        $record->product->productCategory &&
-                        strtolower($record->product->productCategory->name) === 'medicina'
-                    )
+                    ->visible(function (Model $record): bool {
+                        $p = $this->resolveProductFromRecord($record);
+                        if (! $p || ! ($p->productCategory ?? null)) {
+                            return false;
+                        }
+                        return strtolower(($p->productCategory->name) ?? '') === 'medicina';
+                    })
                     ->modalHeading('Gestionar Lotes')
                     ->mountUsing(fn (Form $form, Model $record) => $form->fill([
                         'batches' => $record->batchDetails->toArray(),
