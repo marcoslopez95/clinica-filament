@@ -144,9 +144,9 @@ class Invoice extends Model
         return $this->hasMany(InvoiceDiscount::class);
     }
 
-    public function refunds(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    public function refunds(): HasMany
     {
-        return $this->hasManyThrough(Refund::class, Payment::class);
+        return $this->hasMany(Refund::class);
     }
 
     public function inventories()
