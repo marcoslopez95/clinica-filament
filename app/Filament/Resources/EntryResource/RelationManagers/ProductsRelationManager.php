@@ -2,10 +2,7 @@
 
 namespace App\Filament\Resources\EntryResource\RelationManagers;
 
-use App\Models\Currency;
 use App\Models\Product;
-use App\Models\Unit;
-use App\Models\ProductCategory;
 use App\Models\Inventory;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
@@ -90,37 +87,8 @@ class ProductsRelationManager extends RelationManager
                     ->label('Crear producto')
                     ->modalHeading('Crear nuevo producto y añadir a la entrada')
                     ->form([
-                        TextInput::make('name')
-                            ->label('Nombre del producto')
-                            ->required(),
 
-                        TextInput::make('buy_price')
-                            ->label('Precio de compra')
-                            ->numeric()
-                            ->required(),
-
-                        TextInput::make('sell_price')
-                            ->label('Precio de venta')
-                            ->numeric()
-                            ->required(),
-
-                        Select::make('unit_id')
-                            ->label('Unidad')
-                            ->required()
-                            ->options(fn() => Unit::pluck('name', 'id'))
-                            ->searchable(),
-
-                        Select::make('product_category_id')
-                            ->label('Categoría')
-                            ->required()
-                            ->options(fn() => ProductCategory::pluck('name', 'id'))
-                            ->searchable(),
-
-                        Select::make('currency_id')
-                            ->label('Moneda')
-                            ->required()
-                            ->options(fn() => Currency::pluck('name', 'id'))
-                            ->searchable(),
+                        ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
 
                         TextInput::make('quantity')
                             ->label('Cantidad')
@@ -204,80 +172,14 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
-                    ->form(function (Form $form) {
-                        return $form->schema([
-                            Select::make('content_id')
-                                ->label('Producto')
-                                ->options(function (Model $record) {
-                                    $owner = $this->getOwnerRecord();
-                                    $usedQuery = $owner->details()->where('content_type', Product::class);
-                                    if (! empty($record->id)) {
-                                        $usedQuery->where('id', '!=', $record->id);
-                                    }
-                                    $used = $usedQuery->pluck('content_id')->toArray();
-                                    return Product::whereHas('inventory')
-                                        ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                                        ->pluck('name', 'id');
-                                })
-                                ->searchable()
-                                ->required()
-                                ->reactive()
-                                ->afterStateUpdated(function ($state, $set) {
-                                    $product = Product::find($state);
-                                    if ($product) {
-                                        $set('price', $product->buy_price);
-                                        $set('name', $product->name);
-                                        $set('buy_price', $product->buy_price);
-                                        $set('sell_price', $product->sell_price);
-                                        $set('unit_id', $product->unit_id);
-                                        $set('product_category_id', $product->product_category_id);
-                                        $set('currency_id', $product->currency_id);
-                                    }
-                                }),
+                    ->form([
+                        ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
 
-                            TextInput::make('name')
-                                ->label('Nombre del producto')
-                                ->required(),
-
-                            TextInput::make('buy_price')
-                                ->label('Precio de compra (Producto)')
-                                ->numeric()
-                                ->required(),
-
-                            TextInput::make('sell_price')
-                                ->label('Precio de venta')
-                                ->numeric()
-                                ->required(),
-
-                            Select::make('unit_id')
-                                ->label('Unidad')
-                                ->required()
-                                ->options(fn() => Unit::pluck('name', 'id'))
-                                ->searchable(),
-
-                            Select::make('product_category_id')
-                                ->label('Categoría')
-                                ->required()
-                                ->options(fn() => ProductCategory::pluck('name', 'id'))
-                                ->searchable(),
-
-                            Select::make('currency_id')
-                                ->label('Moneda')
-                                ->required()
-                                ->options(fn() => Currency::pluck('name', 'id'))
-                                ->searchable(),
-
-                            TextInput::make('price')
-                                ->label('Precio de compra (Entrada)')
-                                ->numeric()
-                                ->required(),
-
-                            TextInput::make('quantity')
-                                ->label('Cantidad')
-                                ->numeric()
-                                ->required(),
-                        ]);
-                    })
+                        TextInput::make('quantity')
+                            ->label('Cantidad')
+                            ->numeric()
+                            ->required(),
+                    ])
                     ->mutateRecordDataUsing(function (array $data, Model $record): array {
                         $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
                         if ($product) {
