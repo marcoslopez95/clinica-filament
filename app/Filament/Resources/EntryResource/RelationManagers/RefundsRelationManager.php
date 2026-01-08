@@ -2,18 +2,20 @@
 
 namespace App\Filament\Resources\EntryResource\RelationManagers;
 
-use App\Models\Currency;
-use App\Models\Payment;
-use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Closure;
+use Filament\Tables\Columns\TextColumn;
+use App\Filament\Actions\RefreshTotalCreateAction;
+use App\Filament\Actions\RefreshTotalEditAction;
+use App\Filament\Actions\RefreshTotalDeleteAction;
+use App\Filament\Actions\RefreshTotalDeleteBulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use App\Filament\Resources\RefundResource\Schemas\RefundForm;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 class RefundsRelationManager extends RelationManager
 {
@@ -21,58 +23,11 @@ class RefundsRelationManager extends RelationManager
 
     protected static ?string $title = 'Devoluciones';
 
-    public function form(Form $form): Form
+    private function refundSchema(): array
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('payment_id')
-                    ->label('Pago Original')
-                    ->relationship('payment', 'id', modifyQueryUsing: function (Builder $query) {
-                        return $query->where('invoice_id', $this->getOwnerRecord()->id)
-                            ->whereDoesntHave('refund');
-                    })
-                    ->getOptionLabelFromRecordUsing(fn (Payment $record) => "Pago {$record->amount} {$record->currency->code} ({$record->paymentMethod->name})")
-                    ->required()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        if ($state) {
-                            $payment = Payment::find($state);
-                            if ($payment) {
-                                $set('currency_id', $payment->currency_id);
-                                $set('payment_method_id', $payment->payment_method_id);
-                                $set('exchange', $payment->exchange);
-                                $set('amount', $payment->amount);
-                            }
-                        }
-                    }),
+        $schema = RefundForm::schema();
 
-                Forms\Components\Select::make('payment_method_id')
-                    ->label('Método de Pago')
-                    ->relationship('paymentMethod', 'name')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
-
-                Forms\Components\Select::make('currency_id')
-                    ->label('Moneda')
-                    ->relationship('currency', 'name')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
-
-                Forms\Components\TextInput::make('amount')
-                    ->label('Monto')
-                    ->numeric()
-                    ->required()
-                    ->readOnly(),
-
-                Forms\Components\TextInput::make('exchange')
-                    ->label('Tasa de Cambio')
-                    ->numeric()
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
-            ]);
+        return $schema;
     }
 
     public function table(Table $table): Table
@@ -80,47 +35,124 @@ class RefundsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('amount')
             ->columns([
-                Tables\Columns\TextColumn::make('payment_id')
-                    ->label('Pago Original')
-                    ->formatStateUsing(fn ($state) => "#{$state}"),
-                Tables\Columns\TextColumn::make('paymentMethod.name')
+
+                TextColumn::make('paymentMethod.name')
                     ->label('Método de Pago'),
-                Tables\Columns\TextColumn::make('currency.name')
+
+                TextColumn::make('currency.name')
                     ->label('Moneda'),
-                Tables\Columns\TextColumn::make('amount')
+
+                TextColumn::make('amount')
                     ->label('Monto')
                     ->money(fn($record) => $record->currency->code ?? 'USD'),
-                Tables\Columns\TextColumn::make('exchange')
+
+                TextColumn::make('exchange')
                     ->label('Tasa de Cambio'),
-                Tables\Columns\TextColumn::make('created_at')
+                    
+                TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime()
                     ->sortable(),
             ])
             
             ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
-                Tables\Actions\DeleteAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->after(function ($livewire) {
+                CreateAction::make()
+                    ->label('Nueva Devolución')
+                    ->form($this->refundSchema())
+                        ->action(function (array $data, $livewire): void {
+                            $invoice = $livewire->getOwnerRecord();
+
+                            $paymentsTotal = $invoice->payments->sum(function ($p) {
+                                $exchange = (float) ($p->exchange ?? 1);
+                                $amount = (float) ($p->amount ?? 0);
+                                $currencyId = (int) ($p->currency_id ?? 0);
+                                if ($exchange <= 0) $exchange = 1;
+                                return $currencyId === 1 ? $amount : $amount / $exchange;
+                            });
+
+                            $refundsTotal = $invoice->refunds()->get()->sum(function ($r) {
+                                $exchange = (float) ($r->exchange ?? 1);
+                                $amount = (float) ($r->amount ?? 0);
+                                $currencyId = (int) ($r->currency_id ?? 0);
+                                if ($exchange <= 0) $exchange = 1;
+                                return $currencyId === 1 ? $amount : $amount / $exchange;
+                            });
+
+                            $newExchange = (float) ($data['exchange'] ?? 1);
+                            $newAmountRaw = (float) ($data['amount'] ?? 0);
+                            $newCurrencyId = (int) ($data['currency_id'] ?? 0);
+                            if ($newExchange <= 0) $newExchange = 1;
+                            $newAmount = $newCurrencyId === 1 ? $newAmountRaw : $newAmountRaw / $newExchange;
+
+                            $available = $paymentsTotal - $refundsTotal;
+
+                            if ($newAmount > $available) {
+                                Notification::make()
+                                    ->body('El monto de las devoluciones no puede superar el total de los pagos realizados')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            $invoice->refunds()->create($data);
                             $livewire->dispatch('refreshTotal');
                         }),
+            ])
+            ->actions([
+                EditAction::make()
+                    ->form($this->refundSchema())
+                        ->action(function (Model $record, array $data, $livewire): void {
+                            $invoice = $livewire->getOwnerRecord();
+
+                            $paymentsTotal = $invoice->payments->sum(function ($p) {
+                                $exchange = (float) ($p->exchange ?? 1);
+                                $amount = (float) ($p->amount ?? 0);
+                                $currencyId = (int) ($p->currency_id ?? 0);
+                                if ($exchange <= 0) $exchange = 1;
+                                return $currencyId === 1 ? $amount : $amount / $exchange;
+                            });
+
+                            $otherRefunds = $invoice->refunds()
+                                ->where('id', '!=', $record->id)
+                                ->get()
+                                ->sum(function ($r) {
+                                    $exchange = (float) ($r->exchange ?? 1);
+                                    $amount = (float) ($r->amount ?? 0);
+                                    $currencyId = (int) ($r->currency_id ?? 0);
+                                    if ($exchange <= 0) $exchange = 1;
+                                    return $currencyId === 1 ? $amount : $amount / $exchange;
+                                });
+
+                            $newExchange = (float) ($data['exchange'] ?? 1);
+                            $newAmountRaw = (float) ($data['amount'] ?? 0);
+                            $newCurrencyId = (int) ($data['currency_id'] ?? 0);
+                            if ($newExchange <= 0) $newExchange = 1;
+                            $newAmount = $newCurrencyId === 1 ? $newAmountRaw : $newAmountRaw / $newExchange;
+
+                            $available = $paymentsTotal - $otherRefunds;
+
+                            if ($newAmount > $available) {
+                                Notification::make()
+                                    ->body('El monto de las devoluciones no puede superar el total de los pagos realizados')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            $record->update($data);
+                            $livewire->dispatch('refreshTotal');
+                        }),
+                RefreshTotalDeleteAction::make(),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    RefreshTotalDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema($this->refundSchema());
     }
 }

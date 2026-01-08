@@ -8,21 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Payment extends Model
 {
-    protected static function booted(): void
-    {
-        static::created(function (Payment $payment) {
-            $payment->invoice->updateStatusIfPaid();
-        });
-
-        static::updated(function (Payment $payment) {
-            $payment->invoice->updateStatusIfPaid();
-        });
-
-        static::deleted(function (Payment $payment) {
-            $payment->invoice->updateStatusIfPaid();
-        });
-    }
-
+    
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
@@ -40,6 +26,8 @@ class Payment extends Model
 
     public function refund(): HasOne
     {
-        return $this->hasOne(Refund::class);
+        // Refunds were migrated to reference `invoice_id` instead of `payment_id`.
+        // Match refunds by the payment's `invoice_id`.
+        return $this->hasOne(Refund::class, 'invoice_id', 'invoice_id');
     }
 }

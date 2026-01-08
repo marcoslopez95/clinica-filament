@@ -25,11 +25,6 @@ class DiscountsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Descuentos';
     protected static ?string $title = 'Descuentos';
 
-    public function form(Form $form): Form
-    {
-        return $form->schema($this->discountSchema());
-    }
-
     private function discountSchema(): array
     {
         $schema = DiscountForm::schema();
@@ -119,4 +114,10 @@ class DiscountsRelationManager extends RelationManager
                 ]),
             ]);
     }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema($this->discountSchema());
+    }
+
 }

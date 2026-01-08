@@ -51,6 +51,8 @@ class EntryForm
 
                 TextInput::make('invoice_number')
                     ->label('Número de factura')
+                    ->unique(ignoreRecord: true)
+                    ->required()
                     ->columnSpan(2),
 
                 TextInput::make('full_name')
@@ -81,6 +83,8 @@ class EntryForm
                     ->columnSpan(2),
 
                 \App\Filament\Forms\Components\ToPay::make(),
+
+                \App\Filament\Forms\Components\CancellationPlaceholder::make(),
 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

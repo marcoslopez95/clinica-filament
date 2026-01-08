@@ -20,4 +20,9 @@ class Expense extends Model
         return $this->belongsTo(ExpenseCategory::class, 'expense_category_id');
     }
 
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
 }
