@@ -228,7 +228,7 @@ class ProductsRelationManager extends RelationManager
                     ->label('Impuestos')
                     ->color('warning')
                     ->icon('heroicon-m-receipt-percent')
-                    ->modalHeading('Gestionar Impuestos')
+                    ->modalHeading(false)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Cerrar')
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
