@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use App\Filament\Actions\RefreshTotalDeleteAction;
 use Livewire\Component;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\InvoiceDetailTaxResource\Schemas\InvoiceDetailTaxForm;
@@ -138,8 +139,8 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
 
                         $this->dispatch('refreshTotal');
                     }),
-                DeleteAction::make()
-                    ->after(fn() => $this->dispatch('refreshTotal')),
+                    
+                    RefreshTotalDeleteAction::make(),
             ]);
     }
 
