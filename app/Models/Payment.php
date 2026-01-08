@@ -26,6 +26,8 @@ class Payment extends Model
 
     public function refund(): HasOne
     {
-        return $this->hasOne(Refund::class);
+        // Refunds were migrated to reference `invoice_id` instead of `payment_id`.
+        // Match refunds by the payment's `invoice_id`.
+        return $this->hasOne(Refund::class, 'invoice_id', 'invoice_id');
     }
 }

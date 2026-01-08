@@ -19,7 +19,6 @@ class RefundsTable
     {
         return $table
             ->columns([
-                TextColumn::make('payment_id')->label('Pago Original')->formatStateUsing(fn($state) => "#{$state}"),
                 TextColumn::make('paymentMethod.name')->label('Método de Pago'),
                 TextColumn::make('currency.name')->label('Moneda'),
                 TextColumn::make('amount')->label('Monto'),

@@ -5,14 +5,13 @@ namespace App\Filament\Resources\EntryResource\RelationManagers;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Actions\RefreshTotalCreateAction;
 use App\Filament\Actions\RefreshTotalEditAction;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 use App\Filament\Actions\RefreshTotalDeleteBulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
+use App\Filament\Resources\RefundResource\Schemas\RefundForm;
 
 class RefundsRelationManager extends RelationManager
 {
@@ -20,9 +19,12 @@ class RefundsRelationManager extends RelationManager
 
     protected static ?string $title = 'Devoluciones';
 
-    public function form(Form $form): Form
+    private function refundSchema(): array
+
     {
-        return \App\Filament\Resources\RefundResource\Schemas\RefundForm::configure($form);
+        $schema = RefundForm::schema();
+
+        return $schema;
     }
 
     public function table(Table $table): Table
@@ -30,9 +32,6 @@ class RefundsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('amount')
             ->columns([
-                TextColumn::make('payment_id')
-                    ->label('Pago Original')
-                    ->formatStateUsing(fn ($state) => "#{$state}"),
 
                 TextColumn::make('paymentMethod.name')
                     ->label('Método de Pago'),
@@ -65,5 +64,10 @@ class RefundsRelationManager extends RelationManager
                     RefreshTotalDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema($this->refundSchema());
     }
 }
