@@ -244,36 +244,10 @@ class ProductsRelationManager extends RelationManager
                         }
                         return strtolower(($p->productCategory->name) ?? '') === 'medicina';
                     })
-                    ->modalHeading('Gestionar Lotes')
-                    ->mountUsing(fn (Form $form, Model $record) => $form->fill([
-                        'batches' => $record->batchDetails->toArray(),
-                    ]))
-                    ->action(function (Model $record, array $data): void {
-                        $record->batchDetails()->delete();
-                        $batches = collect($data['batches'])->map(function ($batch) {
-                            unset($batch['id']);
-                            return $batch;
-                        })->toArray();
-                        $record->batchDetails()->createMany($batches);
-                    })
-                    ->form([
-                        Repeater::make('batches')
-                            ->label('Lotes')
-                            ->schema([
-                                TextInput::make('batch_number')
-                                    ->label('Número de Lote')
-                                    ->required(),
-                                DatePicker::make('expiration_date')
-                                    ->label('Fecha de Vencimiento')
-                                    ->required(),
-                                TextInput::make('quantity')
-                                    ->label('Cantidad')
-                                    ->numeric()
-                                    ->step(1)
-                                    ->required(),
-                            ])
-                            ->columns(3)
-                    ]),
+                    ->modalHeading(false)
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Cerrar')
+                    ->modalContent(fn (Model $record) => view('filament.actions.manage-batches', ['record' => $record])),
                 DeleteAction::make()
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
