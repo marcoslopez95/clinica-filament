@@ -22,36 +22,7 @@ class RefundsRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        return $form
-            ->schema([
-
-                Select::make('payment_method_id')
-                    ->label('Método de Pago')
-                    ->relationship('paymentMethod', 'name')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
-
-                Select::make('currency_id')
-                    ->label('Moneda')
-                    ->relationship('currency', 'name')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
-
-                TextInput::make('amount')
-                    ->label('Monto')
-                    ->numeric()
-                    ->required()
-                    ->readOnly(),
-
-                TextInput::make('exchange')
-                    ->label('Tasa de Cambio')
-                    ->numeric()
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
-            ]);
+        return \App\Filament\Resources\RefundResource\Schemas\RefundForm::configure($form);
     }
 
     public function table(Table $table): Table
