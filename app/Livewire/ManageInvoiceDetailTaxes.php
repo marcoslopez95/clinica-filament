@@ -66,19 +66,7 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
         return $table
             ->query(InvoiceDetailTax::query()
             ->where('invoice_detail_id', $this->invoiceDetail->id))
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-
-                TextColumn::make('percentage')
-                    ->label('Porcentaje')
-                    ->suffix('%'),
-
-                TextColumn::make('amount')
-                    ->label('Monto')
-                    ->money('USD'),
-            ])
+            ->columns(\App\Filament\Resources\InvoiceDetailTaxResource\Tables\InvoiceDetailTaxesTable::columns())
             ->headerActions([
                 CreateAction::make()
                     ->label('Añadir Impuesto')
