@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Forms\columns;
+namespace App\Filament\Forms\Columns;
 
 use Filament\Tables\Columns\TextColumn;
 use App\Enums\InvoiceStatus;
