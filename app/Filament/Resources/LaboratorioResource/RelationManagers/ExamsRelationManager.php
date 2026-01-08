@@ -212,18 +212,18 @@ class ExamsRelationManager extends RelationManager
                     })
                     ->requiresConfirmation(false)
                     ->modalWidth('lg'),
-                EditAction::make()
-                    ->action(function (Model $record, array $data, $livewire): void {
-                        $record->update([
-                            'content_id' => $data['content_id'],
-                            'content_type' => Exam::class,
-                            'price' => $data['price'],
-                            'quantity' => 1,
-                        ]);
+                // EditAction::make()
+                //     ->action(function (Model $record, array $data, $livewire): void {
+                //         $record->update([
+                //             'content_id' => $data['content_id'],
+                //             'content_type' => Exam::class,
+                //             'price' => $data['price'],
+                //             'quantity' => 1,
+                //         ]);
 
-                        $livewire->dispatch('refreshTotal');
-                    })
-                    ->after(function ($livewire) { $livewire->dispatch('refreshTotal'); }),
+                //         $livewire->dispatch('refreshTotal');
+                //     })
+                //     ->after(function ($livewire) { $livewire->dispatch('refreshTotal'); }),
                 DeleteAction::make()->after(function ($livewire) { $livewire->dispatch('refreshTotal'); }),
             ])
             ->bulkActions([
