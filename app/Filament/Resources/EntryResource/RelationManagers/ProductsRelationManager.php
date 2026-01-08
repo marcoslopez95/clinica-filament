@@ -20,6 +20,11 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use App\Models\Warehouse;
 use Filament\Notifications\Notification;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Grid;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -73,7 +78,7 @@ class ProductsRelationManager extends RelationManager
                     ->label('Producto')
                     ->sortable()
                     ->searchable(),
-                    
+
                 TextColumn::make('quantity')
                     ->label('Cantidad'),
 
@@ -220,88 +225,14 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
                 Action::make('taxes')
-                    ->label('Taxes')
+                    ->label('Impuestos')
                     ->color('warning')
                     ->icon('heroicon-m-receipt-percent')
-                    ->modalHeading('Gestionar Impuestos')
-                    ->mountUsing(fn (Form $form, Model $record) => $form->fill([
-                        'taxes' => $record->taxes->toArray(),
-                    ]))
-                    ->action(function (Model $record, array $data): void {
-                        $subtotal = ($record->price ?? 0) * ($record->quantity ?? 0);
-                        $taxesSum = collect($data['taxes'] ?? [])->pluck('amount')->sum();
-                        
-                        if ($taxesSum > $subtotal) {
-                            Notification::make()
-                                ->body("El monto de los impuestos no pueden superar al subtotal del producto")
-                                ->danger()
-                                ->send();
-                            return;
-                        }
-                        
-                        $record->taxes()->delete();
-                        $taxes = collect($data['taxes'])->map(function ($tax) {
-                            unset($tax['id']);
-                            return $tax;
-                        })->toArray();
-                        $record->taxes()->createMany($taxes);
-                    })
-                    ->form([
-                        Repeater::make('taxes')
-                            ->label('Impuestos')
-                            ->live()
-                            ->schema([
-                                
-                                TextInput::make('name')
-                                    ->label('Nombre')
-                                    ->required(),
+                    ->modalHeading(false)
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Cerrar')
+                    ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
 
-                                TextInput::make('percentage')
-                                    ->label('Porcentaje')
-                                    ->numeric()
-                                    ->step(0.01)
-                                    ->required()
-                                    ->suffix('%')
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function ($state, $set, Model $record) {
-                                        $price = $record->price ?? 0;
-                                        $quantity = $record->quantity ?? 0;
-                                        $percentage = (float)$state;
-                                        $amount = ($price * $quantity) * ($percentage / 100);
-                                        $set('amount', round($amount, 2));
-                                    })
-                                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null)
-                                    ->suffixAction(
-                                        FormAction::make('calculateAmount')
-                                            ->label('Calcular')
-                                            ->icon('heroicon-m-calculator')
-                                            ->action(function ($state, $set, Model $record) {
-                                                $price = $record->price ?? 0;
-                                                $quantity = $record->quantity ?? 0;
-                                                $percentage = (float)$state;
-                                                $amount = ($price * $quantity) * ($percentage / 100);
-                                                $set('amount', round($amount, 2));
-                                            })
-                                    ),
-                                TextInput::make('amount')
-                                    ->label('Monto')
-                                    ->numeric()
-                                    ->required()
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function ($state, $set, Model $record) {
-                                        $price = $record->price ?? 0;
-                                        $quantity = $record->quantity ?? 0;
-                                        $total = $price * $quantity;
-                                        $amount = (float)$state;
-                                        if ($total > 0) {
-                                            $set('percentage', round(($amount / $total) * 100, 2));
-                                        }
-                                    })
-                                    ->formatStateUsing(fn($state) => $state !== null ? round($state, 2) : null),
-                            ])
-                            ->columns(3),
-
-                    ]),
                 Action::make('batches')
                     ->label('Lotes')
                     ->color('success')
