@@ -29,16 +29,16 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $title = 'Detalles de Productos';
 
-    
-
-    public function form(Form $form): Form
+    protected function productFormSchema(): array
     {
-        return $form->schema([
+        return [
             Select::make('content_id')
                 ->label('Producto')
                 ->options(function () {
                     $owner = $this->getOwnerRecord();
-                    $used = $owner->details()->where('content_type', Product::class)->pluck('content_id')->toArray();
+                    $used = $owner->details()
+                        ->where('content_type', Product::class)->pluck('content_id')->toArray();
+
                     return Product::whereHas('inventory')
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                         ->pluck('name', 'id');
@@ -62,7 +62,7 @@ class ProductsRelationManager extends RelationManager
                 ->label('Cantidad')
                 ->numeric()
                 ->required(),
-        ]);
+        ];
     }
 
     public function table(Table $table): Table
@@ -108,22 +108,22 @@ class ProductsRelationManager extends RelationManager
                             'currency_id' => $data['currency_id'],
                         ]);
 
-                        $warehouseId = Warehouse::where('name', 'Bodega')->first()?->id;
-
                         Inventory::create([
                             'product_id' => $product->id,
-                            'warehouse_id' => $warehouseId,
+                            'warehouse_id' => Warehouse::where('name', 'Bodega')->first(),
                             'stock_min' => 0,
                             'amount' => 0,
                         ]);
 
                         $owner = $livewire->getOwnerRecord();
-                        $owner->details()->create([
-                            'content_id' => $product->id,
-                            'content_type' => Product::class,
-                            'quantity' => $data['quantity'],
-                            'price' => $data['buy_price'],
-                        ]);
+                        $owner
+                            ->details()
+                                ->create([
+                                    'content_id' => $product->id,
+                                    'content_type' => Product::class,
+                                    'quantity' => $data['quantity'],
+                                    'price' => $data['buy_price'],
+                                ]);
 
                         $livewire->dispatch('refreshTotal');
                     }),
@@ -131,44 +131,17 @@ class ProductsRelationManager extends RelationManager
                 CreateAction::make('add_existing')
                     ->label('Añadir producto existente')
                     ->modalHeading('Añadir producto existente a la entrada')
-                    ->form([
-                        Select::make('content_id')
-                            ->label('Producto')
-                            ->options(function () {
-                                $owner = $this->getOwnerRecord();
-                                $used = $owner->details()->where('content_type', Product::class)->pluck('content_id')->toArray();
-                                return Product::whereHas('inventory')
-                                    ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                                    ->pluck('name', 'id');
-                            })
-                            ->searchable()
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, $set) {
-                                $product = Product::find($state);
-                                if ($product) {
-                                    $set('price', $product->buy_price);
-                                }
-                            }),
-
-                        TextInput::make('price')
-                            ->label('Precio de compra')
-                            ->numeric()
-                            ->required(),
-
-                        TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->numeric()
-                            ->required(),
-                    ])
+                    ->form($this->productFormSchema())
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
-                        $owner->details()->create([
-                            'content_id' => $data['content_id'],
-                            'content_type' => Product::class,
-                            'price' => $data['price'],
-                            'quantity' => $data['quantity'],
-                        ]);
+                        $owner
+                            ->details()
+                            ->create([
+                                'content_id' => $data['content_id'],
+                                'content_type' => Product::class,
+                                'price' => $data['price'],
+                                'quantity' => $data['quantity'],
+                            ]);
 
                         $livewire->dispatch('refreshTotal');
                     }),
@@ -216,8 +189,6 @@ class ProductsRelationManager extends RelationManager
                             'price' => $data['price'] ?? $record->price,
                             'quantity' => $data['quantity'] ?? $record->quantity,
                         ]);
-
-                        $livewire->dispatch('refreshTotal');
                     })
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
@@ -254,9 +225,11 @@ class ProductsRelationManager extends RelationManager
                             ->label('Impuestos')
                             ->live()
                             ->schema([
+                                
                                 TextInput::make('name')
                                     ->label('Nombre')
                                     ->required(),
+
                                 TextInput::make('percentage')
                                     ->label('Porcentaje')
                                     ->numeric()
@@ -349,5 +322,10 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
             ]);
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema($this->productFormSchema());
     }
 }
