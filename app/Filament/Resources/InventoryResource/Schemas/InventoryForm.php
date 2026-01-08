@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\InventoryResource\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use App\Filament\Forms\Schemas\TimestampForm;
+use App\Models\Product;
+use App\Models\Inventory;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -14,19 +15,28 @@ class InventoryForm
     {
         return $form
             ->schema([
-                Select::make('product_id')
-                    ->label('Producto')
-                    ->relationship('product', 'name')
-                    ->required()
-                    ->createOptionForm(
-                        \App\Filament\Resources\ProductResource\Schemas\ProductForm::schema()
-                    ),
-
                 Select::make('warehouse_id')
                     ->label('Almacén')
                     ->relationship('warehouse', 'name')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $set) {
+                        $set('product_id', null);
+                    }),
+
+                Select::make('product_id')
+                    ->label('Producto')
+                    ->options(fn ($get) => Product::when($get('warehouse_id'), fn($q, $warehouseId)
+                        => $q->whereNotIn('id', Inventory::where('warehouse_id', $warehouseId)
+                           ->pluck('product_id')->toArray()))->pluck('name', 'id'))
+
+                    ->disabled(fn ($get) => ! $get('warehouse_id'))
+                    ->required()
+                    ->searchable()
+                    ->createOptionForm(
+                        \App\Filament\Resources\ProductResource\Schemas\ProductForm::schema()
+                    ),
 
                 TextInput::make('stock_min')
                     ->label('Stock Minimo')
