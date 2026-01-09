@@ -9,6 +9,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
@@ -41,7 +42,21 @@ class ManageExamResults extends Component implements HasForms, HasTable
             Select::make('reference_value_id')
                 ->label('Valor referencial')
                 ->options(fn() => $options)
-                ->required(),
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, $set) {
+                    $rv = ReferenceValue::find($state);
+                    $set('min_value', $rv->min_value ?? null);
+                    $set('max_value', $rv->max_value ?? null);
+                }),
+
+            Placeholder::make('min_value')
+                ->label('Mínimo')
+                ->content(fn($get) => $get('min_value') ?? '-'),
+
+            Placeholder::make('max_value')
+                ->label('Máximo')
+                ->content(fn($get) => $get('max_value') ?? '-'),
 
             TextInput::make('result')
                 ->label('Resultado')
