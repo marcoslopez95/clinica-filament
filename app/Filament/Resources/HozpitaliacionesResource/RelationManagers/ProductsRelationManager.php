@@ -179,66 +179,21 @@ class ProductsRelationManager extends RelationManager
                     ->state(fn (Model $record): float => $record->quantity * $record->price),
             ])
             ->headerActions([
-                CreateAction::make('create_new')
-                    ->label('Crear producto')
-                    ->modalHeading('Crear nuevo producto y añadir a la entrada')
-                    ->form([
+                Action::make('create_product_resource')
+                    ->label('Recurso de Producto')
+                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/products/create')),
 
-                        ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
+                Action::make('create_exam_resource')
+                    ->label('Recurso de Examen')
+                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/exams/create')),
 
-                        TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->numeric()
-                            ->required(),
-                    ])
-                    ->action(function (array $data, $livewire) {
-                        $product = Product::create([
-                            'name' => $data['name'],
-                            'buy_price' => $data['buy_price'],
-                            'sell_price' => $data['sell_price'],
-                            'unit_id' => $data['unit_id'],
-                            'product_category_id' => $data['product_category_id'],
-                            'currency_id' => $data['currency_id'],
-                        ]);
+                Action::make('create_room_resource')
+                    ->label('Recurso de Room')
+                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/rooms/create')),
 
-                        $warehouse = Warehouse::where('name', 'Bodega')->first();
-                        if (! $warehouse) {
-                            Notification::make()
-                                ->body('Bodega no encontrada')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
-
-                        if (Inventory::where('warehouse_id', $warehouse->id)
-                            ->whereHas('product', fn($q) => $q->where('name', $product->name))
-                            ->exists()) {
-                                Notification::make()
-                                    ->body('Este producto ya existe en el inventario de la Bodega')
-                                    ->danger()
-                                    ->send();
-                                return;
-                        }
-
-                        Inventory::create([
-                            'product_id' => $product->id,
-                            'warehouse_id' => $warehouse->id,
-                            'stock_min' => 0,
-                            'amount' => 0,
-                        ]);
-
-                        $owner = $livewire->getOwnerRecord();
-                        $owner
-                            ->details()
-                                ->create([
-                                    'content_id' => $product->id,
-                                    'content_type' => Product::class,
-                                    'quantity' => $data['quantity'],
-                                    'price' => $data['buy_price'],
-                                ]);
-
-                        $livewire->dispatch('refreshTotal');
-                    }),
+                Action::make('create_service_resource')
+                    ->label('Recurso de Servicio')
+                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/services/create')),
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
@@ -362,4 +317,5 @@ class ProductsRelationManager extends RelationManager
     {
         return $form->schema($this->schema());
     }
+
 }
