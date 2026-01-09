@@ -9,7 +9,6 @@ use App\Models\Service;
 use App\Models\Room;
 use App\Enums\ResourceType;
 use Filament\Tables\Actions\Action;
-use App\Models\Warehouse;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,10 +22,10 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
+use App\Filament\Actions\RefreshTotalDeleteAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Filament\Actions\LoadResultsAction;
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'details';
@@ -184,7 +183,7 @@ class ProductsRelationManager extends RelationManager
                     ->state(fn (Model $record): float => $record->quantity * $record->price),
             ])
             ->headerActions([
-                
+
                 Action::make('choose_resource')
                     ->label('Crear recurso')
                     ->modalHeading('Crear recurso')
@@ -250,7 +249,6 @@ class ProductsRelationManager extends RelationManager
                                 return;
                             }
 
-                            // Prevent duplicates
                             if ($owner->details()
                                 ->where('content_type', $data['content_type'])
                                 ->where('content_id', $selectedId)
@@ -329,11 +327,10 @@ class ProductsRelationManager extends RelationManager
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
+
+                LoadResultsAction::make(),
                     
-                DeleteAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
+                RefreshTotalDeleteAction::make(),
             ]);
     }
 

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ReferenceValue;
 use Filament\Notifications\Notification;
 use App\Filament\Actions\RefreshTotalDeleteAction;
+use App\Filament\Actions\LoadResultsAction;
 
 class ExamsRelationManager extends RelationManager
 {
@@ -153,11 +154,7 @@ class ExamsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Action::make('load_results')
-                    ->label('Cargar resultados')
-                    ->icon('heroicon-o-pencil')
-                    ->modalWidth('lg')
-                    ->modalContent(fn (Model $record) => view('filament.actions.manage-exam-results', ['record' => $record])),
+                LoadResultsAction::make(),
 
                 RefreshTotalDeleteAction::make(),
             ])
