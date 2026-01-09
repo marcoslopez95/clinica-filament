@@ -16,31 +16,21 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('profile_photo_path')
-                    ->label('Profile Photo Path'),
-
-                TextColumn::make('current_team_id')
-                    ->label('Current Team Id'),
-
-                TextColumn::make('two_factor_confirmed_at')
-                    ->label('Two Factor Confirmed At'),
-
-                TextColumn::make('two_factor_recovery_codes')
-                    ->label('Two Factor Recovery Codes'),
-
-                TextColumn::make('two_factor_secret')
-                    ->label('Two Factor Secret'),
+                    ->label('Foto'),
 
                 TextColumn::make('email_verified_at')
-                    ->label('Email Verified Date')
-                    ->date(),
+                    ->label('Verificado')
+                    ->formatStateUsing(fn($state) => $state ? 'Verificado' : 'No verificado')
+                    ->badge()
+                    ->color(fn($state) => $state ? 'success' : 'danger'),
 
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label('Correo')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label('Nombre')
                     ->searchable()
                     ->sortable(),
             ])
