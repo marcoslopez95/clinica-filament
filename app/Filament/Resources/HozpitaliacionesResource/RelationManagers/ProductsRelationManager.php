@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Filament\Resources\EntryResource\RelationManagers;
+namespace App\Filament\Resources\HozpitaliacionesResource\RelationManagers;
 
-use App\Models\Product;
 use App\Models\Inventory;
+use App\Models\Product;
+use Filament\Tables\Actions\Action;
+use App\Models\Warehouse;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Warehouse;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -216,30 +216,7 @@ class ProductsRelationManager extends RelationManager
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
-                Action::make('taxes')
-                    ->label('Impuestos')
-                    ->color('warning')
-                    ->icon('heroicon-m-receipt-percent')
-                    ->modalHeading(false)
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Cerrar')
-                    ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
-
-                Action::make('batches')
-                    ->label('Lotes')
-                    ->color('success')
-                    ->icon('heroicon-m-archive-box')
-                    ->visible(function (Model $record): bool {
-                        $p = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
-                        if (! $p || ! ($p->productCategory ?? null)) {
-                            return false;
-                        }
-                        return strtolower(($p->productCategory->name) ?? '') === 'medicina';
-                    })
-                    ->modalHeading(false)
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Cerrar')
-                    ->modalContent(fn (Model $record) => view('filament.actions.manage-batches', ['record' => $record])),
+                    
                 DeleteAction::make()
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
