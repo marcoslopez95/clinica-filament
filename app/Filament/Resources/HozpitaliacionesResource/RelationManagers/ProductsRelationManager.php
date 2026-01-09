@@ -13,6 +13,11 @@ use App\Models\Warehouse;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Radio;
+use App\Filament\Resources\ProductResource;
+use App\Filament\Resources\ExamResource;
+use App\Filament\Resources\ServiceResource;
+use App\Filament\Resources\RoomResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -179,21 +184,39 @@ class ProductsRelationManager extends RelationManager
                     ->state(fn (Model $record): float => $record->quantity * $record->price),
             ])
             ->headerActions([
-                Action::make('create_product_resource')
-                    ->label('Recurso de Producto')
-                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/products/create')),
+                Action::make('choose_resource')
+                    ->label('Crear recurso')
+                    ->modalHeading('Crear recurso')
+                    ->form([
+                        Radio::make('resource')
+                            ->label(false)
+                            ->options([
+                                'product' => 'Producto',
+                                'exam' => 'Examen',
+                                'room' => 'Habitación',
+                                'service' => 'Servicio',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $map = [
+                            'product' => ProductResource::class,
+                            'exam' => ExamResource::class,
+                            'room' => RoomResource::class,
+                            'service' => ServiceResource::class,
+                        ];
 
-                Action::make('create_exam_resource')
-                    ->label('Recurso de Examen')
-                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/exams/create')),
+                        $key = $data['resource'] ?? null;
+                        if (! $key || ! isset($map[$key])) {
+                            Notification::make()->danger()->body('Seleccione un recurso válido')->send();
+                            return;
+                        }
 
-                Action::make('create_room_resource')
-                    ->label('Recurso de Room')
-                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/rooms/create')),
+                        $resourceClass = $map[$key];
+                        $url = $resourceClass::getUrl('create');
 
-                Action::make('create_service_resource')
-                    ->label('Recurso de Servicio')
-                    ->url(fn () => url('/' . config('filament.path', 'admin') . '/resources/services/create')),
+                        return redirect($url);
+                    }),
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
