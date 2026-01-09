@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ReferenceValueResource\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 
 class ReferenceValueForm
@@ -11,10 +12,6 @@ class ReferenceValueForm
     public static function schema(): array
     {
         return [
-
-            TextInput::make('name')
-                ->label('Nombre')
-                ->required(),
 
             TextInput::make('min_value')
                 ->label(false)
@@ -43,6 +40,10 @@ class ReferenceValueForm
                 ->relationship('exam', 'name')
                 ->required()
                 ->preload(),
+
+            TextInput::make('name')
+                ->label('Nombre')
+                ->required(),
 
             ...self::schema(),
             

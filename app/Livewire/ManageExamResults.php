@@ -50,13 +50,7 @@ class ManageExamResults extends Component implements HasForms, HasTable
                     $set('max_value', $rv->max_value ?? null);
                 }),
 
-            Placeholder::make('min_value')
-                ->label('Mínimo')
-                ->content(fn($get) => $get('min_value') ?? '-'),
-
-            Placeholder::make('max_value')
-                ->label('Máximo')
-                ->content(fn($get) => $get('max_value') ?? '-'),
+            ...\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema(),
 
             TextInput::make('result')
                 ->label('Resultado')
