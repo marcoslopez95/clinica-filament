@@ -184,6 +184,7 @@ class ProductsRelationManager extends RelationManager
                     ->state(fn (Model $record): float => $record->quantity * $record->price),
             ])
             ->headerActions([
+                
                 Action::make('choose_resource')
                     ->label('Crear recurso')
                     ->modalHeading('Crear recurso')
@@ -214,11 +215,6 @@ class ProductsRelationManager extends RelationManager
 
                         $resourceClass = $map[$key];
                         $url = $resourceClass::getUrl('create');
-
-                        // add return_to so created page can show a "Regresar" action
-                        $returnTo = url()->previous() ?? request()->header('referer') ?? url()->current();
-                        $separator = str_contains($url, '?') ? '&' : '?';
-                        $url = $url . $separator . 'return_to=' . urlencode($returnTo);
 
                         return redirect($url);
                     }),

@@ -13,15 +13,8 @@ class CreateProduct extends CreateRecord
 
     protected function getHeaderActions(): array
     {
-        $actions = [];
+        return [
 
-        $returnTo = Request::query('return_to');
-        if ($returnTo) {
-            $actions[] = Action::make('volver')
-                ->label('Regresar')
-                ->url(urldecode($returnTo));
-        }
-
-        return $actions;
+        ];
     }
 }
