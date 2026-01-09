@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ReferenceValueResult;
 use App\Models\ReferenceValue;
 use Filament\Notifications\Notification;
+use App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm;
 
 class ExamsRelationManager extends RelationManager
 {
@@ -74,9 +75,17 @@ class ExamsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('content.name')->label('Examen')->searchable()->sortable(),
-                TextColumn::make('price')->label('Precio'),
-                TextColumn::make('subtotal')->label('Subtotal')->state(fn(Model $record) => 1 * $record->price),
+                TextColumn::make('content.name')
+                    ->label('Examen')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('price')
+                    ->label('Precio'),
+
+                TextColumn::make('subtotal')
+                    ->label('Subtotal')
+                    ->state(fn(Model $record) => 1 * $record->price),
             ])
             ->headerActions([
                 CreateAction::make('add_existing')
@@ -138,80 +147,40 @@ class ExamsRelationManager extends RelationManager
 
                         $livewire->dispatch('refreshTotal');
                     }),
+                CreateAction::make('create_reference_value')
+                    ->label('Crear valor referencial')
+                    ->modalHeading('Crear valor referencial')
+                    ->modalWidth('md')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('exam_id')
+                            ->label('Examen')
+                            ->options(fn() => Exam::all()->pluck('name', 'id'))
+                            ->required(),
+
+                        ...ReferenceValueForm::schema(),
+                        ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                    ])
+                    ->action(function (array $data) {
+                        ReferenceValue::create($data);
+                        Notification::make()
+                            ->title('Valor referencial creado')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->actions([
                 Action::make('load_results')
                     ->label('Cargar resultados')
-                    ->icon('heroicon-o-document-text')
-                    ->form(function (Model $record) {
-                        $exam = $record->content;
+                    ->icon('heroicon-o-pencil')
+                    ->modalWidth('lg')
+                    ->modalContent(fn (Model $record) => view('filament.actions.manage-exam-results', ['record' => $record])),
 
-                        $initial = [];
-                        $existingResults = ReferenceValueResult::where('invoice_detail_id', $record->id)->get();
-                        foreach ($existingResults as $er) {
-                            $initial[] = [
-                                'reference_value_id' => $er->reference_value_id,
-                                'result' => $er->result,
-                            ];
-                        }
-
-                        $options = [];
-                        if ($exam) {
-                            $options = $exam->referenceValues()->pluck('name', 'id')->toArray();
-                        }
-
-                        return [
-                            Repeater::make('results')
-                                ->label('Resultados')
-                                ->schema([
-                                    Select::make('reference_value_id')
-                                        ->label('Valor referencial')
-                                        ->options(fn() => $options)
-                                        ->reactive()
-                                        ->required(),
-
-                                    FormPlaceholder::make('min')
-                                        ->label('Mínimo')
-                                        ->content(fn($get) => ($ref = ReferenceValue::find($get('reference_value_id'))) ? $ref->min_value : ''),
-
-                                    FormPlaceholder::make('max')
-                                        ->label('Máximo')
-                                        ->content(fn($get) => ($ref = ReferenceValue::find($get('reference_value_id'))) ? $ref->max_value : ''),
-
-                                    TextInput::make('result')->label('Resultado')->required(false),
-                                ])
-                                ->default($initial)
-                                   ->addActionLabel('Añadir resultado')
-                                ->columns(1)
-                                ->collapsed(false),
-                        ];
-                    })
-                    ->action(function (Model $record, array $data, $livewire) {
-                        $exam = $record->content;
-                        if (! $exam) return;
-
-                        $items = $data['results'] ?? [];
-                        foreach ($items as $item) {
-                            $refId = $item['reference_value_id'] ?? null;
-                            $value = $item['result'] ?? null;
-                            if (! $refId) continue;
-
-                            ReferenceValueResult::updateOrCreate(
-                                [
-                                    'invoice_detail_id' => $record->id,
-                                    'reference_value_id' => $refId,
-                                ],
-                                ['result' => $value]
-                            );
-                        }
-
-                        Notification::make()
-                            ->success()
-                            ->title('Resultados guardados')
-                            ->send();
-                    })
-                    ->requiresConfirmation(false)
-                    ->modalWidth('lg'),
+                // Action::make('manage_reference_values')
+                //     ->label('Valores referenciales')
+                //     ->icon('heroicon-o-book-open')
+                //     ->modalHeading('Valores referenciales')
+                //     ->modalWidth('lg')
+                //     ->modalContent(fn (Model $record) => view('filament.actions.manage-reference-values', ['record' => $record])),
                 // EditAction::make()
                 //     ->action(function (Model $record, array $data, $livewire): void {
                 //         $record->update([
