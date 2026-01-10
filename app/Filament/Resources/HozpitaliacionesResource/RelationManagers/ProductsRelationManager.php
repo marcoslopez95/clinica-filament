@@ -157,8 +157,8 @@ class ProductsRelationManager extends RelationManager
             TextInput::make('quantity')
                 ->label('Cantidad')
                 ->numeric()
-                ->required(fn($get) => $get('content_type') === Product::class)
-                ->visible(fn($get) => $get('content_type') === Product::class),
+                ->required(fn($get) => in_array($get('content_type'), [Product::class, Service::class]))
+                ->visible(fn($get) => in_array($get('content_type'), [Product::class, Service::class])),
         ];
     }
 
@@ -267,7 +267,7 @@ class ProductsRelationManager extends RelationManager
                                     'content_id' => $selectedId,
                                     'content_type' => $data['content_type'],
                                     'price' => $data['price'] ?? null,
-                                    'quantity' => $data['content_type'] === Product::class ? ($data['quantity'] ?? 1) : null,
+                                    'quantity' => in_array($data['content_type'] ?? '', [Product::class, Service::class]) ? ($data['quantity'] ?? 1) : null,
                                 ]);
 
                             $livewire->dispatch('refreshTotal');
@@ -275,54 +275,115 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
-                    ->form([
-                        ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
+                    ->form(function (Form $form) {
+                        return $form->schema([
+                            \Filament\Forms\Components\Hidden::make('content_type')
+                                ->default(fn (?Model $record) => $record->content_type ?? Product::class),
 
-                        TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->numeric()
-                            ->required()
-                            ->readOnly(
-                                fn ($get) => ! Inventory::where('product_id', $get('content_id'))->exists()
-                            )
-                            ->helperText(
-                                fn ($get) => Inventory::where('product_id', $get('content_id'))->exists()
-                                ? '  ' : 'Este producto no tiene inventario por ende no puede modificarse su cantidad'
-                            ),
-                    ])
-                    ->mutateRecordDataUsing(function (array $data, Model $record): array {
-                        $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
-                        if ($product) {
-                            $data['name'] = $product->name;
-                            $data['buy_price'] = $product->buy_price;
-                            $data['sell_price'] = $product->sell_price;
-                            $data['unit_id'] = $product->unit_id;
-                            $data['product_category_id'] = $product->product_category_id;
-                            $data['currency_id'] = $product->currency_id;
-                            $data['content_id'] = $product->id;
-                        }
+                            Select::make('content_id')
+                                ->label('Elemento')
+                                ->options(function (Model $record) {
+                                    $owner = $this->getOwnerRecord();
+                                    $exclude = $record->id ?? null;
+                                    $contentType = $record->content_type ?? Product::class;
 
-                        return $data;
+                                    if ($contentType === Exam::class) {
+                                        $query = $owner->details()->where('content_type', Exam::class);
+                                        if ($exclude) {
+                                            $query->where('id', '!=', $exclude);
+                                        }
+                                        $used = $query->pluck('content_id')->toArray();
+
+                                        return Exam::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                                            ->pluck('name', 'id');
+                                    }
+
+                                    if ($contentType === Service::class) {
+                                        $query = $owner->details()->where('content_type', Service::class);
+                                        if ($exclude) {
+                                            $query->where('id', '!=', $exclude);
+                                        }
+                                        $used = $query->pluck('content_id')->toArray();
+
+                                        return Service::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                                            ->pluck('name', 'id');
+                                    }
+
+                                    if ($contentType === Room::class) {
+                                        $query = $owner->details()->where('content_type', Room::class);
+                                        if ($exclude) {
+                                            $query->where('id', '!=', $exclude);
+                                        }
+                                        $used = $query->pluck('content_id')->toArray();
+
+                                        return Room::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                                            ->pluck('name', 'id');
+                                    }
+
+                                    $query = $owner->details()->where('content_type', Product::class);
+                                    if ($exclude) {
+                                        $query->where('id', '!=', $exclude);
+                                    }
+                                    $used = $query->pluck('content_id')->toArray();
+
+                                    return Product::whereHas('inventory')
+                                        ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                                        ->pluck('name', 'id');
+                                })
+                                ->searchable()
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $contentId = $state;
+                                    $contentType = $get('content_type');
+
+                                    if ($contentType === Service::class) {
+                                        $service = Service::find($contentId);
+                                        if ($service) {
+                                            $set('price', $service->buy_price ?? $service->sell_price ?? null);
+                                            $set('name', $service->name);
+                                        }
+                                    } elseif ($contentType === Exam::class) {
+                                        $exam = Exam::find($contentId);
+                                        if ($exam) {
+                                            $set('price', $exam->price ?? null);
+                                            $set('name', $exam->name);
+                                        }
+                                    } elseif ($contentType === Room::class) {
+                                        $room = Room::find($contentId);
+                                        if ($room) {
+                                            $set('price', $room->price ?? null);
+                                            $set('name', $room->name);
+                                        }
+                                    } else {
+                                        $product = Product::find($contentId);
+                                        if ($product) {
+                                            $set('price', $product->sell_price);
+                                            $set('name', $product->name);
+                                        }
+                                    }
+                                }),
+
+                            TextInput::make('price')
+                                ->label('Precio')
+                                ->numeric()
+                                ->required(),
+
+                            TextInput::make('quantity')
+                                ->label('Cantidad')
+                                ->numeric()
+                                ->required()
+                                ->readOnly(fn ($get) => ($get('content_type') === Product::class) ? ! Inventory::where('product_id', $get('content_id'))->exists() : false),
+                        ]);
                     })
                     ->action(function (Model $record, array $data, $livewire): void {
-                        $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
-                        if ($product) {
-                            $product->update([
-                                'name' => $data['name'],
-                                'buy_price' => $data['buy_price'],
-                                'sell_price' => $data['sell_price'],
-                                'unit_id' => $data['unit_id'],
-                                'product_category_id' => $data['product_category_id'],
-                                'currency_id' => $data['currency_id'],
-                            ]);
-                        }
-
                         $record->update([
-                            'content_id' => $data['content_id'] ?? $record->content_id,
-                            'content_type' => Product::class,
-                            'price' => $data['price'] ?? $record->price,
-                            'quantity' => $data['quantity'] ?? $record->quantity,
+                            'content_id' => $data['content_id'],
+                            'price' => $data['price'],
+                            'quantity' => $data['quantity'],
                         ]);
+
+                        $livewire->dispatch('refreshTotal');
                     })
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
