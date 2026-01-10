@@ -26,7 +26,7 @@ class ExamResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return ExamForm::configure($form);
+        return $form->schema(ExamForm::schema());
     }
 
     public static function table(Table $table): Table
@@ -37,7 +37,7 @@ class ExamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ReferenceValuesRelationManager::class,
         ];
     }
 

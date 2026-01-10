@@ -9,21 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InvoiceDiscount extends Model
 {
     use SoftDeletes;
-
-    protected static function booted(): void
-    {
-        static::created(function (InvoiceDiscount $discount) {
-            $discount->invoice->updateStatusIfPaid();
-        });
-
-        static::updated(function (InvoiceDiscount $discount) {
-            $discount->invoice->updateStatusIfPaid();
-        });
-
-        static::deleted(function (InvoiceDiscount $discount) {
-            $discount->invoice->updateStatusIfPaid();
-        });
-    }
+    
+    
 
     protected $fillable = [
         'invoice_id',

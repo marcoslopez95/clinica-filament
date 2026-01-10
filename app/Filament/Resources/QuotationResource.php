@@ -2,22 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InvoiceResource\RelationManagers as InvoiceRelationManagers;
-use App\Filament\Resources\CotizacionResource\Pages;
-use App\Filament\Resources\InvoiceResource\Schemas\InvoiceForm;
-use App\Filament\Resources\InvoiceResource\Tables\InvoicesTable;
+use App\Filament\Resources\QuotationResource\Pages;
+use App\Filament\Resources\QuotationResource\Schemas\QuotationForm;
+use App\Filament\Resources\QuotationResource\Tables\QuotationsTable;
 use App\Models\Invoice;
 use App\Enums\InvoiceType;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use \App\Filament\Actions\MakeInvoiceAction;
+use \App\Filament\Actions\CancelInvoiceAction;
+use \Filament\Tables\Actions\EditAction;
 
-class CotizacionResource extends Resource
+class QuotationResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $slug = 'cotizaciones';
+    protected static ?string $slug = 'quotations';
 
     protected static ?string $navigationGroup = 'Contabilidad';
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -27,20 +29,20 @@ class CotizacionResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return InvoiceForm::configure($form);
+        return QuotationForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        return InvoicesTable::table($table);
+        return QuotationsTable::table($table);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCotizaciones::route('/'),
-            'create' => Pages\CreateCotizacion::route('/create'),
-            'edit' => Pages\EditCotizacion::route('/{record}/edit'),
+            'index' => Pages\ListQuotations::route('/'),
+            'create' => Pages\CreateQuotation::route('/create'),
+            'edit' => Pages\EditQuotation::route('/{record}/edit'),
         ];
     }
 

@@ -32,6 +32,10 @@ class ExpensesTable
                     ->label('Moneda')
                     ->sortable(),
 
+                TextColumn::make('supplier.name')
+                    ->label('Proveedor')
+                    ->sortable(),
+
                 TextColumn::make('category.name')
                     ->label('Categoría')
                     ->sortable(),

@@ -25,22 +25,24 @@ class ExamForm
 
             \App\Filament\Forms\Components\CurrencySelect::make(),
 
-            Section::make('')
-                ->description('Agrega o selecciona valores referenciales para este examen')
-                ->schema([
-                    Repeater::make('referenceValues')
-                        ->label('Valores Referenciales')
-                        ->schema(\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema())
-                        ->columns(3)
-                        ->default([]),
-                ]),
+            // Section::make('')
+            //     ->description('Agrega o selecciona valores referenciales para este examen')
+            //     ->schema([
+            //         Repeater::make('referenceValues')
+            //             ->label('Valores Referenciales')
+            //             ->schema(\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema())
+            //             ->columns(3)
+            //             ->default([]),
+            //     ]),
         ];
     }
 
     public static function configure(Form $form): Form
     {
         return $form->schema([
+            
             ...self::schema(),
+
             ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }

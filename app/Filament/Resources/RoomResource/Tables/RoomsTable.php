@@ -11,6 +11,7 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Table;
+use \Filament\Tables\Columns\TextColumn;
 
 class RoomsTable
 {
@@ -19,6 +20,14 @@ class RoomsTable
         return $table
             ->columns([
                 ...\App\Filament\Forms\Tables\SimpleTable::columns(),
+
+                TextColumn::make('price')
+                    ->label('Precio')
+                    ->sortable(),
+
+                TextColumn::make('currency.name')
+                    ->label('Moneda'),
+
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             

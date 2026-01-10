@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\PaymentMethodResource\Schemas;
 
 use Filament\Forms\Components\Select;
-use App\Filament\Forms\Schemas\SimpleForm;
-use App\Filament\Forms\Schemas\TimestampForm;
 use Filament\Forms\Form;
 
 class PaymentMethodForm
@@ -15,7 +13,11 @@ class PaymentMethodForm
             ->schema([
                 ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
 
-                \App\Filament\Forms\Components\CurrencySelect::make(),
+                Select::make('currencies')
+                    ->label('Moneda')
+                    ->relationship('currencies', 'name')
+                    ->multiple()
+                    ->preload(),
 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

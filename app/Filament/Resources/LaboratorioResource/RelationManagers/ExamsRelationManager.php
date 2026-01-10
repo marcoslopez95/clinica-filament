@@ -6,21 +6,18 @@ use App\Models\Exam;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Placeholder as FormPlaceholder;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ReferenceValueResult;
 use App\Models\ReferenceValue;
 use Filament\Notifications\Notification;
+use App\Filament\Actions\RefreshTotalDeleteAction;
+use App\Filament\Actions\LoadResultsAction;
 
 class ExamsRelationManager extends RelationManager
 {
@@ -30,43 +27,42 @@ class ExamsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Examenes';
     protected static ?string $title = 'Examenes de laboratorio';
 
-    protected function getUsedContentIds(Model $owner, ?int $excludeRecordId = null): array
+    public static function schema($owner): array
     {
-        $query = $owner->details()->where('content_type', Exam::class);
-        if ($excludeRecordId) $query->where('id', '!=', $excludeRecordId);
-        return $query->pluck('content_id')->toArray();
-    }
-
-    protected function getAvailableExams(Model $owner, ?int $excludeRecordId = null)
-    {
-        $used = $this->getUsedContentIds($owner, $excludeRecordId);
-        return Exam::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-            ->whereHas('referenceValues')
-            ->pluck('name', 'id');
-    }
-
-    protected function fillPriceFromExam($state, $set): void
-    {
-        $exam = Exam::find($state);
-        if ($exam) {
-            $set('price', $exam->price ?? 0);
-        }
-    }
-
-    public function form(Form $form): Form
-    {
-        return $form->schema([
+        return [
             Select::make('content_id')
                 ->label('Examen')
-                ->options(fn() => $this->getAvailableExams($this->getOwnerRecord()))
+                ->options(function () use ($owner) {
+                    $used = $owner->details()
+                        ->where('content_type', Exam::class)
+                        ->pluck('content_id')
+                        ->toArray();
+
+                    return Exam::query()
+                        ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                        ->pluck('name', 'id');
+                })
                 ->searchable()
-                ->required()
-                ->reactive(),
+                ->reactive()
+                ->afterStateUpdated(function ($state, $set) {
+                    $exam = Exam::find($state);
+                    if ($exam) {
+                        $set('price', $exam->price ?? 0);
+                    }
+                }),
 
             TextInput::make('price')
                 ->label('Precio')
-                ->numeric()
-                ->required(),
+                ->default(0),
+        ];
+    }
+
+
+    public static function configure(Form $form, $owner): Form
+    {
+        return $form->schema([
+            ...self::schema($owner),
+            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 
@@ -74,25 +70,23 @@ class ExamsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('content.name')->label('Examen')->searchable()->sortable(),
-                TextColumn::make('price')->label('Precio'),
-                TextColumn::make('subtotal')->label('Subtotal')->state(fn(Model $record) => 1 * $record->price),
+                TextColumn::make('content.name')
+                    ->label('Examen')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('price')
+                    ->label('Precio'),
+
+                TextColumn::make('subtotal')
+                    ->label('Subtotal')
+                    ->state(fn(Model $record) => 1 * $record->price),
             ])
             ->headerActions([
                 CreateAction::make('add_existing')
                     ->label('Añadir examen existente')
-                    ->form([
-                        Select::make('content_id')
-                            ->label('Examen')
-                            ->options(fn() => $this->getAvailableExams($this->getOwnerRecord()))
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, $set) {
-                                $this->fillPriceFromExam($state, $set);
-                            }),
-
-                        TextInput::make('price')->label('Precio')->numeric()->required()->default(0),
-                    ])
+                    ->modalHeading(false)
+                    ->form(fn() => self::schema($this->getOwnerRecord()))
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
                         $owner->details()->create([
@@ -107,7 +101,7 @@ class ExamsRelationManager extends RelationManager
 
                 CreateAction::make('create_exam')
                     ->label('Crear examen')
-                    ->modalHeading('Formulario de examen')
+                    ->modalHeading(false)
                     ->form(\App\Filament\Resources\ExamResource\Schemas\ExamForm::schema())
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
@@ -138,96 +132,36 @@ class ExamsRelationManager extends RelationManager
 
                         $livewire->dispatch('refreshTotal');
                     }),
+                CreateAction::make('create_reference_value')
+                    ->label('Crear valor referencial')
+                    ->modalHeading(false)
+                    ->modalWidth('md')
+                    ->form([
+
+                        Select::make('exam_id')
+                            ->label('Examen')
+                            ->options(fn() => Exam::all()->pluck('name', 'id'))
+                            ->required(),
+
+                        ...\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema(),
+                    ])
+                    ->action(function (array $data) {
+                        ReferenceValue::create($data);
+                        Notification::make()
+                            ->title('Valor referencial creado')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->actions([
-                Action::make('load_results')
-                    ->label('Cargar resultados')
-                    ->icon('heroicon-o-document-text')
-                    ->form(function (Model $record) {
-                        $exam = $record->content;
+                LoadResultsAction::make(),
 
-                        $initial = [];
-                        $existingResults = ReferenceValueResult::where('invoice_detail_id', $record->id)->get();
-                        foreach ($existingResults as $er) {
-                            $initial[] = [
-                                'reference_value_id' => $er->reference_value_id,
-                                'result' => $er->result,
-                            ];
-                        }
-
-                        $options = [];
-                        if ($exam) {
-                            $options = $exam->referenceValues()->pluck('name', 'id')->toArray();
-                        }
-
-                        return [
-                            Repeater::make('results')
-                                ->label('Resultados')
-                                ->schema([
-                                    Select::make('reference_value_id')
-                                        ->label('Valor referencial')
-                                        ->options(fn() => $options)
-                                        ->reactive()
-                                        ->required(),
-
-                                    FormPlaceholder::make('min')
-                                        ->label('Mínimo')
-                                        ->content(fn($get) => ($ref = ReferenceValue::find($get('reference_value_id'))) ? $ref->min_value : ''),
-
-                                    FormPlaceholder::make('max')
-                                        ->label('Máximo')
-                                        ->content(fn($get) => ($ref = ReferenceValue::find($get('reference_value_id'))) ? $ref->max_value : ''),
-
-                                    TextInput::make('result')->label('Resultado')->required(false),
-                                ])
-                                ->default($initial)
-                                   ->addActionLabel('Añadir resultado')
-                                ->columns(1)
-                                ->collapsed(false),
-                        ];
-                    })
-                    ->action(function (Model $record, array $data, $livewire) {
-                        $exam = $record->content;
-                        if (! $exam) return;
-
-                        $items = $data['results'] ?? [];
-                        foreach ($items as $item) {
-                            $refId = $item['reference_value_id'] ?? null;
-                            $value = $item['result'] ?? null;
-                            if (! $refId) continue;
-
-                            ReferenceValueResult::updateOrCreate(
-                                [
-                                    'invoice_detail_id' => $record->id,
-                                    'reference_value_id' => $refId,
-                                ],
-                                ['result' => $value]
-                            );
-                        }
-
-                        Notification::make()
-                            ->success()
-                            ->title('Resultados guardados')
-                            ->send();
-                    })
-                    ->requiresConfirmation(false)
-                    ->modalWidth('lg'),
-                EditAction::make()
-                    ->action(function (Model $record, array $data, $livewire): void {
-                        $record->update([
-                            'content_id' => $data['content_id'],
-                            'content_type' => Exam::class,
-                            'price' => $data['price'],
-                            'quantity' => 1,
-                        ]);
-
-                        $livewire->dispatch('refreshTotal');
-                    })
-                    ->after(function ($livewire) { $livewire->dispatch('refreshTotal'); }),
-                DeleteAction::make()->after(function ($livewire) { $livewire->dispatch('refreshTotal'); }),
+                RefreshTotalDeleteAction::make(),
             ])
             ->bulkActions([
-                BulkActionGroup::make([ DeleteBulkAction::make() ])
+                BulkActionGroup::make([ 
+                    DeleteBulkAction::make() 
+                ])
             ]);
     }
 }

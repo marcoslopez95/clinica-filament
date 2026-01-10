@@ -31,6 +31,12 @@ class ExpenseForm
                     ->required()
                     ->preload(),
 
+                Select::make('supplier_id')
+                    ->label('Proveedor')
+                    ->relationship('supplier', 'name')
+                    ->preload()
+                    ->nullable(),
+
                 ...\App\Filament\Forms\Schemas\CurrencyForm::schema(),
 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),

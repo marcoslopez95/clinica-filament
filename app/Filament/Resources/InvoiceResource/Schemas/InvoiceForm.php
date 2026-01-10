@@ -5,8 +5,10 @@ namespace App\Filament\Resources\InvoiceResource\Schemas;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
+use App\Enums\InvoiceStatus;
 use App\Models\Patient;
 
 class InvoiceForm
@@ -55,6 +57,8 @@ class InvoiceForm
                     ->columnSpan(2),
 
                 \App\Filament\Forms\Components\ToPay::make(),
+
+                \App\Filament\Forms\Components\CancellationPlaceholder::make(),
 
                 ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

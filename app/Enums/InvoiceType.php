@@ -8,6 +8,7 @@ enum InvoiceType: int
 	case INVENTORY = 2;
 	case LABORATORY = 3;
 	case COTIZACION = 4;
+	case HOSPITALIZATION = 5;
 
 	public function getName(): string
 	{
@@ -15,7 +16,8 @@ enum InvoiceType: int
 			self::DEFAULT => 'Factura',
 			self::INVENTORY => 'Factura de Entrada',
 			self::LABORATORY => 'Laboratorio',
-			self::COTIZACION => 'Cotización'
+			self::COTIZACION => 'Cotización',
+			self::HOSPITALIZATION => 'Hozpitaliación',
 		};
 	}
 }

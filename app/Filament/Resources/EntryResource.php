@@ -47,7 +47,7 @@ class EntryResource extends Resource
             InventoryRelationManager::class,
             PaymentsRelationManager::class,
             DiscountsRelationManager::class,
-            // RefundsRelationManager::class,
+            RefundsRelationManager::class,
         ];
     }
 

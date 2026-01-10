@@ -3,18 +3,12 @@
 namespace App\Filament\Resources\InvoiceResource\Tables;
 
 use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ForceDeleteAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
-use App\Filament\Actions\CancelInvoiceAction;
 use Filament\Tables\Columns\TextColumn;
-use App\Filament\Filters\StatusFilter;
-use Filament\Tables\Table;
 use App\Enums\InvoiceStatus;
+use Filament\Tables\Table;
+use \App\Filament\Actions\CancelInvoiceAction;
 
 class InvoicesTable
 {
@@ -44,22 +38,19 @@ class InvoicesTable
                 \App\Filament\Forms\Columns\StatusColumn::make(),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
+
+                \App\Filament\Forms\columns\CancellationColumn::make(),
             ])
             ->filters([
                 
             ])
             ->actions([
-                CancelInvoiceAction::make(),
+                CancelInvoiceAction::makeTable(),
                 EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
                 ]),
             ]);
     }
