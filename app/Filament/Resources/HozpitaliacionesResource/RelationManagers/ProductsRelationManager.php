@@ -26,6 +26,7 @@ use App\Filament\Actions\RefreshTotalDeleteAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Actions\LoadResultsAction;
+use \Filament\Forms\Components\Hidden;
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'details';
@@ -277,7 +278,7 @@ class ProductsRelationManager extends RelationManager
                 EditAction::make()
                     ->form(function (Form $form) {
                         return $form->schema([
-                            \Filament\Forms\Components\Hidden::make('content_type')
+                            Hidden::make('content_type')
                                 ->default(fn (?Model $record) => $record->content_type ?? Product::class),
 
                             Select::make('content_id')
