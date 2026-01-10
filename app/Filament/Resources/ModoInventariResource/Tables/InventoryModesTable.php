@@ -16,7 +16,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 
-class ModoInventarisTable
+class InventoryModesTable
 {
     public static function table(Table $table): Table
     {

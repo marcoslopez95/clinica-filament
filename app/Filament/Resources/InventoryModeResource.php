@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ModoInventariResource\Pages;
-use App\Filament\Resources\ModoInventariResource\Tables\ModoInventarisTable;
+use App\Filament\Resources\ModoInventariResource\Tables\InventoryModesTable;
 use App\Models\Inventory;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -11,7 +11,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class ModoInventariResource extends Resource
+class InventoryModeResource extends Resource
 {
     protected static ?string $model = Inventory::class;
 
@@ -31,13 +31,13 @@ class ModoInventariResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return ModoInventarisTable::table($table);
+        return InventoryModesTable::table($table);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListModoInventaris::route('/'),
+            'index' => Pages\ListInventoryModes::route('/'),
         ];
     }
 
