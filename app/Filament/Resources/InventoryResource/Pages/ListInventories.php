@@ -19,7 +19,7 @@ class ListInventories extends ListRecords
                 ->label('Modo inventario')
                 ->url(InventoryModeResource::getUrl('index')),
 
-            CreateAction::make()->label('Crear ' . InventoryResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

@@ -13,7 +13,7 @@ class ListRooms extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . RoomResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

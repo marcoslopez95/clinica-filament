@@ -13,7 +13,7 @@ class ListDoctors extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . DoctorResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

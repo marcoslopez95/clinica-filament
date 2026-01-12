@@ -13,7 +13,7 @@ class ListExams extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . ExamResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

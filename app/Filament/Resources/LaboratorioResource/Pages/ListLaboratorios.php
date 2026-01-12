@@ -13,7 +13,7 @@ class ListLaboratorios extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . LaboratorioResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

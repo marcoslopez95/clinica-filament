@@ -13,7 +13,7 @@ class ListHozpitaliaciones extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . HozpitaliacionesResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

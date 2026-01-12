@@ -7,7 +7,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
-use App\Filament\Actions\GenericDeleteAction;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Table;
 
 class InventoriesTable
@@ -46,12 +46,12 @@ class InventoriesTable
             ])
 
             ->actions([
-                EditAction::make()->label('Editar'),
-                GenericDeleteAction::make()->label('Eliminar'),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Borrado masivo'),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -13,7 +13,7 @@ class ListQuotations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Create ' . QuotationResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

@@ -13,7 +13,7 @@ class ListTypeDocuments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . TypeDocumentResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

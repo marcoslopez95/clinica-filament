@@ -13,7 +13,7 @@ class ListSpecializations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . SpecializationResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

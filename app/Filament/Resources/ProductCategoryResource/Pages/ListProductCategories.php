@@ -13,7 +13,7 @@ class ListProductCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . ProductCategoryResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }
