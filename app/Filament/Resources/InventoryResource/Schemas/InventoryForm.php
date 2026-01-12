@@ -14,6 +14,33 @@ class InventoryForm
     public static function schema(): array
     {
         return [
+
+            TextInput::make('stock_min')
+                ->label('Stock Mínimo')
+                ->required()
+                ->numeric(),
+
+            TextInput::make('amount')
+                ->label('Cantidad')
+                ->required()
+                ->numeric(),
+
+            TextInput::make('batch')
+                ->label('Lote'),
+
+            DatePicker::make('end_date')
+                ->label('Fecha Expiración'),
+
+            TextInput::make('observation')
+                ->label('Observaciones'),
+
+        ];
+    }
+
+    public static function configure(Form $form): Form
+    {
+        return $form->schema([
+
             Select::make('warehouse_id')
                 ->label('Almacén')
                 ->relationship('warehouse', 'name')
@@ -36,33 +63,9 @@ class InventoryForm
                     \App\Filament\Resources\ProductResource\Schemas\ProductForm::schema()
                 ),
 
-            TextInput::make('stock_min')
-                ->label('Stock Mínimo')
-                ->required()
-                ->numeric(),
-
-            TextInput::make('amount')
-                ->label('Cantidad')
-                ->required()
-                ->numeric(),
-
-            TextInput::make('batch')
-                ->label('Lote'),
-
-            DatePicker::make('end_date')
-                ->label('Fecha Expiración'),
-
-            TextInput::make('observation')
-                ->label('Observaciones'),
+            ...self::schema(),
 
             ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
-        ];
-    }
-
-    public static function configure(Form $form): Form
-    {
-        return $form->schema([
-            ...self::schema(),
         ]);
     }
 }

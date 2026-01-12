@@ -26,6 +26,7 @@ use App\Filament\Actions\RefreshTotalDeleteAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Actions\LoadResultsAction;
+use Dom\Text;
 use \Filament\Forms\Components\Hidden;
 class ProductsRelationManager extends RelationManager
 {
@@ -153,7 +154,8 @@ class ProductsRelationManager extends RelationManager
             TextInput::make('price')
                 ->label('Precio')
                 ->numeric()
-                ->required(),
+                ->required()
+                ->disabled(),
 
             TextInput::make('quantity')
                 ->label('Cantidad')
@@ -179,15 +181,22 @@ class ProductsRelationManager extends RelationManager
                     ->label('Precio'),
 
                 TextColumn::make('subtotal')
-                    ->label('Subtotal')
-                    ->money('USD')
-                    ->state(fn (Model $record): float => $record->quantity * $record->price),
+                    ->label('Subtotal'),
+
+                TextColumn::make('content_type')
+                    ->label('Tipo')
+                    ->formatStateUsing(
+                        fn (string $state) 
+                            => ResourceType::tryFrom($state)->getName()
+                    ),
+
             ])
             ->headerActions([
 
                 Action::make('choose_resource')
                     ->label('Crear recurso')
                     ->modalHeading('Crear recurso')
+                    ->modalWidth('sm')
                     ->form([
                         Radio::make('resource')
                             ->label(false)
@@ -262,12 +271,33 @@ class ProductsRelationManager extends RelationManager
                                 return;
                             }
 
+                            $price = $data['price'] ?? null;
+                            if (!$price) {
+                                $model = match ($data['content_type']) {
+                                    Product::class => Product::find($selectedId),
+                                    Exam::class => Exam::find($selectedId),
+                                    Service::class => Service::find($selectedId),
+                                    Room::class => Room::find($selectedId),
+                                    default => null,
+                                };
+
+                                if ($model) {
+                                    $price = match ($data['content_type']) {
+                                        Product::class => $model->sell_price ?? null,
+                                        Exam::class => $model->price ?? null,
+                                        Service::class => $model->buy_price ?? $model->sell_price ?? null,
+                                        Room::class => $model->price ?? null,
+                                        default => null,
+                                    };
+                                }
+                            }
+
                             $owner
                                 ->details()
                                 ->create([
                                     'content_id' => $selectedId,
                                     'content_type' => $data['content_type'],
-                                    'price' => $data['price'] ?? null,
+                                    'price' => $price,
                                     'quantity' => in_array($data['content_type'] ?? '', [Product::class, Service::class]) ? ($data['quantity'] ?? 1) : null,
                                 ]);
 
@@ -288,49 +318,35 @@ class ProductsRelationManager extends RelationManager
                                     $exclude = $record->id ?? null;
                                     $contentType = $record->content_type ?? Product::class;
 
-                                    if ($contentType === Exam::class) {
-                                        $query = $owner->details()->where('content_type', Exam::class);
-                                        if ($exclude) {
-                                            $query->where('id', '!=', $exclude);
-                                        }
-                                        $used = $query->pluck('content_id')->toArray();
-
-                                        return Exam::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                                            ->pluck('name', 'id');
-                                    }
-
-                                    if ($contentType === Service::class) {
-                                        $query = $owner->details()->where('content_type', Service::class);
-                                        if ($exclude) {
-                                            $query->where('id', '!=', $exclude);
-                                        }
-                                        $used = $query->pluck('content_id')->toArray();
-
-                                        return Service::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                                            ->pluck('name', 'id');
-                                    }
-
-                                    if ($contentType === Room::class) {
-                                        $query = $owner->details()->where('content_type', Room::class);
-                                        if ($exclude) {
-                                            $query->where('id', '!=', $exclude);
-                                        }
-                                        $used = $query->pluck('content_id')->toArray();
-
-                                        return Room::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                                            ->pluck('name', 'id');
-                                    }
-
-                                    $query = $owner->details()->where('content_type', Product::class);
+                                    $query = $owner->details()->where('content_type', $contentType);
                                     if ($exclude) {
                                         $query->where('id', '!=', $exclude);
                                     }
                                     $used = $query->pluck('content_id')->toArray();
 
-                                    return Product::whereHas('inventory')
+                                    $model = match ($contentType) {
+                                        Exam::class   => Exam::class,
+                                        Service::class => Service::class,
+                                        Room::class   => Room::class,
+                                        Product::class => Product::class,
+                                        default       => null,
+                                    };
+
+                                    if (! $model) {
+                                        return [];
+                                    }
+
+                                    $builder = $model::query();
+
+                                    if ($model === Product::class) {
+                                        $builder->whereHas('inventory');
+                                    }
+
+                                    return $builder
                                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                                         ->pluck('name', 'id');
                                 })
+
                                 ->searchable()
                                 ->required()
                                 ->reactive()
@@ -338,31 +354,26 @@ class ProductsRelationManager extends RelationManager
                                     $contentId = $state;
                                     $contentType = $get('content_type');
 
-                                    if ($contentType === Service::class) {
-                                        $service = Service::find($contentId);
-                                        if ($service) {
-                                            $set('price', $service->buy_price ?? $service->sell_price ?? null);
-                                            $set('name', $service->name);
-                                        }
-                                    } elseif ($contentType === Exam::class) {
-                                        $exam = Exam::find($contentId);
-                                        if ($exam) {
-                                            $set('price', $exam->price ?? null);
-                                            $set('name', $exam->name);
-                                        }
-                                    } elseif ($contentType === Room::class) {
-                                        $room = Room::find($contentId);
-                                        if ($room) {
-                                            $set('price', $room->price ?? null);
-                                            $set('name', $room->name);
-                                        }
-                                    } else {
-                                        $product = Product::find($contentId);
-                                        if ($product) {
-                                            $set('price', $product->sell_price);
-                                            $set('name', $product->name);
-                                        }
+                                    $model = match ($contentType) {
+                                        Service::class => Service::find($contentId),
+                                        Exam::class    => Exam::find($contentId),
+                                        Room::class    => Room::find($contentId),
+                                        Product::class => Product::find($contentId),
+                                        default        => null,
+                                    };
+
+                                    if (! $model) {
+                                        return;
                                     }
+
+                                    $price = match ($contentType) {
+                                        Service::class, Product::class => $model->sell_price ?? null,
+                                        Exam::class, Room::class       => $model->price ?? null,
+                                        default                        => null,
+                                    };
+
+                                    $set('price', $price);
+                                    $set('name', $model->name);
                                 }),
 
                             TextInput::make('price')
@@ -377,14 +388,12 @@ class ProductsRelationManager extends RelationManager
                                 ->readOnly(fn ($get) => ($get('content_type') === Product::class) ? ! Inventory::where('product_id', $get('content_id'))->exists() : false),
                         ]);
                     })
-                    ->action(function (Model $record, array $data, $livewire): void {
+                    ->action(function (Model $record, array $data): void {
                         $record->update([
                             'content_id' => $data['content_id'],
                             'price' => $data['price'],
                             'quantity' => $data['quantity'],
                         ]);
-
-                        $livewire->dispatch('refreshTotal');
                     })
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');

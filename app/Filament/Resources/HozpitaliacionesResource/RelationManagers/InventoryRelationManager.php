@@ -7,7 +7,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Columns\TextColumn;
 
 class InventoryRelationManager extends RelationManager
 {
@@ -21,31 +21,13 @@ class InventoryRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('amount')
-                    ->label('Cantidad Actual')
-                    ->numeric()
-                    ->required(),
-
                 Forms\Components\Select::make('warehouse_id')
                     ->label('Almacén')
                     ->relationship('warehouse', 'name')
                     ->searchable()
                     ->preload(),
 
-                Forms\Components\TextInput::make('stock_min')
-                    ->label('Stock Mínimo')
-                    ->numeric()
-                    ->required(),
-
-                Forms\Components\TextInput::make('batch')
-                    ->label('Lote'),
-
-                Forms\Components\DatePicker::make('end_date')
-                    ->label('Fecha de Vencimiento'),
-
-                Forms\Components\TextInput::make('observation')
-                    ->label('Observación')
-                    ->columnSpanFull(),
+                ...\App\Filament\Resources\InventoryResource\Schemas\InventoryForm::schema(),
             ]);
     }
 
@@ -54,21 +36,21 @@ class InventoryRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('product.name')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('warehouse.name')
+                TextColumn::make('warehouse.name')
                     ->label('Almacén')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Cantidad Actual'),
-                Tables\Columns\TextColumn::make('stock_min')
+                TextColumn::make('stock_min')
                     ->label('Stock Mínimo'),
-                Tables\Columns\TextColumn::make('batch')
+                TextColumn::make('batch')
                     ->label('Lote'),
-                Tables\Columns\TextColumn::make('end_date')
+                TextColumn::make('end_date')
                     ->label('Vencimiento')
                     ->date(),
             ])
@@ -76,11 +58,10 @@ class InventoryRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                // No permitir crear desde aquí
+
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('Ajustar Inventario'),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
             ]);

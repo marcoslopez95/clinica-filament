@@ -31,7 +31,6 @@ class ReferenceValuesRelationManager extends RelationManager
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
             ->filters([
-                //
             ])
             ->headerActions([
                 CreateAction::make(),
