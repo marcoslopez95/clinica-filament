@@ -1,0 +1,21 @@
+name: Deploy to cPanel
+on:
+  push:
+    branches: [ master ] # Cambia a tu rama de producción
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22 # O el puerto SSH que asigne tu hosting
+          script: |
+            cd /home/robertse/www/clinica.robertserra.gob.ve
+            git pull origin mater
+            # Opcional: comandos adicionales como npm install o composer install
+            php artisan migrate
