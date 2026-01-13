@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\InvoiceResource\RelationManagers;
 
-use App\Models\Currency;
-use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\Unit;
-use App\Models\ProductCategory;
-use App\Models\Warehouse;
+use App\Models\Service;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Radio;
+use Filament\Notifications\Notification;
+use App\Filament\Resources\ProductResource;
+use App\Filament\Resources\ServiceResource;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -29,43 +30,75 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $title = 'Productos de la factura';
 
-    protected function getUsedContentIds(Model $owner, ?int $excludeRecordId = null): array
-    {
-        $query = $owner->details()->where('content_type', Product::class);
-        if ($excludeRecordId) {
-            $query->where('id', '!=', $excludeRecordId);
-        }
-        return $query->pluck('content_id')->toArray();
-    }
 
-    protected function getAvailableProducts(Model $owner, ?int $excludeRecordId = null)
+    protected function schema(): array
     {
-        $used = $this->getUsedContentIds($owner, $excludeRecordId);
-        return Product::whereHas('inventory')
-            ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-            ->pluck('name', 'id');
-    }
-
-    protected function fillPriceFromProduct($state, $set): void
-    {
-        $product = Product::find($state);
-        if ($product) {
-            $set('price', $product->buy_price);
-        }
-    }
-
-    public function form(Form $form): Form
-    {
-        return $form->schema([
-            Select::make('content_id')
-                ->label('Producto')
-                ->options(fn() => $this->getAvailableProducts($this->getOwnerRecord()))
-                ->searchable()
+        return [
+            Select::make('content_type')
+                ->label('Tipo de contenido')
+                ->options([
+                    Product::class => 'Producto',
+                    Service::class => 'Servicio',
+                ])
                 ->required()
                 ->reactive()
                 ->afterStateUpdated(function ($state, $set) {
-                    $this->fillPriceFromProduct($state, $set);
+                    $set('product_id', null);
+                    $set('service_id', null);
+                    $set('name', null);
+                    $set('price', null);
+                    $set('quantity', null);
                 }),
+
+            Select::make('product_id')
+                ->label('Producto')
+                ->options(function () {
+                    $owner = $this->getOwnerRecord();
+                    $used = $owner->details()
+                        ->where('content_type', Product::class)->pluck('content_id')->toArray();
+
+                    return Product::whereHas('inventory')
+                        ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                        ->pluck('name', 'id');
+                })
+                ->searchable()
+                ->required(fn($get) => $get('content_type') === Product::class)
+                ->visible(fn($get) => $get('content_type') === Product::class)
+                ->reactive()
+                ->afterStateUpdated(function ($state, $set) {
+                    $product = Product::find($state);
+                    if ($product) {
+                        $set('name', $product->name);
+                        $set('price', $product->sell_price);
+                    }
+                }),
+
+            Select::make('service_id')
+                ->label('Servicio')
+                ->options(function () {
+                    $owner = $this->getOwnerRecord();
+                    $used = $owner->details()
+                        ->where('content_type', Service::class)->pluck('content_id')->toArray();
+
+                    return Service::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                        ->pluck('name', 'id');
+                })
+                ->searchable()
+                ->required(fn($get) => $get('content_type') === Service::class)
+                ->visible(fn($get) => $get('content_type') === Service::class)
+                ->reactive()
+                ->afterStateUpdated(function ($state, $set) {
+                    $service = Service::find($state);
+                    if ($service) {
+                        $set('name', $service->name);
+                        $set('price', $service->sell_price ?? null);
+                    }
+                }),
+
+            TextInput::make('name')
+                ->label('Nombre')
+                ->required()
+                ->disabled(),
 
             TextInput::make('price')
                 ->label('Precio')
@@ -76,7 +109,12 @@ class ProductsRelationManager extends RelationManager
                 ->label('Cantidad')
                 ->numeric()
                 ->required(),
-        ]);
+        ];
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema($this->schema());
     }
 
     public function table(Table $table): Table
@@ -97,135 +135,143 @@ class ProductsRelationManager extends RelationManager
                     ->state(fn (Model $record): float => $record->quantity * $record->price),
             ])
             ->headerActions([
-                CreateAction::make('create_new')
-                    ->label('Crear producto')
-                    ->modalHeading('Crear nuevo producto y añadir a la factura')
+                Action::make('choose_resource')
+                    ->label('Crear recurso')
+                    ->modalHeading('Crear recurso')
                     ->form([
-                        TextInput::make('name')
-                            ->label('Nombre del producto')
-                            ->required(),
-
-                        TextInput::make('buy_price')
-                            ->label('Precio de compra')
-                            ->numeric()
-                            ->required(),
-
-                        TextInput::make('sell_price')
-                            ->label('Precio de venta')
-                            ->numeric()
-                            ->required(),
-
-                        Select::make('unit_id')
-                            ->label('Unidad')
-                            ->required()
-                            ->options(fn() => Unit::pluck('name', 'id'))
-                            ->searchable(),
-
-                        Select::make('product_category_id')
-                            ->label('Categoría')
-                            ->required()
-                            ->options(fn() => ProductCategory::pluck('name', 'id'))
-                            ->searchable(),
-
-                        Select::make('currency_id')
-                            ->label('Moneda')
-                            ->required()
-                            ->options(fn() => Currency::pluck('name', 'id'))
-                            ->searchable(),
-
-                        TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->numeric()
+                        Radio::make('resource')
+                            ->label(false)
+                            ->options([
+                                'product' => 'Producto',
+                                'service' => 'Servicio',
+                            ])
                             ->required(),
                     ])
                     ->action(function (array $data, $livewire) {
-                        $product = Product::create([
-                            'name' => $data['name'],
-                            'buy_price' => $data['buy_price'],
-                            'sell_price' => $data['sell_price'],
-                            'unit_id' => $data['unit_id'],
-                            'product_category_id' => $data['product_category_id'],
-                            'currency_id' => $data['currency_id'],
-                        ]);
+                        $map = [
+                            'product' => ProductResource::class,
+                            'service' => ServiceResource::class,
+                        ];
 
-                        $warehouseId = Warehouse::where('name', 'Bodega')->first()?->id;
+                        $key = $data['resource'] ?? null;
+                        if (! $key || ! isset($map[$key])) {
+                            Notification::make()->danger()->body('Seleccione un recurso válido')->send();
+                            return;
+                        }
 
-                        Inventory::create([
-                            'product_id' => $product->id,
-                            'warehouse_id' => $warehouseId,
-                            'stock_min' => 0,
-                            'amount' => 0,
-                        ]);
+                        $resourceClass = $map[$key];
+                        $url = $resourceClass::getUrl('create');
 
-                        $owner = $livewire->getOwnerRecord();
-                        $owner->details()->create([
-                            'content_id' => $product->id,
-                            'content_type' => Product::class,
-                            'quantity' => $data['quantity'],
-                            'price' => $data['buy_price'],
-                        ]);
+                        $returnTo = url()->previous() ?? request()->header('referer') ?? url()->current();
+                        $separator = str_contains($url, '?') ? '&' : '?';
+                        $url = $url . $separator . 'return_to=' . urlencode($returnTo) . '&return_from=relation';
 
-                        $livewire->dispatch('refreshTotal');
+                        return redirect($url);
                     }),
 
                 CreateAction::make('add_existing')
-                    ->label('Añadir producto existente')
-                    ->modalHeading('Añadir producto existente a la factura')
-                    ->form([
-                        Select::make('content_id')
-                            ->label('Producto')
-                            ->options(fn() => $this->getAvailableProducts($this->getOwnerRecord()))
-                            ->searchable()
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, $set) {
-                                $this->fillPriceFromProduct($state, $set);
-                            }),
+                    ->label('Añadir existente')
+                    ->modalHeading('Añadir recurso existente a la factura')
+                    ->form($this->schema())
+                        ->action(function (array $data, $livewire) {
+                            $owner = $livewire->getOwnerRecord();
 
-                        TextInput::make('price')
-                            ->label('Precio')
-                            ->numeric()
-                            ->required(),
+                            $selectedId = null;
+                            switch ($data['content_type'] ?? null) {
+                                case Product::class:
+                                    $selectedId = $data['product_id'] ?? null;
+                                    break;
+                                case Service::class:
+                                    $selectedId = $data['service_id'] ?? null;
+                                    break;
+                            }
 
-                        TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->numeric()
-                            ->required(),
-                    ])
-                    ->action(function (array $data, $livewire) {
-                        $owner = $livewire->getOwnerRecord();
-                        $owner->details()->create([
-                            'content_id' => $data['content_id'],
-                            'content_type' => Product::class,
-                            'price' => $data['price'],
-                            'quantity' => $data['quantity'],
-                        ]);
+                            if (! $selectedId) {
+                                Notification::make()
+                                    ->body('Seleccione un elemento válido para el tipo elegido')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
 
-                        $livewire->dispatch('refreshTotal');
-                    }),
+                            if ($owner->details()
+                                ->where('content_type', $data['content_type'])
+                                ->where('content_id', $selectedId)
+                                ->exists()) {
+                                Notification::make()
+                                    ->body('El elemento ya fue agregado a los detalles')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            $owner
+                                ->details()
+                                ->create([
+                                    'content_id' => $selectedId,
+                                    'content_type' => $data['content_type'],
+                                    'price' => $data['price'] ?? null,
+                                    'quantity' => $data['quantity'] ?? 1,
+                                ]);
+
+                            $livewire->dispatch('refreshTotal');
+                        }),
             ])
             ->actions([
                 EditAction::make()
                     ->form(function (Form $form) {
                         return $form->schema([
+                            \Filament\Forms\Components\Hidden::make('content_type')
+                                ->default(fn (?Model $record) => $record->content_type ?? Product::class),
+
                             Select::make('content_id')
-                                ->label('Producto')
+                                ->label('Elemento')
                                 ->options(function (Model $record) {
-                                    return $this->getAvailableProducts($this->getOwnerRecord(), $record->id ?? null);
+                                    $owner = $this->getOwnerRecord();
+                                    $exclude = $record->id ?? null;
+                                    $contentType = $record->content_type ?? Product::class;
+
+                                    if ($contentType === Service::class) {
+                                        $query = $owner->details()->where('content_type', Service::class);
+                                        if ($exclude) {
+                                            $query->where('id', '!=', $exclude);
+                                        }
+                                        $used = $query->pluck('content_id')->toArray();
+
+                                        return Service::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                                            ->pluck('name', 'id');
+                                    }
+
+                                    $query = $owner->details()->where('content_type', Product::class);
+                                    if ($exclude) {
+                                        $query->where('id', '!=', $exclude);
+                                    }
+                                    $used = $query->pluck('content_id')->toArray();
+
+                                    return Product::whereHas('inventory')
+                                        ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                                        ->pluck('name', 'id');
                                 })
                                 ->searchable()
                                 ->required()
                                 ->reactive()
-                                ->afterStateUpdated(function ($state, $set) {
-                                    $product = Product::find($state);
-                                    if ($product) {
-                                        $set('price', $product->buy_price);
-                                        $set('name', $product->name);
-                                        $set('buy_price', $product->buy_price);
-                                        $set('sell_price', $product->sell_price);
-                                        $set('unit_id', $product->unit_id);
-                                        $set('product_category_id', $product->product_category_id);
-                                        $set('currency_id', $product->currency_id);
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $contentId = $state;
+                                    $contentType = $get('content_type');
+
+                                    if ($contentType === Service::class) {
+                                        $service = Service::find($contentId);
+                                        if ($service) {
+                                            $set('price', $service->sell_price ?? null);
+                                            $set('name', $service->name);
+                                        }
+                                    } else {
+                                        $product = Product::find($contentId);
+                                        if ($product) {
+                                            $set('price', $product->sell_price);
+                                            $set('name', $product->name);
+                                        }
                                     }
                                 }),
 
@@ -237,37 +283,13 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('quantity')
                                 ->label('Cantidad')
                                 ->numeric()
-                                ->required(),
+                                ->required()
+                                ->readOnly(fn ($get) => ($get('content_type') === Product::class) ? ! \App\Models\Inventory::where('product_id', $get('content_id'))->exists() : false),
                         ]);
                     })
-                    ->mutateRecordDataUsing(function (array $data, Model $record): array {
-                        $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
-                        if ($product) {
-                            $data['name'] = $product->name;
-                            $data['buy_price'] = $product->buy_price;
-                            $data['sell_price'] = $product->sell_price;
-                            $data['unit_id'] = $product->unit_id;
-                            $data['product_category_id'] = $product->product_category_id;
-                            $data['currency_id'] = $product->currency_id;
-                        }
-                        return $data;
-                    })
                     ->action(function (Model $record, array $data, $livewire): void {
-                        $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
-                        if ($product) {
-                            $product->update([
-                                'name' => $data['name'],
-                                'buy_price' => $data['buy_price'],
-                                'sell_price' => $data['sell_price'],
-                                'unit_id' => $data['unit_id'],
-                                'product_category_id' => $data['product_category_id'],
-                                'currency_id' => $data['currency_id'],
-                            ]);
-                        }
-
                         $record->update([
                             'content_id' => $data['content_id'],
-                            'content_type' => Product::class,
                             'price' => $data['price'],
                             'quantity' => $data['quantity'],
                         ]);

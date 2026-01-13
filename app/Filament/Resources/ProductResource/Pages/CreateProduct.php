@@ -4,6 +4,8 @@ namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Actions\Action;
+use Illuminate\Support\Facades\Request;
 
 class CreateProduct extends CreateRecord
 {

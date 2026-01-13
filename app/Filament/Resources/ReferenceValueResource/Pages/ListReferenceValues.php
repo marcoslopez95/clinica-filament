@@ -13,7 +13,7 @@ class ListReferenceValues extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Crear ' . ReferenceValueResource::getModelLabel()),
+            Actions\CreateAction::make(),
         ];
     }
 }

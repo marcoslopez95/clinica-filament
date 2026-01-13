@@ -13,7 +13,6 @@ class CreateLaboratorio extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $this->getRecord()->updateStatusIfPaid();
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

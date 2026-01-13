@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\InventoryResource\Pages;
 
 use App\Filament\Resources\InventoryResource;
+use App\Filament\Resources\InventoryModeResource;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -13,7 +15,11 @@ class ListInventories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . InventoryResource::getModelLabel()),
+            Action::make('modo_inventario')
+                ->label('Modo inventario')
+                ->url(InventoryModeResource::getUrl('index')),
+
+            CreateAction::make(),
         ];
     }
 }

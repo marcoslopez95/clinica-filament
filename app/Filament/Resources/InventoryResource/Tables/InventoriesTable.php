@@ -3,15 +3,11 @@
 namespace App\Filament\Resources\InventoryResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
- 
+
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Table;
 
 class InventoriesTable
@@ -45,21 +41,17 @@ class InventoriesTable
 
                 TextColumn::make('observation')
                     ->label('Observaciones'),
-                    
+
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
                 ]),
             ]);
     }

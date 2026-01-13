@@ -22,6 +22,9 @@ class ProductServiceDetailResource extends Resource
     protected static ?string $modelLabel = 'Producto del servicio';
     protected static ?string $pluralModelLabel = 'Productos de los servicios';
     protected static ?string $navigationLabel = 'Productos de los servicios';
+    protected static bool $shouldRegisterNavigation = false;
+
+
 
     public static function form(Form $form): Form
     {

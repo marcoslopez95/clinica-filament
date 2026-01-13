@@ -13,7 +13,7 @@ class ListCurrencies extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . CurrencyResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }
