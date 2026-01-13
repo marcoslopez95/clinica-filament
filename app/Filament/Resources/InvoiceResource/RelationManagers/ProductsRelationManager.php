@@ -5,22 +5,24 @@ namespace App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Product;
 use App\Models\Service;
 use Filament\Tables\Actions\Action;
-use Filament\Forms\Components\Radio;
-use Filament\Notifications\Notification;
-use App\Filament\Resources\ProductResource;
-use App\Filament\Resources\ServiceResource;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Radio;
+use App\Filament\Resources\ProductResource;
+use App\Filament\Resources\ServiceResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Hidden;
+use App\Filament\Actions\RefreshTotalDeleteAction;
+use App\Models\Inventory;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -29,7 +31,6 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $modelLabel = 'Producto';
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $title = 'Productos de la factura';
-
 
     protected function schema(): array
     {
@@ -103,18 +104,14 @@ class ProductsRelationManager extends RelationManager
             TextInput::make('price')
                 ->label('Precio')
                 ->numeric()
-                ->required(),
+                ->required()
+                ->disabled(),
 
             TextInput::make('quantity')
                 ->label('Cantidad')
                 ->numeric()
                 ->required(),
         ];
-    }
-
-    public function form(Form $form): Form
-    {
-        return $form->schema($this->schema());
     }
 
     public function table(Table $table): Table
@@ -125,19 +122,32 @@ class ProductsRelationManager extends RelationManager
                     ->label('Producto')
                     ->sortable()
                     ->searchable(),
+
                 TextColumn::make('quantity')
                     ->label('Cantidad'),
+
                 TextColumn::make('price')
                     ->label('Precio'),
+
                 TextColumn::make('subtotal')
-                    ->label('Subtotal')
-                    ->money('USD')
-                    ->state(fn (Model $record): float => $record->quantity * $record->price),
+                    ->label('Subtotal'),
+
+                TextColumn::make('content_type')
+                    ->label('Tipo')
+                    ->formatStateUsing(
+                        fn (string $state) => match ($state) {
+                            Product::class => 'Producto',
+                            Service::class => 'Servicio',
+                            default => 'Desconocido'
+                        }
+                    ),
             ])
             ->headerActions([
+
                 Action::make('choose_resource')
                     ->label('Crear recurso')
                     ->modalHeading('Crear recurso')
+                    ->modalWidth('sm')
                     ->form([
                         Radio::make('resource')
                             ->label(false)
@@ -161,10 +171,6 @@ class ProductsRelationManager extends RelationManager
 
                         $resourceClass = $map[$key];
                         $url = $resourceClass::getUrl('create');
-
-                        $returnTo = url()->previous() ?? request()->header('referer') ?? url()->current();
-                        $separator = str_contains($url, '?') ? '&' : '?';
-                        $url = $url . $separator . 'return_to=' . urlencode($returnTo) . '&return_from=relation';
 
                         return redirect($url);
                     }),
@@ -206,12 +212,29 @@ class ProductsRelationManager extends RelationManager
                                 return;
                             }
 
+                            $price = $data['price'] ?? null;
+                            if (!$price) {
+                                $model = match ($data['content_type']) {
+                                    Product::class => Product::find($selectedId),
+                                    Service::class => Service::find($selectedId),
+                                    default => null,
+                                };
+
+                                if ($model) {
+                                    $price = match ($data['content_type']) {
+                                        Product::class => $model->sell_price ?? null,
+                                        Service::class => $model->sell_price ?? null,
+                                        default => null,
+                                    };
+                                }
+                            }
+
                             $owner
                                 ->details()
                                 ->create([
                                     'content_id' => $selectedId,
                                     'content_type' => $data['content_type'],
-                                    'price' => $data['price'] ?? null,
+                                    'price' => $price,
                                     'quantity' => $data['quantity'] ?? 1,
                                 ]);
 
@@ -222,7 +245,7 @@ class ProductsRelationManager extends RelationManager
                 EditAction::make()
                     ->form(function (Form $form) {
                         return $form->schema([
-                            \Filament\Forms\Components\Hidden::make('content_type')
+                            Hidden::make('content_type')
                                 ->default(fn (?Model $record) => $record->content_type ?? Product::class),
 
                             Select::make('content_id')
@@ -232,24 +255,29 @@ class ProductsRelationManager extends RelationManager
                                     $exclude = $record->id ?? null;
                                     $contentType = $record->content_type ?? Product::class;
 
-                                    if ($contentType === Service::class) {
-                                        $query = $owner->details()->where('content_type', Service::class);
-                                        if ($exclude) {
-                                            $query->where('id', '!=', $exclude);
-                                        }
-                                        $used = $query->pluck('content_id')->toArray();
-
-                                        return Service::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                                            ->pluck('name', 'id');
-                                    }
-
-                                    $query = $owner->details()->where('content_type', Product::class);
+                                    $query = $owner->details()->where('content_type', $contentType);
                                     if ($exclude) {
                                         $query->where('id', '!=', $exclude);
                                     }
                                     $used = $query->pluck('content_id')->toArray();
 
-                                    return Product::whereHas('inventory')
+                                    $model = match ($contentType) {
+                                        Service::class => Service::class,
+                                        Product::class => Product::class,
+                                        default       => null,
+                                    };
+
+                                    if (! $model) {
+                                        return [];
+                                    }
+
+                                    $builder = $model::query();
+
+                                    if ($model === Product::class) {
+                                        $builder->whereHas('inventory');
+                                    }
+
+                                    return $builder
                                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                                         ->pluck('name', 'id');
                                 })
@@ -260,19 +288,23 @@ class ProductsRelationManager extends RelationManager
                                     $contentId = $state;
                                     $contentType = $get('content_type');
 
-                                    if ($contentType === Service::class) {
-                                        $service = Service::find($contentId);
-                                        if ($service) {
-                                            $set('price', $service->sell_price ?? null);
-                                            $set('name', $service->name);
-                                        }
-                                    } else {
-                                        $product = Product::find($contentId);
-                                        if ($product) {
-                                            $set('price', $product->sell_price);
-                                            $set('name', $product->name);
-                                        }
+                                    $model = match ($contentType) {
+                                        Service::class => Service::find($contentId),
+                                        Product::class => Product::find($contentId),
+                                        default        => null,
+                                    };
+
+                                    if (! $model) {
+                                        return;
                                     }
+
+                                    $price = match ($contentType) {
+                                        Service::class, Product::class => $model->sell_price ?? null,
+                                        default                        => null,
+                                    };
+
+                                    $set('price', $price);
+                                    $set('name', $model->name);
                                 }),
 
                             TextInput::make('price')
@@ -283,31 +315,31 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('quantity')
                                 ->label('Cantidad')
                                 ->numeric()
-                                ->required()
-                                ->readOnly(fn ($get) => ($get('content_type') === Product::class) ? ! \App\Models\Inventory::where('product_id', $get('content_id'))->exists() : false),
+                                ->required(),
                         ]);
                     })
-                    ->action(function (Model $record, array $data, $livewire): void {
+                    ->action(function (Model $record, array $data): void {
                         $record->update([
                             'content_id' => $data['content_id'],
                             'price' => $data['price'],
                             'quantity' => $data['quantity'],
                         ]);
-
-                        $livewire->dispatch('refreshTotal');
                     })
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
-                DeleteAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
+
+                RefreshTotalDeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema($this->schema());
     }
 }
