@@ -11,6 +11,9 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -22,13 +25,13 @@ class PaymentsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('payment_method_id')
+                Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
                     ->required()
                     ->live(),
 
-                Forms\Components\Select::make('currency_id')
+                Select::make('currency_id')
                     ->relationship(
                         'currency',
                         'name',
@@ -48,14 +51,14 @@ class PaymentsRelationManager extends RelationManager
                         $set('exchange', $currency->exchange ?? 0);
                     }),
 
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->label('Monto')
                     ->numeric()
                     ->required()
                     ->disabled(fn(Get $get) => !$get('currency_id'))
                     ->live(debounce: 500),
 
-                Forms\Components\TextInput::make('exchange')
+                TextInput::make('exchange')
                     ->label('Tasa de Cambio')
                     ->disabled()
                     ->dehydrated(),
@@ -67,16 +70,20 @@ class PaymentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('amount')
             ->columns([
-                Tables\Columns\TextColumn::make('paymentMethod.name')
+                TextColumn::make('paymentMethod.name')
                     ->label('Método de Pago'),
-                Tables\Columns\TextColumn::make('currency.name')
+
+                TextColumn::make('currency.name')
                     ->label('Moneda'),
-                Tables\Columns\TextColumn::make('amount')
+
+                TextColumn::make('amount')
                     ->label('Monto')
-                    ->money(fn($record) => $record->currency->code ?? 'USD'),
-                Tables\Columns\TextColumn::make('exchange')
+                    ->money(fn($record) => $record->currency->code ?? ''),
+
+                TextColumn::make('exchange')
                     ->label('Tasa de Cambio'),
-                Tables\Columns\TextColumn::make('created_at')
+                    
+                TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime()
                     ->sortable(),
