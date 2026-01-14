@@ -210,6 +210,84 @@
         "categoria": "Almacén"
     },
     {
+        "name": "hospitalizations.inventories.edit",
+        "description": "Editar Inventario en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.inventories.view",
+        "description": "Ver Inventario en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.create",
+        "description": "Crear Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.edit",
+        "description": "Editar Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.view",
+        "description": "Ver Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.attach",
+        "description": "Asociar Detalle existente en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.edit",
+        "description": "Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.view",
+        "description": "Ver Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.delete",
+        "description": "Eliminar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "warehouses.list",
         "description": "Listar Almacenes",
         "guard": "web",
