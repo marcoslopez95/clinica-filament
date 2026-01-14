@@ -26,7 +26,17 @@ class ReferenceValuesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->label('Nombre'),
+
+                TextColumn::make('min_value')
+                    ->label('Mínimo'),
+
+                TextColumn::make('max_value')
+                    ->label('Máximo'),
+
+                TextColumn::make('unit.name')
+                    ->label('Unidad'),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])

@@ -119,6 +119,7 @@ class ExamsRelationManager extends RelationManager
                                     'name'      => $rv['name'],
                                     'min_value' => $rv['min_value'],
                                     'max_value' => $rv['max_value'],
+                                    'unit_id'   => $rv['unit_id'] ?? null,
                                 ]);
                             }
                         }

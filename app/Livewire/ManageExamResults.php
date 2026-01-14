@@ -66,6 +66,9 @@ class ManageExamResults extends Component implements HasForms, HasTable
                 TextColumn::make('referenceValue.name')
                     ->label('Valor referencial'),
 
+                TextColumn::make('referenceValue.unit.name')
+                    ->label('Unidad'),
+
                 TextColumn::make('result')
                     ->label('Resultado'),
             ])

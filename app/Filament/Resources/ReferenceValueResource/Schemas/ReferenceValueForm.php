@@ -12,6 +12,10 @@ class ReferenceValueForm
     public static function schema(): array
     {
         return [
+            TextInput::make('name')
+                ->label(false)
+                ->placeholder('Nombre')
+                ->required(),
 
             TextInput::make('min_value')
                 ->label(false)
@@ -28,6 +32,13 @@ class ReferenceValueForm
                 ->numeric()
                 ->placeholder('máximo')
                 ->extraAttributes(['class' => 'text-center']),
+
+            Select::make('unit_id')
+                ->label(false)
+                ->relationship('unit', 'name')
+                ->placeholder('Unidad')
+                ->searchable()
+                ->preload(),
         ];
     }
 
@@ -40,10 +51,6 @@ class ReferenceValueForm
                 ->relationship('exam', 'name')
                 ->required()
                 ->preload(),
-
-            TextInput::make('name')
-                ->label('Nombre')
-                ->required(),
 
             ...self::schema(),
 
