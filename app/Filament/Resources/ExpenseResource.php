@@ -15,12 +15,32 @@ class ExpenseResource extends Resource
     protected static ?string $model = Expense::class;
 
     protected static ?string $slug = 'expenses';
-    
+
     protected static ?string $navigationGroup = 'Contabilidad';
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $modelLabel = 'Gasto';
     protected static ?string $pluralModelLabel = 'Gastos';
     protected static ?string $navigationLabel = 'Gastos';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('expenses.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('expenses.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('expenses.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('expenses.delete');
+    }
 
     public static function form(Form $form): Form
     {

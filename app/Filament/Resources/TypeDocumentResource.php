@@ -23,6 +23,26 @@ class TypeDocumentResource extends Resource
     protected static ?string $pluralModelLabel = 'Tipos de Documentos';
     protected static ?string $navigationLabel = 'Tipos de Documentos';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('type_documents.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('type_documents.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('type_documents.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('type_documents.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return TypeDocumentForm::configure($form);

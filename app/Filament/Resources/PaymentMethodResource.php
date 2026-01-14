@@ -23,6 +23,26 @@ class PaymentMethodResource extends Resource
     protected static ?string $pluralModelLabel = 'Métodos de Pago';
     protected static ?string $navigationLabel = 'Métodos de Pago';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('payment_methods.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('payment_methods.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('payment_methods.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('payment_methods.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return PaymentMethodForm::configure($form);

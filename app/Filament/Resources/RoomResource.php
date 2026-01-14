@@ -23,6 +23,26 @@ class RoomResource extends Resource
     protected static ?string $pluralModelLabel = 'Habitaciones';
     protected static ?string $navigationLabel = 'Habitaciones';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('rooms.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('rooms.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('rooms.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('rooms.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return RoomForm::configure($form);

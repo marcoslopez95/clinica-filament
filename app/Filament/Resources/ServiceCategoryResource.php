@@ -22,6 +22,26 @@ class ServiceCategoryResource extends Resource
     protected static ?string $pluralModelLabel = 'Categorías de Servicios';
     protected static ?string $navigationLabel = 'Categorías de Servicios';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('service_categories.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('service_categories.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('service_categories.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('service_categories.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return ServiceCategoryForm::configure($form);

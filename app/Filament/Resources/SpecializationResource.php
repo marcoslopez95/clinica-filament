@@ -17,11 +17,31 @@ class SpecializationResource extends Resource
 
     protected static ?string $slug = 'specializations';
 
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'RRHH';
     protected static ?string $navigationIcon = 'heroicon-o-star';
     protected static ?string $modelLabel = 'Especialización';
     protected static ?string $pluralModelLabel = 'Especializaciones';
     protected static ?string $navigationLabel = 'Especializaciones';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('specializations.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('specializations.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('specializations.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('specializations.delete');
+    }
 
     public static function form(Form $form): Form
     {

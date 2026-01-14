@@ -23,6 +23,26 @@ class ProductCategoryResource extends Resource
     protected static ?string $pluralModelLabel = 'Categorías de Productos';
     protected static ?string $navigationLabel = 'Categorías de Productos';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('product_categories.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('product_categories.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('product_categories.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('product_categories.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return ProductCategoryForm::configure($form);
