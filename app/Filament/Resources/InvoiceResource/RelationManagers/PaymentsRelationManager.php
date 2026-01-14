@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources\InvoiceResource\RelationManagers;
 
+use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
+use App\Services\Helper;
 use Filament\Forms;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -11,6 +14,9 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -22,13 +28,15 @@ class PaymentsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('payment_method_id')
+                ToPayInvoiceable::make()
+                ->dehydrated(false),
+                Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
                     ->required()
                     ->live(),
 
-                Forms\Components\Select::make('currency_id')
+                Select::make('currency_id')
                     ->relationship(
                         'currency',
                         'name',
@@ -43,19 +51,22 @@ class PaymentsRelationManager extends RelationManager
                     ->disabled(fn(Get $get) => !$get('payment_method_id'))
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, mixed $state) {
+                    ->afterStateUpdated(function (Set $set, mixed $state,RelationManager $livewire) {
                         $currency = Currency::find($state);
                         $set('exchange', $currency->exchange ?? 0);
+                        if ($currency) {
+                            $set('per_pay_invoiceable', ToPayInvoiceable::recalculateBalance($currency, $livewire));
+                        }
                     }),
 
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->label('Monto')
                     ->numeric()
                     ->required()
                     ->disabled(fn(Get $get) => !$get('currency_id'))
                     ->live(debounce: 500),
 
-                Forms\Components\TextInput::make('exchange')
+                TextInput::make('exchange')
                     ->label('Tasa de Cambio')
                     ->disabled()
                     ->dehydrated(),
@@ -67,16 +78,20 @@ class PaymentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('amount')
             ->columns([
-                Tables\Columns\TextColumn::make('paymentMethod.name')
+                TextColumn::make('paymentMethod.name')
                     ->label('Método de Pago'),
-                Tables\Columns\TextColumn::make('currency.name')
+
+                TextColumn::make('currency.name')
                     ->label('Moneda'),
-                Tables\Columns\TextColumn::make('amount')
+
+                TextColumn::make('amount')
                     ->label('Monto')
-                    ->money(fn($record) => $record->currency->code ?? 'USD'),
-                Tables\Columns\TextColumn::make('exchange')
+                    ->state(fn($record) => Helper::formatCurrency($record->amount, $record->currency)),
+
+                TextColumn::make('exchange')
                     ->label('Tasa de Cambio'),
-                Tables\Columns\TextColumn::make('created_at')
+
+                TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime()
                     ->sortable(),

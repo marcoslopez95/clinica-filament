@@ -38,9 +38,14 @@ class ReferenceValuesTable
                     ->label('Max Value')
                     ->sortable(),
 
+                TextColumn::make('unit.name')
+                    ->label('Unit')
+                    ->sortable()
+                    ->searchable(),
+
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

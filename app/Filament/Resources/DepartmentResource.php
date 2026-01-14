@@ -29,11 +29,31 @@ class DepartmentResource extends Resource
 {
     protected static ?string $model = Department::class;
 
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'RRHH';
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $modelLabel = 'Departamento';
     protected static ?string $pluralModelLabel = 'Departamentos';
     protected static ?string $navigationLabel = 'Departamentos';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('departments.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('departments.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('departments.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('departments.delete');
+    }
 
 
     public static function form(Form $form): Form

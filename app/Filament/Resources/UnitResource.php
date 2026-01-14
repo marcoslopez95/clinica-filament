@@ -23,6 +23,26 @@ class UnitResource extends Resource
     protected static ?string $pluralModelLabel = 'Unidades';
     protected static ?string $navigationLabel = 'Unidades';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('units.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('units.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('units.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('units.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return UnitForm::configure($form);

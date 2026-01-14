@@ -7,15 +7,22 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
+
 class ReferenceValueForm
 {
     public static function schema(): array
     {
         return [
+            TextInput::make('name')
+                ->label(false)
+                ->placeholder('Nombre')
+                ->required(),
 
             TextInput::make('min_value')
                 ->label(false)
-                ->prefix('<') 
+                ->prefix('<')
                 ->required()
                 ->numeric()
                 ->placeholder('mínimo')
@@ -23,11 +30,24 @@ class ReferenceValueForm
 
             TextInput::make('max_value')
                 ->label(false)
-                ->prefix('>') 
+                ->prefix('>')
                 ->required()
                 ->numeric()
                 ->placeholder('máximo')
                 ->extraAttributes(['class' => 'text-center']),
+
+            Select::make('unit_id')
+                ->label(false)
+                ->relationship(
+                    name: 'unit',
+                    titleAttribute: 'name',
+                    modifyQueryUsing: fn (Builder $query) => $query->whereHas('categories', function (Builder $query) {
+                        $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                    })
+                )
+                ->placeholder('Unidad')
+                ->searchable()
+                ->preload(),
         ];
     }
 
@@ -41,13 +61,9 @@ class ReferenceValueForm
                 ->required()
                 ->preload(),
 
-            TextInput::make('name')
-                ->label('Nombre')
-                ->required(),
-
             ...self::schema(),
-            
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 }

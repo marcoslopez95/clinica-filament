@@ -19,6 +19,9 @@ use Filament\Notifications\Notification;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 use App\Filament\Actions\LoadResultsAction;
 
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
+
 class ExamsRelationManager extends RelationManager
 {
     protected static string $relationship = 'details';
@@ -62,7 +65,7 @@ class ExamsRelationManager extends RelationManager
     {
         return $form->schema([
             ...self::schema($owner),
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 
@@ -89,12 +92,22 @@ class ExamsRelationManager extends RelationManager
                     ->form(fn() => self::schema($this->getOwnerRecord()))
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
-                        $owner->details()->create([
+                        $detail = $owner->details()->create([
                             'content_id' => $data['content_id'],
                             'content_type' => Exam::class,
                             'price' => $data['price'],
                             'quantity' => 1,
                         ]);
+
+                        $exam = Exam::find($data['content_id']);
+                        if ($exam) {
+                            foreach ($exam->referenceValues as $rv) {
+                                $detail->referenceResults()->create([
+                                    'reference_value_id' => $rv->id,
+                                    'result' => null,
+                                ]);
+                            }
+                        }
 
                         $livewire->dispatch('refreshTotal');
                     }),
@@ -119,16 +132,24 @@ class ExamsRelationManager extends RelationManager
                                     'name'      => $rv['name'],
                                     'min_value' => $rv['min_value'],
                                     'max_value' => $rv['max_value'],
+                                    'unit_id'   => $rv['unit_id'] ?? null,
                                 ]);
                             }
                         }
 
-                        $owner->details()->create([
+                        $detail = $owner->details()->create([
                             'content_id'   => $exam->id,
                             'content_type' => Exam::class,
                             'price'        => $data['price'],
-                            'quantity'     => 0,
+                            'quantity'     => 1,
                         ]);
+
+                        foreach ($exam->referenceValues as $rv) {
+                            $detail->referenceResults()->create([
+                                'reference_value_id' => $rv->id,
+                                'result' => null,
+                            ]);
+                        }
 
                         $livewire->dispatch('refreshTotal');
                     }),
@@ -143,7 +164,31 @@ class ExamsRelationManager extends RelationManager
                             ->options(fn() => Exam::all()->pluck('name', 'id'))
                             ->required(),
 
-                        ...\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema(),
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->relationship(
+                                name: 'unit',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->whereHas('categories', function (Builder $query) {
+                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                                })
+                            )
+                            ->searchable()
+                            ->preload(),
+
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+
+                        TextInput::make('min_value')
+                            ->label('Mínimo')
+                            ->numeric()
+                            ->required(),
+
+                        TextInput::make('max_value')
+                            ->label('Máximo')
+                            ->numeric()
+                            ->required(),
                     ])
                     ->action(function (array $data) {
                         ReferenceValue::create($data);
@@ -159,8 +204,8 @@ class ExamsRelationManager extends RelationManager
                 RefreshTotalDeleteAction::make(),
             ])
             ->bulkActions([
-                BulkActionGroup::make([ 
-                    DeleteBulkAction::make() 
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                 ])
             ]);
     }

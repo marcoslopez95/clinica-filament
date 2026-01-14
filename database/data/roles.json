@@ -1,0 +1,6 @@
+[
+    {
+        "name": "Admin",
+        "guard_name": "web"
+    }
+]

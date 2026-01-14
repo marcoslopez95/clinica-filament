@@ -37,7 +37,7 @@ class RefundForm
 
             ...self::schema(),
 
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 }

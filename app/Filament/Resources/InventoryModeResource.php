@@ -24,6 +24,26 @@ class InventoryModeResource extends Resource
     protected static ?string $navigationLabel = 'Modo inventari';
     protected static bool $shouldRegisterNavigation = false;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('inventory_modes.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('inventory_modes.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('inventory_modes.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('inventory_modes.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([]);

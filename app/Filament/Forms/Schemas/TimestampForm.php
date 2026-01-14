@@ -7,9 +7,9 @@ use Filament\Forms\Components\Section;
 
 class TimestampForm
 {
-    public static function schema(): array
+    public static function schema(): Section
     {
-        return [
+        return
             Section::make()
                 ->schema([
                     Placeholder::make('created_at')
@@ -20,7 +20,7 @@ class TimestampForm
                         ->label('Fecha de Última Modificación')
                         ->content(fn($record): string => $record?->updated_at?->diffForHumans() ?? '-'),
                 ])
-                ->columns(2),
-        ];
+                ->columns(2)
+        ;
     }
 }

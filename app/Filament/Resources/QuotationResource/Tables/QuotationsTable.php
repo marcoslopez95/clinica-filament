@@ -40,7 +40,7 @@ class QuotationsTable
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
 
-                \App\Filament\Forms\columns\CancellationColumn::make(),
+                \App\Filament\Forms\Columns\CancellationColumn::make(),
             ])
             ->filters([
             ])

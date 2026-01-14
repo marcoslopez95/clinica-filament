@@ -26,6 +26,26 @@ class HozpitaliacionesResource extends Resource
     protected static ?string $pluralModelLabel = 'Hozpitaliaciones';
     protected static ?string $navigationLabel = 'Hozpitaliaciones';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('hozpitaliaciones.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('hozpitaliaciones.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('hozpitaliaciones.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('hozpitaliaciones.delete');
+    }
+
     public static function form(Form $form): Form
     {
         // reuse invoice form

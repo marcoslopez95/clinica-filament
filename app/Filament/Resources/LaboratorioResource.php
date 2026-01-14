@@ -25,6 +25,26 @@ class LaboratorioResource extends Resource
     protected static ?string $pluralModelLabel = 'Laboratorios';
     protected static ?string $navigationLabel = 'Laboratorio';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('laboratorio.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('laboratorio.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('laboratorio.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('laboratorio.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return InvoiceForm::configure($form);

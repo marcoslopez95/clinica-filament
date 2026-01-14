@@ -39,7 +39,7 @@ class ServiceForm
                     ->relationship('serviceCategory', 'name')
                     ->preload(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

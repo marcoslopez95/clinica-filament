@@ -24,6 +24,26 @@ class ReferenceValueResource extends Resource
     protected static ?string $pluralModelLabel = 'Valores  Referenciales';
     protected static ?string $navigationLabel = 'Valores  Referenciales';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('reference_values.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('reference_values.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('reference_values.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('reference_values.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return ReferenceValueForm::configure($form);

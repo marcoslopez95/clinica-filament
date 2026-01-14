@@ -24,6 +24,26 @@ class PatientResource extends Resource
     protected static ?string $pluralModelLabel = 'Pacientes';
     protected static ?string $navigationLabel = 'Pacientes';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('patients.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('patients.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('patients.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('patients.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return PatientForm::configure($form);

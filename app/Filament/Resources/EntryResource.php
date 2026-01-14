@@ -29,6 +29,26 @@ class EntryResource extends Resource
     protected static ?string $pluralModelLabel = 'Entradas';
     protected static ?string $navigationLabel = 'Entradas';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('entries.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('entries.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('entries.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('entries.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return EntryForm::configure($form);

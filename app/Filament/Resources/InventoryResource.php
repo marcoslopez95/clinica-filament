@@ -24,6 +24,26 @@ class InventoryResource extends Resource
     protected static ?string $pluralModelLabel = 'Inventarios';
     protected static ?string $navigationLabel = 'Inventarios';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('inventories.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('inventories.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('inventories.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('inventories.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return InventoryForm::configure($form);

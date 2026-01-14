@@ -9,7 +9,7 @@ use App\Models\Currency;
 
 class CurrencyForm
 {
-    public static function schema(): array
+    public static function schema(bool $disabledExchange = false): array
     {
         return [
             Select::make('currency_id')
@@ -30,7 +30,9 @@ class CurrencyForm
             TextInput::make('exchange')
                 ->label('Tasa de cambio')
                 ->numeric()
-                ->required(),
+                ->required()
+                ->disabled($disabledExchange)
+                ->dehydrated(),
         ];
     }
 }

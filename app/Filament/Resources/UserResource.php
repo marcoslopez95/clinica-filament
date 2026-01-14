@@ -16,7 +16,27 @@ class UserResource extends Resource
 
     protected static ?string $slug = 'users';
 
-    protected static ?string $navigationGroup = 'Administracion';
+    protected static ?string $navigationGroup = 'Administración';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('users.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('users.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('users.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('users.delete');
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';

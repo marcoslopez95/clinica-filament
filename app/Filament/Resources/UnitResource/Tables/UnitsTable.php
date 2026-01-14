@@ -28,9 +28,14 @@ class UnitsTable
                 TextColumn::make('symbol')
                     ->label('Símbolo'),
 
+                TextColumn::make('categories.name')
+                    ->label('Categorías')
+                    ->badge()
+                    ->searchable(),
+
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

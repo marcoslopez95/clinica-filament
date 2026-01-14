@@ -24,6 +24,26 @@ class ServiceResource extends Resource
     protected static ?string $pluralModelLabel = 'Servicios';
     protected static ?string $navigationLabel = 'Servicios';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('services.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('services.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('services.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('services.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return ServiceForm::configure($form);

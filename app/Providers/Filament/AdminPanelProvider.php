@@ -55,9 +55,12 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->navigationGroups([
+                'Seguridad',
                 'Almacén',
                 'RRHH',
                 'Configuración',
+                'Contabilidad',
+                'Administración',
             ]);
     }
 }

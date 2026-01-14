@@ -43,7 +43,7 @@ class EntryForm
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $supplier = $state ? Supplier::find($state) : null;
-                        
+
                         $set('full_name', $supplier?->name);
                         $set('dni', $supplier?->document);
                         $set('type_document_id', $supplier?->type_document_id);
@@ -86,7 +86,7 @@ class EntryForm
 
                 \App\Filament\Forms\Components\CancellationPlaceholder::make(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

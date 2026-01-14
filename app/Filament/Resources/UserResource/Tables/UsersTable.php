@@ -33,6 +33,11 @@ class UsersTable
                     ->label('Nombre')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('roles.name')
+                    ->label('Rol')
+                    ->badge()
+                    ->searchable(),
             ])
             ->filters([
                 //

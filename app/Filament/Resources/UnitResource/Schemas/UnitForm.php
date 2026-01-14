@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UnitResource\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 
 class UnitForm
@@ -19,7 +20,14 @@ class UnitForm
                     ->label('Símbolo')
                     ->required(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                Select::make('categories')
+                    ->label('Categorías')
+                    ->multiple()
+                    ->relationship('categories', 'name')
+                    ->preload()
+                    ->searchable(),
+
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }
