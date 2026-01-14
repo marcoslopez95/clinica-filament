@@ -14,6 +14,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -98,13 +100,26 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('invoices.payments.create'))
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->after(function ($livewire) {
+                    ->visible(fn (): bool => auth()->user()->can('invoices.payments.edit.view'))
+                    ->action(function (Model $record, array $data, $livewire): void {
+                        if (!auth()->user()->can('invoices.payments.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $record->update($data);
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
@@ -113,5 +128,10 @@ class PaymentsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('invoices.payments.view');
     }
 }

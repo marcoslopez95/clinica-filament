@@ -85,6 +85,7 @@ class ProductsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make('create_new')
                     ->label('Crear producto')
+                    ->visible(fn (): bool => auth()->user()->can('entries.details.create'))
                     ->modalHeading('Crear nuevo producto y añadir a la entrada')
                     ->form([
 
@@ -146,6 +147,7 @@ class ProductsRelationManager extends RelationManager
 
                 CreateAction::make('add_existing')
                     ->label('Añadir producto existente')
+                    ->visible(fn (): bool => auth()->user()->can('entries.details.attach'))
                     ->modalHeading('Añadir producto existente a la entrada')
                     ->form($this->productFormSchema())
                     ->action(function (array $data, $livewire) {
@@ -164,6 +166,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.details.edit.view'))
                     ->form([
                         ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
 
@@ -194,6 +197,16 @@ class ProductsRelationManager extends RelationManager
                         return $data;
                     })
                     ->action(function (Model $record, array $data, $livewire): void {
+                        if (!auth()->user()->can('entries.details.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
                         if ($product) {
                             $product->update([
@@ -245,6 +258,11 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('entries.details.view');
     }
 
     public function form(Form $form): Form

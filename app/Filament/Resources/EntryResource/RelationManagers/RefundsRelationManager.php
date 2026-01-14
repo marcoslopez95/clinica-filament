@@ -48,16 +48,17 @@ class RefundsRelationManager extends RelationManager
 
                 TextColumn::make('exchange')
                     ->label('Tasa de Cambio'),
-                    
+
                 TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime()
                     ->sortable(),
             ])
-            
+
             ->headerActions([
                 CreateAction::make()
                     ->label('Nueva Devolución')
+                    ->visible(fn (): bool => auth()->user()->can('entries.refunds.create'))
                     ->form($this->refundSchema())
                         ->action(function (array $data, $livewire): void {
                             $invoice = $livewire->getOwnerRecord();
@@ -100,8 +101,19 @@ class RefundsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.refunds.edit.view'))
                     ->form($this->refundSchema())
                         ->action(function (Model $record, array $data, $livewire): void {
+                            if (!auth()->user()->can('entries.refunds.edit')) {
+                                Notification::make()
+                                    ->title('Acceso denegado')
+                                    ->body('No tienes permiso para editar este elemento')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
                             $invoice = $livewire->getOwnerRecord();
 
                             $paymentsTotal = $invoice->payments->sum(function ($p) {
@@ -149,6 +161,11 @@ class RefundsRelationManager extends RelationManager
                     RefreshTotalDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('entries.refunds.view');
     }
 
     public function form(Form $form): Form

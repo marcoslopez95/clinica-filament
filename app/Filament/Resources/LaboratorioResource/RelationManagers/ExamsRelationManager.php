@@ -85,6 +85,7 @@ class ExamsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make('add_existing')
                     ->label('Añadir examen existente')
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.attach'))
                     ->modalHeading(false)
                     ->form(fn() => self::schema($this->getOwnerRecord()))
                     ->action(function (array $data, $livewire) {
@@ -101,6 +102,7 @@ class ExamsRelationManager extends RelationManager
 
                 CreateAction::make('create_exam')
                     ->label('Crear examen')
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.create'))
                     ->modalHeading(false)
                     ->form(\App\Filament\Resources\ExamResource\Schemas\ExamForm::schema())
                     ->action(function (array $data, $livewire) {
@@ -163,5 +165,10 @@ class ExamsRelationManager extends RelationManager
                     DeleteBulkAction::make()
                 ])
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('laboratories.details.view');
     }
 }
