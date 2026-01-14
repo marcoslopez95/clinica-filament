@@ -4,6 +4,7 @@ namespace App\Filament\Resources\EntryResource\RelationManagers;
 
 use App\Models\Currency;
 use Filament\Forms;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -24,6 +25,12 @@ class PaymentsRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Por Pagar')
+                ->schema([
+                    Placeholder::make('per_pay')
+                        ->label('')
+                        ->content(fn(RelationManager $livewire): string => $livewire->ownerRecord->balance),
+                ]),
                 Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
