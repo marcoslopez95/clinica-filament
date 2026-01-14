@@ -41,7 +41,8 @@ class UserForm
                     ->dehydrated(fn ($state) => filled($state)),
 
                 Select::make('roles')
-                    ->label('Rol')
+                    ->label('Roles')
+                    ->multiple()
                     ->relationship('roles', 'name')
                     ->preload()
                     ->searchable()

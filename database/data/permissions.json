@@ -810,6 +810,36 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "invoices.details.view",
+        "description": "Ver detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.edit.view",
+        "description": "Editar detalle de Factura Modal",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.edit",
+        "description": "Editar detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.delete",
+        "description": "Eliminar detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.attach",
+        "description": "Crear detalle de Factura con recurso existente",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "laboratorio.list",
         "description": "Listar Laboratorio",
         "guard": "web",

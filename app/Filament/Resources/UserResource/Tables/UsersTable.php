@@ -35,7 +35,7 @@ class UsersTable
                     ->sortable(),
 
                 TextColumn::make('roles.name')
-                    ->label('Rol')
+                    ->label('Roles')
                     ->badge()
                     ->searchable(),
             ])
