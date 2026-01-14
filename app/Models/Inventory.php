@@ -11,6 +11,7 @@ class Inventory extends Model
 {
     use SoftDeletes;
 
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

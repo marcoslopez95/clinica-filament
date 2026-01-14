@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\HozpitaliacionesResource\RelationManagers;
 
+use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
+use App\Services\Helper;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -29,6 +31,8 @@ class PaymentsRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                ToPayInvoiceable::make()
+                    ->dehydrated(false),
                 Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
@@ -50,9 +54,12 @@ class PaymentsRelationManager extends RelationManager
                     ->disabled(fn(Get $get) => !$get('payment_method_id'))
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, mixed $state) {
+                    ->afterStateUpdated(function (Set $set, mixed $state, RelationManager $livewire) {
                         $currency = Currency::find($state);
                         $set('exchange', $currency->exchange ?? 0);
+                        if ($currency) {
+                            $set('per_pay_invoiceable', ToPayInvoiceable::recalculateBalance($currency, $livewire));
+                        }
                     }),
 
                 TextInput::make('amount')
@@ -81,8 +88,9 @@ class PaymentsRelationManager extends RelationManager
                     ->label('Moneda'),
 
                 TextColumn::make('amount')
-                    ->label('Monto'),
-                    
+                    ->label('Monto')
+                    ->state(fn($record) => Helper::formatCurrency($record->amount, $record->currency)),
+
                 TextColumn::make('exchange')
                     ->label('Tasa de Cambio'),
 

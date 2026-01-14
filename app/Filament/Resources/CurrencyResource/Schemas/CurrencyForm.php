@@ -27,14 +27,14 @@ class CurrencyForm
                     ->label('Tasa de Cambio')
                     ->required()
                     ->numeric(),
-                    
+
                 Select::make('paymentMethods')
                     ->label('Métodos de Pago')
                     ->relationship('paymentMethods', 'name')
                     ->multiple()
                     ->preload(),
 
-                ...TimestampForm::schema(),
+                TimestampForm::schema(),
             ]);
     }
 }

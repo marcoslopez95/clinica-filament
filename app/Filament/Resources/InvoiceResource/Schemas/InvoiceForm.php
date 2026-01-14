@@ -56,6 +56,8 @@ class InvoiceForm
                     ->dehydrated()
                     ->columnSpan(2),
 
+                ...\App\Filament\Forms\Schemas\CurrencyForm::schema(true),
+
                 \App\Filament\Forms\Components\ToPay::make(),
 
                 \App\Filament\Forms\Components\CancellationPlaceholder::make(),
