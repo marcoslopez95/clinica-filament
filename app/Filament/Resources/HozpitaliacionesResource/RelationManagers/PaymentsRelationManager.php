@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\HospitalizationResource\RelationManagers;
+namespace App\Filament\Resources\HozpitaliacionesResource\RelationManagers;
 
 use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
