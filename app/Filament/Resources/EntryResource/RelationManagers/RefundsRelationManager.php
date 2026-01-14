@@ -154,11 +154,13 @@ class RefundsRelationManager extends RelationManager
                             $record->update($data);
                             $livewire->dispatch('refreshTotal');
                         }),
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.refunds.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    RefreshTotalDeleteBulkAction::make(),
+                    RefreshTotalDeleteBulkAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('entries.refunds.bulk_delete')),
                 ]),
             ]);
     }

@@ -118,11 +118,13 @@ class DiscountsRelationManager extends RelationManager
                         $record->update($data);
                         $livewire->dispatch('refreshTotal');
                     }),
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.discounts.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.discounts.bulk_delete')),
                 ]),
             ]);
     }

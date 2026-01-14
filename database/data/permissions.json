@@ -750,6 +750,150 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "entries.discounts.create",
+        "description": "Crear Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.edit",
+        "description": "Editar Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.edit.view",
+        "description": "Ver Modal para Editar Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.delete",
+        "description": "Eliminar Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.bulk_delete",
+        "description": "Eliminación Masiva de Descuentos en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.create",
+        "description": "Crear Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.edit",
+        "description": "Editar Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.view",
+        "description": "Ver Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.inventories.edit",
+        "description": "Editar Inventario en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.inventories.view",
+        "description": "Ver Inventario en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.create",
+        "description": "Crear Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.edit",
+        "description": "Editar Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.edit.view",
+        "description": "Ver Modal para Editar Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.view",
+        "description": "Ver Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.delete",
+        "description": "Eliminar Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.bulk_delete",
+        "description": "Eliminación Masiva de Reembolsos en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.create",
+        "description": "Crear Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.attach",
+        "description": "Asociar Detalle existente en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.edit",
+        "description": "Editar Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.view",
+        "description": "Ver Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.delete",
+        "description": "Eliminar Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "expenses.list",
         "description": "Listar Gastos",
         "guard": "web",

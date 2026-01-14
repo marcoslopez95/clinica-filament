@@ -13,10 +13,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Warehouse;
 use Filament\Notifications\Notification;
+use App\Filament\Actions\RefreshTotalDeleteAction;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -253,10 +253,9 @@ class ProductsRelationManager extends RelationManager
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Cerrar')
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-batches', ['record' => $record])),
-                DeleteAction::make()
-                    ->after(function ($livewire) {
-                        $livewire->dispatch('refreshTotal');
-                    }),
+
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.details.delete')),
             ]);
     }
 

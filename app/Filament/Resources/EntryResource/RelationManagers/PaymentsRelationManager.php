@@ -5,13 +5,10 @@ namespace App\Filament\Resources\EntryResource\RelationManagers;
 use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
 use App\Services\Helper;
-use Filament\Forms;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +16,9 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\BulkActionGroup;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -99,14 +99,14 @@ class PaymentsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->visible(fn (): bool => auth()->user()->can('entries.payments.create'))
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn (): bool => auth()->user()->can('entries.payments.edit.view'))
                     ->action(function (Model $record, array $data, $livewire): void {
                         if (!auth()->user()->can('entries.payments.edit')) {
@@ -124,8 +124,8 @@ class PaymentsRelationManager extends RelationManager
                     }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+
                 ]),
             ]);
     }
