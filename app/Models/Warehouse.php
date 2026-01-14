@@ -15,4 +15,12 @@ class Warehouse extends Model
         return $this->hasMany(Inventory::class);
     }
 
+    public static function getBodega(): Warehouse
+    {
+        return self::firstOrCreate(['name' => 'Bodega'],[
+            'description' => 'Almacén principal de suministros',
+            'location' => 'bodega'
+        ]);
+    }
+
 }
