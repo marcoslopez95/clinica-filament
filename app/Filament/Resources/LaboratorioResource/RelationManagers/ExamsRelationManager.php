@@ -89,12 +89,22 @@ class ExamsRelationManager extends RelationManager
                     ->form(fn() => self::schema($this->getOwnerRecord()))
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
-                        $owner->details()->create([
+                        $detail = $owner->details()->create([
                             'content_id' => $data['content_id'],
                             'content_type' => Exam::class,
                             'price' => $data['price'],
                             'quantity' => 1,
                         ]);
+
+                        $exam = Exam::find($data['content_id']);
+                        if ($exam) {
+                            foreach ($exam->referenceValues as $rv) {
+                                $detail->referenceResults()->create([
+                                    'reference_value_id' => $rv->id,
+                                    'result' => null,
+                                ]);
+                            }
+                        }
 
                         $livewire->dispatch('refreshTotal');
                     }),
@@ -119,16 +129,24 @@ class ExamsRelationManager extends RelationManager
                                     'name'      => $rv['name'],
                                     'min_value' => $rv['min_value'],
                                     'max_value' => $rv['max_value'],
+                                    'unit_id'   => $rv['unit_id'] ?? null,
                                 ]);
                             }
                         }
 
-                        $owner->details()->create([
+                        $detail = $owner->details()->create([
                             'content_id'   => $exam->id,
                             'content_type' => Exam::class,
                             'price'        => $data['price'],
-                            'quantity'     => 0,
+                            'quantity'     => 1,
                         ]);
+
+                        foreach ($exam->referenceValues as $rv) {
+                            $detail->referenceResults()->create([
+                                'reference_value_id' => $rv->id,
+                                'result' => null,
+                            ]);
+                        }
 
                         $livewire->dispatch('refreshTotal');
                     }),
