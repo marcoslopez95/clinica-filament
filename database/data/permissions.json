@@ -690,6 +690,36 @@
         "categoria": "Configuración"
     },
     {
+        "name": "unit_categories.list",
+        "description": "Listar Categorías de Unidades",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "unit_categories.view",
+        "description": "Ver Categoría de Unidad",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "unit_categories.create",
+        "description": "Crear Categoría de Unidad",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "unit_categories.edit",
+        "description": "Editar Categoría de Unidad",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "unit_categories.delete",
+        "description": "Eliminar Categoría de Unidad",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "entries.list",
         "description": "Listar Entradas",
         "guard": "web",
