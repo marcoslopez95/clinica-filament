@@ -35,6 +35,26 @@ class CurrencyResource extends Resource
     protected static ?string $pluralModelLabel = 'Monedas';
     protected static ?string $navigationLabel = 'Monedas';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('currencies.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('currencies.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('currencies.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('currencies.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return CurrencyForm::configure($form);

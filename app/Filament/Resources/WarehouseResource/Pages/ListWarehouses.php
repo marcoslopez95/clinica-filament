@@ -13,7 +13,7 @@ class ListWarehouses extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . WarehouseResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

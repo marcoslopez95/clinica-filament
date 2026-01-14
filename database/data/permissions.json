@@ -1,0 +1,902 @@
+[
+    {
+        "name": "roles.list",
+        "description": "Listar Roles",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "roles.view",
+        "description": "Ver Rol",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "roles.create",
+        "description": "Crear Rol",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "roles.edit",
+        "description": "Editar Rol",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "roles.delete",
+        "description": "Eliminar Rol",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "permissions.list",
+        "description": "Listar Permisos",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "permissions.view",
+        "description": "Ver Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "permissions.create",
+        "description": "Crear Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "permissions.edit",
+        "description": "Editar Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "permissions.delete",
+        "description": "Eliminar Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.list",
+        "description": "Listar Categorías de Permisos",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.view",
+        "description": "Ver Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.create",
+        "description": "Crear Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.edit",
+        "description": "Editar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.delete",
+        "description": "Eliminar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "products.list",
+        "description": "Listar Productos",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.view",
+        "description": "Ver Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.create",
+        "description": "Crear Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.edit",
+        "description": "Editar Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.delete",
+        "description": "Eliminar Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.list",
+        "description": "Listar Servicios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.view",
+        "description": "Ver Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.create",
+        "description": "Crear Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.edit",
+        "description": "Editar Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.delete",
+        "description": "Eliminar Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.list",
+        "description": "Listar Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.view",
+        "description": "Ver Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.create",
+        "description": "Crear Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.edit",
+        "description": "Editar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.delete",
+        "description": "Eliminar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.list",
+        "description": "Listar Modos de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.view",
+        "description": "Ver Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.create",
+        "description": "Crear Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.edit",
+        "description": "Editar Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.delete",
+        "description": "Eliminar Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "warehouses.list",
+        "description": "Listar Almacenes",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "warehouses.view",
+        "description": "Ver Almacén",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "warehouses.create",
+        "description": "Crear Almacén",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "warehouses.edit",
+        "description": "Editar Almacén",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "warehouses.delete",
+        "description": "Eliminar Almacén",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "doctors.list",
+        "description": "Listar Doctores",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "doctors.view",
+        "description": "Ver Doctor",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "doctors.create",
+        "description": "Crear Doctor",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "doctors.edit",
+        "description": "Editar Doctor",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "doctors.delete",
+        "description": "Eliminar Doctor",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "patients.list",
+        "description": "Listar Pacientes",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "patients.view",
+        "description": "Ver Paciente",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "patients.create",
+        "description": "Crear Paciente",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "patients.edit",
+        "description": "Editar Paciente",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "patients.delete",
+        "description": "Eliminar Paciente",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.list",
+        "description": "Listar Especializaciones",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.view",
+        "description": "Ver Especialización",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.create",
+        "description": "Crear Especialización",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.edit",
+        "description": "Editar Especialización",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.delete",
+        "description": "Eliminar Especialización",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "departments.list",
+        "description": "Listar Departamentos",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "departments.view",
+        "description": "Ver Departamento",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "departments.create",
+        "description": "Crear Departamento",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "departments.edit",
+        "description": "Editar Departamento",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "departments.delete",
+        "description": "Eliminar Departamento",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "currencies.list",
+        "description": "Listar Monedas",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "currencies.view",
+        "description": "Ver Moneda",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "currencies.create",
+        "description": "Crear Moneda",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "currencies.edit",
+        "description": "Editar Moneda",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "currencies.delete",
+        "description": "Eliminar Moneda",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.list",
+        "description": "Listar Exámenes",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.view",
+        "description": "Ver Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.create",
+        "description": "Crear Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.edit",
+        "description": "Editar Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.delete",
+        "description": "Eliminar Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "payment_methods.list",
+        "description": "Listar Métodos de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "payment_methods.view",
+        "description": "Ver Método de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "payment_methods.create",
+        "description": "Crear Método de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "payment_methods.edit",
+        "description": "Editar Método de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "payment_methods.delete",
+        "description": "Eliminar Método de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.list",
+        "description": "Listar Categorías de Productos",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.view",
+        "description": "Ver Categoría de Producto",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.create",
+        "description": "Crear Categoría de Producto",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.edit",
+        "description": "Editar Categoría de Producto",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.delete",
+        "description": "Eliminar Categoría de Producto",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_service_details.list",
+        "description": "Listar Detalles de Producto/Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_service_details.view",
+        "description": "Ver Detalle de Producto/Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_service_details.create",
+        "description": "Crear Detalle de Producto/Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_service_details.edit",
+        "description": "Editar Detalle de Producto/Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_service_details.delete",
+        "description": "Eliminar Detalle de Producto/Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "reference_values.list",
+        "description": "Listar Valores de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "reference_values.view",
+        "description": "Ver Valor de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "reference_values.create",
+        "description": "Crear Valor de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "reference_values.edit",
+        "description": "Editar Valor de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "reference_values.delete",
+        "description": "Eliminar Valor de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "rooms.list",
+        "description": "Listar Habitaciones",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "rooms.view",
+        "description": "Ver Habitación",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "rooms.create",
+        "description": "Crear Habitación",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "rooms.edit",
+        "description": "Editar Habitación",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "rooms.delete",
+        "description": "Eliminar Habitación",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "service_categories.list",
+        "description": "Listar Categorías de Servicios",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "service_categories.view",
+        "description": "Ver Categoría de Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "service_categories.create",
+        "description": "Crear Categoría de Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "service_categories.edit",
+        "description": "Editar Categoría de Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "service_categories.delete",
+        "description": "Eliminar Categoría de Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "suppliers.list",
+        "description": "Listar Proveedores",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "suppliers.view",
+        "description": "Ver Proveedor",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "suppliers.create",
+        "description": "Crear Proveedor",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "suppliers.edit",
+        "description": "Editar Proveedor",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "suppliers.delete",
+        "description": "Eliminar Proveedor",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "type_documents.list",
+        "description": "Listar Tipos de Documentos",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "type_documents.view",
+        "description": "Ver Tipo de Documento",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "type_documents.create",
+        "description": "Crear Tipo de Documento",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "type_documents.edit",
+        "description": "Editar Tipo de Documento",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "type_documents.delete",
+        "description": "Eliminar Tipo de Documento",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "units.list",
+        "description": "Listar Unidades de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "units.view",
+        "description": "Ver Unidad de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "units.create",
+        "description": "Crear Unidad de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "units.edit",
+        "description": "Editar Unidad de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "units.delete",
+        "description": "Eliminar Unidad de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "entries.list",
+        "description": "Listar Entradas",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.view",
+        "description": "Ver Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.create",
+        "description": "Crear Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.edit",
+        "description": "Editar Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.delete",
+        "description": "Eliminar Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "expenses.list",
+        "description": "Listar Gastos",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "expenses.view",
+        "description": "Ver Gasto",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "expenses.create",
+        "description": "Crear Gasto",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "expenses.edit",
+        "description": "Editar Gasto",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "expenses.delete",
+        "description": "Eliminar Gasto",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.list",
+        "description": "Listar Hozpitaliaciones",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.view",
+        "description": "Ver Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.create",
+        "description": "Crear Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.edit",
+        "description": "Editar Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.delete",
+        "description": "Eliminar Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.list",
+        "description": "Listar Facturas",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.view",
+        "description": "Ver Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.create",
+        "description": "Crear Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.edit",
+        "description": "Editar Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.delete",
+        "description": "Eliminar Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratorio.list",
+        "description": "Listar Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratorio.view",
+        "description": "Ver Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratorio.create",
+        "description": "Crear Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratorio.edit",
+        "description": "Editar Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratorio.delete",
+        "description": "Eliminar Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.list",
+        "description": "Listar Cotizaciones",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.view",
+        "description": "Ver Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.create",
+        "description": "Crear Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.edit",
+        "description": "Editar Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.delete",
+        "description": "Eliminar Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "users.list",
+        "description": "Listar Usuarios",
+        "guard": "web",
+        "categoria": "Administración"
+    },
+    {
+        "name": "users.view",
+        "description": "Ver Usuario",
+        "guard": "web",
+        "categoria": "Administración"
+    },
+    {
+        "name": "users.create",
+        "description": "Crear Usuario",
+        "guard": "web",
+        "categoria": "Administración"
+    },
+    {
+        "name": "users.edit",
+        "description": "Editar Usuario",
+        "guard": "web",
+        "categoria": "Administración"
+    },
+    {
+        "name": "users.delete",
+        "description": "Eliminar Usuario",
+        "guard": "web",
+        "categoria": "Administración"
+    }
+]

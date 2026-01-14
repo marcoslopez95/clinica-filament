@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
+
 use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Models\Currency;
@@ -15,8 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use \App\Services\InvoiceStatusService;
 
-class Invoice extends Model
+class Invoice extends Model implements Auditable
 {
+    use AuditableTrait;
     use SoftDeletes;
 
     /* -----------------------------------------------------------------

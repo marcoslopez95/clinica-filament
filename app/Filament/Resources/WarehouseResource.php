@@ -14,12 +14,31 @@ class WarehouseResource extends Resource
 {
     protected static ?string $model = Warehouse::class;
 
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'Almacén';
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
     protected static ?string $modelLabel = 'Almacén';
     protected static ?string $pluralModelLabel = 'Almacenes';
     protected static ?string $navigationLabel = 'Almacenes';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('warehouses.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('warehouses.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('warehouses.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('warehouses.delete');
+    }
 
     public static function form(Form $form): Form
     {

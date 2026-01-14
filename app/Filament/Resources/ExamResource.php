@@ -24,6 +24,26 @@ class ExamResource extends Resource
     protected static ?string $pluralModelLabel = 'Examenes';
     protected static ?string $navigationLabel = 'Examenes';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('exams.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('exams.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('exams.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('exams.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema(ExamForm::schema());

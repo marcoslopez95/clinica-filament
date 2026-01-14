@@ -19,7 +19,7 @@ class UnitForm
                     ->label('Símbolo')
                     ->required(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

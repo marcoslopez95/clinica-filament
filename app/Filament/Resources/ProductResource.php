@@ -26,6 +26,26 @@ class ProductResource extends Resource
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $navigationLabel = 'Productos';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('products.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('products.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('products.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('products.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return ProductForm::configure($form);

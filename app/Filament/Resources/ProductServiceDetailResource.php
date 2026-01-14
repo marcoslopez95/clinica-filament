@@ -22,6 +22,27 @@ class ProductServiceDetailResource extends Resource
     protected static ?string $modelLabel = 'Producto del servicio';
     protected static ?string $pluralModelLabel = 'Productos de los servicios';
     protected static ?string $navigationLabel = 'Productos de los servicios';
+    protected static bool $shouldRegisterNavigation = false;
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('product_service_details.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('product_service_details.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('product_service_details.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('product_service_details.delete');
+    }
 
     public static function form(Form $form): Form
     {

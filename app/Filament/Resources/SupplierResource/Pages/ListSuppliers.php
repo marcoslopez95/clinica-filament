@@ -13,7 +13,7 @@ class ListSuppliers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . SupplierResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }

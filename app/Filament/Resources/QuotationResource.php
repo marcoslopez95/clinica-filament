@@ -27,6 +27,26 @@ class QuotationResource extends Resource
     protected static ?string $pluralModelLabel = 'Cotizaciones';
     protected static ?string $navigationLabel = 'Cotizaciones';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('quotations.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('quotations.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('quotations.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('quotations.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return QuotationForm::configure($form);

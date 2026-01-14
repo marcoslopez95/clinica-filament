@@ -51,7 +51,7 @@ return [
     {
         return $form->schema([
             ...self::schema(),
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 }

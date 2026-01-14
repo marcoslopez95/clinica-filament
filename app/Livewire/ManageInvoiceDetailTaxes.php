@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use App\Filament\Actions\RefreshTotalDeleteAction;
 use Livewire\Component;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\InvoiceDetailTaxResource\Schemas\InvoiceDetailTaxForm;
@@ -65,19 +66,7 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
         return $table
             ->query(InvoiceDetailTax::query()
             ->where('invoice_detail_id', $this->invoiceDetail->id))
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-
-                TextColumn::make('percentage')
-                    ->label('Porcentaje')
-                    ->suffix('%'),
-
-                TextColumn::make('amount')
-                    ->label('Monto')
-                    ->money('USD'),
-            ])
+            ->columns(\App\Filament\Resources\InvoiceDetailTaxResource\Tables\InvoiceDetailTaxesTable::columns())
             ->headerActions([
                 CreateAction::make()
                     ->label('Añadir Impuesto')
@@ -138,8 +127,8 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
 
                         $this->dispatch('refreshTotal');
                     }),
-                DeleteAction::make()
-                    ->after(fn() => $this->dispatch('refreshTotal')),
+                    
+                    RefreshTotalDeleteAction::make(),
             ]);
     }
 

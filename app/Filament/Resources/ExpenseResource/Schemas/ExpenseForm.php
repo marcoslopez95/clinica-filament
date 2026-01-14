@@ -39,7 +39,7 @@ class ExpenseForm
 
                 ...\App\Filament\Forms\Schemas\CurrencyForm::schema(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\InvoiceDetailTaxResource\Tables;
 
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use App\Filament\Resources\InvoiceDetailTaxResource\Tables\InvoiceDetailTaxesColumns;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -16,22 +17,29 @@ use Filament\Tables\Actions\RestoreBulkAction;
 class InvoiceDetailTaxesTable
 {
 
+    public static function columns(): array
+    {
+        return [
+            TextColumn::make('name')
+                ->label('Nombre')
+                ->searchable(),
+
+            TextColumn::make('percentage')
+                ->label('Porcentaje')
+                ->suffix('%'),
+
+            TextColumn::make('amount')
+                ->label('Monto')
+                ->money('USD'),
+
+            ...\App\Filament\Forms\Tables\TimestampTable::columns(),
+        ];
+    }
+
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-
-                TextColumn::make('percentage')
-                    ->label('Porcentaje'),
-
-                TextColumn::make('amount')
-                    ->label('Monto'),
-
-                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
-            ])
+            ->columns(self::columns())
             ->filters([
                 // add filters here
             ])

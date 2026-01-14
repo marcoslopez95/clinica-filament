@@ -7,8 +7,6 @@ use App\Models\Inventory;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\DatePicker;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -17,14 +15,8 @@ use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\Actions\Action as FormAction;
 use App\Models\Warehouse;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\Grid;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -244,36 +236,10 @@ class ProductsRelationManager extends RelationManager
                         }
                         return strtolower(($p->productCategory->name) ?? '') === 'medicina';
                     })
-                    ->modalHeading('Gestionar Lotes')
-                    ->mountUsing(fn (Form $form, Model $record) => $form->fill([
-                        'batches' => $record->batchDetails->toArray(),
-                    ]))
-                    ->action(function (Model $record, array $data): void {
-                        $record->batchDetails()->delete();
-                        $batches = collect($data['batches'])->map(function ($batch) {
-                            unset($batch['id']);
-                            return $batch;
-                        })->toArray();
-                        $record->batchDetails()->createMany($batches);
-                    })
-                    ->form([
-                        Repeater::make('batches')
-                            ->label('Lotes')
-                            ->schema([
-                                TextInput::make('batch_number')
-                                    ->label('Número de Lote')
-                                    ->required(),
-                                DatePicker::make('expiration_date')
-                                    ->label('Fecha de Vencimiento')
-                                    ->required(),
-                                TextInput::make('quantity')
-                                    ->label('Cantidad')
-                                    ->numeric()
-                                    ->step(1)
-                                    ->required(),
-                            ])
-                            ->columns(3)
-                    ]),
+                    ->modalHeading(false)
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Cerrar')
+                    ->modalContent(fn (Model $record) => view('filament.actions.manage-batches', ['record' => $record])),
                 DeleteAction::make()
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');

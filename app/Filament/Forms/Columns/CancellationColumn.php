@@ -13,6 +13,6 @@ class CancellationColumn
             ->label('Motivo de anulación')
             ->default('-')
             ->toggleable(isToggledHiddenByDefault: true);
-    }
+    } 
 }
 

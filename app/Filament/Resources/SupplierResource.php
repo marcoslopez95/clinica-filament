@@ -19,6 +19,26 @@ class SupplierResource extends Resource
     protected static ?string $pluralModelLabel = 'Proveedores';
     protected static ?string $navigationLabel = 'Proveedores';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('suppliers.list');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('suppliers.create');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->can('suppliers.edit');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->can('suppliers.delete');
+    }
+
     public static function form(Form $form): Form
     {
         return SupplierForm::configure($form);

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\InvoiceResource\Pages;
 
 use App\Filament\Resources\InvoiceResource;
 use App\Filament\Actions\CancelInvoiceAction;
+use App\Services\Helper;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -36,4 +37,5 @@ class EditInvoice extends EditRecord
     {
         $this->refreshTotal();
     }
+
 }

@@ -13,7 +13,7 @@ class ListEntries extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Crear ' . EntryResource::getModelLabel()),
+            CreateAction::make(),
         ];
     }
 }
