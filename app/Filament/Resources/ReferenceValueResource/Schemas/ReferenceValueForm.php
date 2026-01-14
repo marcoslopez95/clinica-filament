@@ -7,6 +7,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
+
 class ReferenceValueForm
 {
     public static function schema(): array
@@ -35,7 +38,13 @@ class ReferenceValueForm
 
             Select::make('unit_id')
                 ->label(false)
-                ->relationship('unit', 'name')
+                ->relationship(
+                    name: 'unit',
+                    titleAttribute: 'name',
+                    modifyQueryUsing: fn (Builder $query) => $query->whereHas('categories', function (Builder $query) {
+                        $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                    })
+                )
                 ->placeholder('Unidad')
                 ->searchable()
                 ->preload(),

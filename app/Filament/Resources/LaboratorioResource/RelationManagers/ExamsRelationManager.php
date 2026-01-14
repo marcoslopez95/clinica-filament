@@ -19,6 +19,9 @@ use Filament\Notifications\Notification;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 use App\Filament\Actions\LoadResultsAction;
 
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
+
 class ExamsRelationManager extends RelationManager
 {
     protected static string $relationship = 'details';
@@ -161,7 +164,31 @@ class ExamsRelationManager extends RelationManager
                             ->options(fn() => Exam::all()->pluck('name', 'id'))
                             ->required(),
 
-                        ...\App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm::schema(),
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->relationship(
+                                name: 'unit',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->whereHas('categories', function (Builder $query) {
+                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                                })
+                            )
+                            ->searchable()
+                            ->preload(),
+
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+
+                        TextInput::make('min_value')
+                            ->label('Mínimo')
+                            ->numeric()
+                            ->required(),
+
+                        TextInput::make('max_value')
+                            ->label('Máximo')
+                            ->numeric()
+                            ->required(),
                     ])
                     ->action(function (array $data) {
                         ReferenceValue::create($data);
