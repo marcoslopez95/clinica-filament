@@ -15,7 +15,7 @@ class ReferenceValueForm
 
             TextInput::make('min_value')
                 ->label(false)
-                ->prefix('<') 
+                ->prefix('<')
                 ->required()
                 ->numeric()
                 ->placeholder('mínimo')
@@ -23,7 +23,7 @@ class ReferenceValueForm
 
             TextInput::make('max_value')
                 ->label(false)
-                ->prefix('>') 
+                ->prefix('>')
                 ->required()
                 ->numeric()
                 ->placeholder('máximo')
@@ -46,8 +46,8 @@ class ReferenceValueForm
                 ->required(),
 
             ...self::schema(),
-            
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 }

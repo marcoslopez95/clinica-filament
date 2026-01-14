@@ -25,7 +25,7 @@ class RoomForm
                     ->searchable()
                     ->nullable(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

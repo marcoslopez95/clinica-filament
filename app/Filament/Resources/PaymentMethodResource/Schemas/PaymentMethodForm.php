@@ -19,7 +19,7 @@ class PaymentMethodForm
                     ->multiple()
                     ->preload(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

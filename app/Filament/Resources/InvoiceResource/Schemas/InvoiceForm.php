@@ -60,7 +60,7 @@ class InvoiceForm
 
                 \App\Filament\Forms\Components\CancellationPlaceholder::make(),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+                \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }
 }

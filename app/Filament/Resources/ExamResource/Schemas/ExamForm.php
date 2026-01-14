@@ -26,10 +26,10 @@ class ExamForm
     public static function configure(Form $form): Form
     {
         return $form->schema([
-            
+
             ...self::schema(),
 
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 }

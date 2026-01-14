@@ -45,7 +45,7 @@ class DoctorForm
                     ->required()
                     ->label('Especialización'),
 
-                ...\App\Filament\Forms\Schemas\TimestampForm::schema()
+                \App\Filament\Forms\Schemas\TimestampForm::schema()
             ]);
     }
 }

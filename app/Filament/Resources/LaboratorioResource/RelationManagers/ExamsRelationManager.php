@@ -62,7 +62,7 @@ class ExamsRelationManager extends RelationManager
     {
         return $form->schema([
             ...self::schema($owner),
-            ...\App\Filament\Forms\Schemas\TimestampForm::schema(),
+            \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
 
@@ -159,8 +159,8 @@ class ExamsRelationManager extends RelationManager
                 RefreshTotalDeleteAction::make(),
             ])
             ->bulkActions([
-                BulkActionGroup::make([ 
-                    DeleteBulkAction::make() 
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                 ])
             ]);
     }
