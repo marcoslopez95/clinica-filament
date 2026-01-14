@@ -984,6 +984,24 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "invoices.inventories.edit",
+        "description": "Editar Inventario en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.inventories.view",
+        "description": "Ver Inventario en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "invoices.details.view",
         "description": "Ver detalle de Factura",
         "guard": "web",
@@ -1010,6 +1028,36 @@
     {
         "name": "invoices.details.attach",
         "description": "Crear detalle de Factura con recurso existente",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+        {
+        "name": "invoices.payments.create",
+        "description": "Crear Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.edit",
+        "description": "Editar Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.view",
+        "description": "Ver Pago en Factura",
         "guard": "web",
         "categoria": "Contabilidad"
     },

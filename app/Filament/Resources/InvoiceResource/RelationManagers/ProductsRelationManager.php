@@ -354,11 +354,13 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
 
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('invoices.details.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('invoices.details.bulk_delete')),
                 ]),
             ]);
     }
