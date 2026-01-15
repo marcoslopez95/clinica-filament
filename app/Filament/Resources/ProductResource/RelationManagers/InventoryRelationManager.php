@@ -94,7 +94,27 @@ class InventoryRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('products.inventories.edit')),
+                    ->visible(fn (): bool => auth()->user()->can('products.inventories.edit'))    
+                    ->action(function (array $data, $record) {
+                        if (!auth()->user()->can('products.inventories.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+                        
+                        $record->update([
+                            'amount' => $data['amount'],
+                            'warehouse_id' => $data['warehouse_id'],
+                            'stock_min' => $data['stock_min'],
+                            'batch' => $data['batch'],
+                            'end_date' => $data['end_date'],
+                            'observation' => $data['observation'],
+                        ]);
+                    }),
                 DeleteAction::make()
                     ->visible(fn (): bool => auth()->user()->can('products.inventories.delete')),
             ])

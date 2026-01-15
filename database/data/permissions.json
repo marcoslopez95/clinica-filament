@@ -126,6 +126,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "products.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "products.inventories.edit",
         "description": "Editar Inventario de Producto",
         "guard": "web",
@@ -176,6 +182,48 @@
     {
         "name": "services.delete",
         "description": "Eliminar Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.create",
+        "description": "Crear Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.attach",
+        "description": "Asociar Producto existente en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.edit.view",
+        "description": "Ver Modal para Editar Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.edit",
+        "description": "Editar Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.view",
+        "description": "Ver Productos en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.delete",
+        "description": "Eliminar Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.bulk_delete",
+        "description": "Eliminación Masiva de Productos en Servicio",
         "guard": "web",
         "categoria": "Almacén"
     },

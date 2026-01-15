@@ -6,13 +6,13 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder as FormPlaceholder;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Currency;
 use App\Models\Product;
@@ -85,6 +85,7 @@ class ProductsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Añadir producto')
+                    ->visible(fn (): bool => auth()->user()->can('services.products.create'))
                     ->form([
                         TextInput::make('name')
                             ->label('Nombre del producto')
@@ -143,6 +144,7 @@ class ProductsRelationManager extends RelationManager
 
                 CreateAction::make('add_existing')
                     ->label('Añadir producto existente')
+                    ->visible(fn (): bool => auth()->user()->can('services.products.attach'))
                     ->form([
                         Select::make('product_id')
                             ->label('Producto')
@@ -169,6 +171,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('services.products.edit.view'))
                     ->form([
                         TextInput::make('name')
                             ->label('Nombre del producto')
@@ -222,6 +225,16 @@ class ProductsRelationManager extends RelationManager
                         return $data;
                     })
                     ->action(function ($data, $record) {
+                        if (!auth()->user()->can('services.products.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+                        
                         if ($record->product) {
                             $record->product->update([
                                 'name' => $data['name'],
@@ -236,8 +249,20 @@ class ProductsRelationManager extends RelationManager
                             'quantity' => $data['quantity'],
                         ]);
                     }),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('services.products.delete')),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('services.products.bulk_delete')),
+                ]),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('services.products.view');
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
