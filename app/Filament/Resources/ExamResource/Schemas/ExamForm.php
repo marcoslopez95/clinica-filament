@@ -13,7 +13,7 @@ class ExamForm
             TextInput::make('name')
                 ->label('Nombre')
                 ->required()
-                ->unique(ignorable: true),
+                ->unique('exams', ignoreRecord: true),
 
             TextInput::make('price')
                 ->label('Precio')

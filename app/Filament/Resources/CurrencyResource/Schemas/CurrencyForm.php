@@ -18,12 +18,12 @@ class CurrencyForm
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required()
-                    ->unique(ignorable: true),
+                    ->unique('currencies', ignoreRecord: true),
 
                 TextInput::make('symbol')
                     ->label('Símbolo')
                     ->required()
-                    ->unique(ignorable: true),
+                    ->unique('currencies', ignoreRecord: true),
 
                 TextInput::make('exchange')
                     ->label('Tasa de Cambio')

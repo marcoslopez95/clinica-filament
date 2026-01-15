@@ -14,7 +14,7 @@ class UnitCategoryForm
             TextInput::make('name')
                 ->label('Nombre')
                 ->required()
-                ->unique(ignorable: true),
+                ->unique('unit_categories', ignoreRecord: true),
 
             Select::make('units')
                 ->label('Unidades')

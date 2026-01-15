@@ -14,7 +14,7 @@ return [
     TextInput::make('name')
         ->label('Nombre')
         ->required()
-        ->unique(ignorable: true),
+        ->unique('products', ignoreRecord: true),
 
     TextInput::make('buy_price')
         ->label('Precio de Compra')

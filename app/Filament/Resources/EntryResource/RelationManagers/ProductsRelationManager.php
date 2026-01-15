@@ -246,6 +246,56 @@ class ProductsRelationManager extends RelationManager
                     ->modalCancelActionLabel('Cerrar')
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
 
+                Action::make('return_product')
+                    ->label('Devolver producto')
+                    ->color('danger')
+                    ->icon('heroicon-m-arrow-uturn-left')
+                    ->visible(fn (): bool => auth()->user()->can('entries.details.return'))
+                    ->form([
+                        TextInput::make('current_quantity')
+                            ->label('Total del producto')
+                            ->numeric()
+                            ->readOnly()
+                            ->default(fn (Model $record) => $record->quantity),
+                        TextInput::make('return_quantity')
+                            ->label('Total a devolver')
+                            ->numeric()
+                            ->required()
+                            ->minValue(1)
+                            ->maxValue(fn (Model $record) => $record->quantity),
+                    ])
+                    ->action(function (Model $record, array $data, $livewire): void {
+                        $returnQuantity = $data['return_quantity'];
+
+                        // Crear el registro negativo en los detalles de la entrada
+                        $newDetail = $record->replicate()->fill([
+                            'quantity' => - $returnQuantity,
+                        ]);
+                        $newDetail->save();
+
+                        // Actualizar el inventario
+                        $warehouse = Warehouse::getFarmacia();
+                        $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
+
+                        if ($product) {
+                            $inventory = Inventory::where('warehouse_id', $warehouse->id)
+                                ->where('product_id', $product->id)
+                                ->first();
+
+                            if ($inventory) {
+                                $inventory->decrement('amount', $returnQuantity);
+                            }
+                        }
+
+                        Notification::make()
+                            ->title('Producto devuelto')
+                            ->body("Se han devuelto {$returnQuantity} unidades de " . ($product->name ?? 'producto'))
+                            ->success()
+                            ->send();
+
+                        $livewire->dispatch('refreshTotal');
+                    }),
+
                 Action::make('batches')
                     ->label('Lotes')
                     ->color('success')

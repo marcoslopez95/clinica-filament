@@ -16,7 +16,7 @@ class SimpleForm
             ->maxLength(255);
 
         if ($uniqueTable) {
-            $nameField->unique($uniqueTable, ignorable: true);
+            $nameField->unique($uniqueTable, ignoreRecord: true);
         }
 
         return [
