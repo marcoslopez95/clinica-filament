@@ -18,13 +18,13 @@ class HozpitaliacionesResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $slug = 'hozpitaliaciones';
+    protected static ?string $slug = 'hospitalizacion';
 
     protected static ?string $navigationGroup = 'Contabilidad';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?string $modelLabel = 'Hozpitaliación';
-    protected static ?string $pluralModelLabel = 'Hozpitaliaciones';
-    protected static ?string $navigationLabel = 'Hozpitaliaciones';
+    protected static ?string $modelLabel = 'Hospitalización';
+    protected static ?string $pluralModelLabel = 'Hospitalizaciones';
+    protected static ?string $navigationLabel = 'Hospitalizaciones';
 
     public static function canViewAny(): bool
     {
