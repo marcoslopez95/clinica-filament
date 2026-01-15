@@ -174,7 +174,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('entries.details.edit.view'))
+                    ->visible(fn (Model $record): bool => auth()->user()->can('entries.details.edit.view') && $record->quantity > 0)
                     ->form([
                         ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
 
@@ -244,13 +244,16 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading(false)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Cerrar')
+                    ->visible(fn (Model $record): bool =>$record->quantity > 0 )
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
 
                 Action::make('return_product')
                     ->label('Devolver producto')
                     ->color('danger')
                     ->icon('heroicon-m-arrow-uturn-left')
-                    ->visible(fn (): bool => auth()->user()->can('entries.details.return'))
+                    ->visible(fn (Model $record): bool =>
+                        auth()->user()->can('entries.details.return') && $record->quantity > 0
+                    )
                     ->form([
                         TextInput::make('current_quantity')
                             ->label('Total del producto')
@@ -268,7 +271,9 @@ class ProductsRelationManager extends RelationManager
                         $returnQuantity = $data['return_quantity'];
 
                         // Crear el registro negativo en los detalles de la entrada
-                        $newDetail = $record->replicate()->fill([
+                        $newDetail = $record->replicate();
+                        unset($newDetail->subtotal);
+                        $newDetail->fill([
                             'quantity' => - $returnQuantity,
                         ]);
                         $newDetail->save();
