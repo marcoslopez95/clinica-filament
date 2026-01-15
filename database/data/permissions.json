@@ -120,6 +120,36 @@
         "categoria": "Almacén"
     },
     {
+        "name": "products.inventories.create",
+        "description": "Crear Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.edit",
+        "description": "Editar Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.view",
+        "description": "Ver Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.delete",
+        "description": "Eliminar Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.bulk_delete",
+        "description": "Eliminación Masiva de Inventarios de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "services.list",
         "description": "Listar Servicios",
         "guard": "web",
@@ -208,6 +238,36 @@
         "description": "Eliminar Modo de Inventario",
         "guard": "web",
         "categoria": "Almacén"
+    },
+    {
+        "name": "hozpitaliaciones.list",
+        "description": "Listar Hozpitaliaciones",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.view",
+        "description": "Ver Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.create",
+        "description": "Crear Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.edit",
+        "description": "Editar Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.delete",
+        "description": "Eliminar Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
     },
     {
         "name": "hospitalizations.inventories.edit",
@@ -311,7 +371,7 @@
         "guard": "web",
         "categoria": "Contabilidad"
     },
-        {
+    {
         "name": "laboratories.payments.create",
         "description": "Crear Pago en Laboratorio",
         "guard": "web",
@@ -1050,36 +1110,6 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hozpitaliaciones.list",
-        "description": "Listar Hozpitaliaciones",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.view",
-        "description": "Ver Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.create",
-        "description": "Crear Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.edit",
-        "description": "Editar Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.delete",
-        "description": "Eliminar Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
         "name": "invoices.list",
         "description": "Listar Facturas",
         "guard": "web",
@@ -1163,7 +1193,7 @@
         "guard": "web",
         "categoria": "Contabilidad"
     },
-        {
+    {
         "name": "invoices.payments.create",
         "description": "Crear Pago en Factura",
         "guard": "web",

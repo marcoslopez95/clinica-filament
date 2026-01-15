@@ -2,10 +2,17 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -22,31 +29,31 @@ class InventoryRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->label('Cantidad Actual')
                     ->numeric()
                     ->required()
                     ->default(0),
 
-                Forms\Components\Select::make('warehouse_id')
+                Select::make('warehouse_id') 
                     ->label('Almacén')
                     ->relationship('warehouse', 'name')
                     ->searchable()
                     ->preload(),
 
-                Forms\Components\TextInput::make('stock_min')
+                TextInput::make('stock_min')
                     ->label('Stock Mínimo')
                     ->numeric()
                     ->required()
                     ->default(0),
 
-                Forms\Components\TextInput::make('batch')
+                TextInput::make('batch')
                     ->label('Lote'),
 
-                Forms\Components\DatePicker::make('end_date')
+                DatePicker::make('end_date')
                     ->label('Fecha de Vencimiento'),
 
-                Forms\Components\TextInput::make('observation')
+                TextInput::make('observation')
                     ->label('Observación')
                     ->columnSpanFull(),
             ]);
@@ -57,17 +64,21 @@ class InventoryRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('product_id')
             ->columns([
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Cantidad Actual'),
-                Tables\Columns\TextColumn::make('warehouse.name')
+
+                TextColumn::make('warehouse.name')
                     ->label('Almacén')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('stock_min')
+
+                TextColumn::make('stock_min')
                     ->label('Stock Mínimo'),
-                Tables\Columns\TextColumn::make('batch')
+
+                TextColumn::make('batch')
                     ->label('Lote'),
-                Tables\Columns\TextColumn::make('end_date')
+                    
+                TextColumn::make('end_date')
                     ->label('Vencimiento')
                     ->date(),
             ])
@@ -75,17 +86,28 @@ class InventoryRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->visible(fn (RelationManager $livewire): bool => $livewire->getOwnerRecord()->inventory === null),
+                CreateAction::make()
+                    ->visible(fn (RelationManager $livewire): bool => 
+                        $livewire->getOwnerRecord()->inventory === null && 
+                        auth()->user()->can('products.inventories.create')
+                    ),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('products.inventories.edit')),
+                DeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('products.inventories.delete')),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('products.inventories.bulk_delete')),
+                ])->visible(fn (): bool => auth()->user()->can('products.inventories.bulk_delete')),
             ]);
+    }
+
+    public static function canViewForRecord($ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('products.inventories.view');
     }
 }
