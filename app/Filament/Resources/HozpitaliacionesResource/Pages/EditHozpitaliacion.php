@@ -28,6 +28,11 @@ class EditHozpitaliacion extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            \Filament\Actions\Action::make('print')
+                ->label('Imprimir')
+                ->icon('heroicon-o-printer')
+                ->url(fn ($record) => route('print.invoice', $record))
+                ->openUrlInNewTab(),
             CancelInvoiceAction::makeForm(),
         ];
     }

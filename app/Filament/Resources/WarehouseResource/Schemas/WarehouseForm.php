@@ -10,8 +10,8 @@ class WarehouseForm
     public static function configure(Form $form): Form
     {
         return $form->schema([
-            
-            ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
+
+            ...\App\Filament\Forms\Schemas\SimpleForm::schema('warehouses'),
 
             TextInput::make('location')
                 ->label('Ubicación')

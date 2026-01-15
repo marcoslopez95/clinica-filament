@@ -14,5 +14,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/print-invoice/{record}', \App\Http\Controllers\PrintInvoiceController::class)->name('print.invoice');
 });
 

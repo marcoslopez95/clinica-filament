@@ -18,12 +18,24 @@ class ReferenceValueForm
             TextInput::make('name')
                 ->label(false)
                 ->placeholder('Nombre')
+                ->unique(column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get, $livewire) {
+                    $examId = $get('exam_id');
+
+                    // Si no hay exam_id en el formulario actual (podría ser un RelationManager),
+                    // intentamos obtenerlo del registro padre.
+                    if (!$examId && $livewire instanceof \Filament\Resources\RelationManagers\RelationManager) {
+                        $examId = $livewire->getOwnerRecord()->id;
+                    }
+
+                    return $rule
+                        ->where('exam_id', $examId)
+                        ->whereNull('deleted_at');
+                })
                 ->required(),
 
             TextInput::make('min_value')
                 ->label(false)
                 ->prefix('<')
-                ->required()
                 ->numeric()
                 ->placeholder('mínimo')
                 ->extraAttributes(['class' => 'text-center']),
@@ -31,7 +43,6 @@ class ReferenceValueForm
             TextInput::make('max_value')
                 ->label(false)
                 ->prefix('>')
-                ->required()
                 ->numeric()
                 ->placeholder('máximo')
                 ->extraAttributes(['class' => 'text-center']),

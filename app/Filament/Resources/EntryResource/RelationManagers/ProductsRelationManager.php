@@ -47,11 +47,17 @@ class ProductsRelationManager extends RelationManager
                     $product = Product::find($state);
                     if ($product) {
                         $set('price', $product->buy_price);
+                        $set('sell_price', $product->sell_price);
                     }
                 }),
 
             TextInput::make('price')
                 ->label('Precio de compra')
+                ->numeric()
+                ->required(),
+
+            TextInput::make('sell_price')
+                ->label('Precio de venta')
                 ->numeric()
                 ->required(),
 
@@ -106,31 +112,22 @@ class ProductsRelationManager extends RelationManager
                             'currency_id' => $data['currency_id'],
                         ]);
 
-                        $warehouse = Warehouse::where('name', 'Bodega')->first();
-                        if (! $warehouse) {
-                            Notification::make()
-                                ->body('Bodega no encontrada')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
+                        $warehouse = Warehouse::getFarmacia();
 
-                        if (Inventory::where('warehouse_id', $warehouse->id)
-                            ->whereHas('product', fn($q) => $q->where('name', $product->name))
-                            ->exists()) {
-                                Notification::make()
-                                    ->body('Este producto ya existe en el inventario de la Bodega')
-                                    ->danger()
-                                    ->send();
-                                return;
-                        }
+                        $inventory = Inventory::where('warehouse_id', $warehouse->id)
+                            ->where('product_id', $product->id)
+                            ->first();
 
-                        Inventory::create([
-                            'product_id' => $product->id,
-                            'warehouse_id' => $warehouse->id,
-                            'stock_min' => 0,
-                            'amount' => 0,
-                        ]);
+                        if ($inventory) {
+                            $inventory->increment('amount', $data['quantity']);
+                        } else {
+                            Inventory::create([
+                                'product_id' => $product->id,
+                                'warehouse_id' => $warehouse->id,
+                                'stock_min' => 0,
+                                'amount' => $data['quantity'],
+                            ]);
+                        }
 
                         $owner = $livewire->getOwnerRecord();
                         $owner
@@ -151,6 +148,14 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading('Añadir producto existente a la entrada')
                     ->form($this->productFormSchema())
                     ->action(function (array $data, $livewire) {
+                        $product = Product::find($data['content_id']);
+                        if ($product) {
+                            $product->update([
+                                'buy_price' => $data['price'],
+                                'sell_price' => $data['sell_price'],
+                            ]);
+                        }
+
                         $owner = $livewire->getOwnerRecord();
                         $owner
                             ->details()
@@ -161,12 +166,29 @@ class ProductsRelationManager extends RelationManager
                                 'quantity' => $data['quantity'],
                             ]);
 
+                        $warehouse = Warehouse::getFarmacia();
+
+                        $inventory = Inventory::where('warehouse_id', $warehouse->id)
+                            ->where('product_id', $data['content_id'])
+                            ->first();
+
+                        if ($inventory) {
+                            $inventory->increment('amount', $data['quantity']);
+                        } else {
+                            Inventory::create([
+                                'product_id' => $data['content_id'],
+                                'warehouse_id' => $warehouse->id,
+                                'stock_min' => 0,
+                                'amount' => $data['quantity'],
+                            ]);
+                        }
+
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
             ->actions([
                 EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('entries.details.edit.view'))
+                    ->visible(fn (Model $record): bool => auth()->user()->can('entries.details.edit.view') && $record->quantity > 0)
                     ->form([
                         ...\App\Filament\Resources\ProductResource\Schemas\ProductForm::schema(),
 
@@ -236,7 +258,62 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading(false)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Cerrar')
+                    ->visible(fn (Model $record): bool =>$record->quantity > 0 )
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
+
+                Action::make('return_product')
+                    ->label('Devolver producto')
+                    ->color('danger')
+                    ->icon('heroicon-m-arrow-uturn-left')
+                    ->visible(fn (Model $record): bool =>
+                        auth()->user()->can('entries.details.return') && $record->quantity > 0
+                    )
+                    ->form([
+                        TextInput::make('current_quantity')
+                            ->label('Total del producto')
+                            ->numeric()
+                            ->readOnly()
+                            ->default(fn (Model $record) => $record->quantity),
+                        TextInput::make('return_quantity')
+                            ->label('Total a devolver')
+                            ->numeric()
+                            ->required()
+                            ->minValue(1)
+                            ->maxValue(fn (Model $record) => $record->quantity),
+                    ])
+                    ->action(function (Model $record, array $data, $livewire): void {
+                        $returnQuantity = $data['return_quantity'];
+
+                        // Crear el registro negativo en los detalles de la entrada
+                        $newDetail = $record->replicate();
+                        unset($newDetail->subtotal);
+                        $newDetail->fill([
+                            'quantity' => - $returnQuantity,
+                        ]);
+                        $newDetail->save();
+
+                        // Actualizar el inventario
+                        $warehouse = Warehouse::getFarmacia();
+                        $product = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
+
+                        if ($product) {
+                            $inventory = Inventory::where('warehouse_id', $warehouse->id)
+                                ->where('product_id', $product->id)
+                                ->first();
+
+                            if ($inventory) {
+                                $inventory->decrement('amount', $returnQuantity);
+                            }
+                        }
+
+                        Notification::make()
+                            ->title('Producto devuelto')
+                            ->body("Se han devuelto {$returnQuantity} unidades de " . ($product->name ?? 'producto'))
+                            ->success()
+                            ->send();
+
+                        $livewire->dispatch('refreshTotal');
+                    }),
 
                 Action::make('batches')
                     ->label('Lotes')

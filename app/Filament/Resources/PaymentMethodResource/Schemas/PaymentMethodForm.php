@@ -11,7 +11,7 @@ class PaymentMethodForm
     {
         return $form
             ->schema([
-                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema('payment_methods'),
 
                 Select::make('currencies')
                     ->label('Moneda')

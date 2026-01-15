@@ -1176,6 +1176,12 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "entries.details.return",
+        "description": "Devolver Producto en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "expenses.list",
         "description": "Listar Gastos",
         "guard": "web",
@@ -1402,5 +1408,11 @@
         "description": "Eliminar Usuario",
         "guard": "web",
         "categoria": "Administración"
+    },
+    {
+        "name": "reports.list",
+        "description": "Ver Reportes de Facturas",
+        "guard": "web",
+        "categoria": "Reportes"
     }
 ]

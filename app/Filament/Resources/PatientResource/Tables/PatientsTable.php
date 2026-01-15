@@ -41,9 +41,12 @@ class PatientsTable
                 TextColumn::make('address')
                     ->label('Dirección'),
 
+                TextColumn::make('phone')
+                    ->label('Teléfono'),
+
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

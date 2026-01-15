@@ -14,7 +14,7 @@ class DepartmentForm
     {
         return $form
             ->schema([
-                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema('departments'),
                 \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);
     }

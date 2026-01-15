@@ -14,14 +14,16 @@ class Warehouse extends Model implements Auditable
     use AuditableTrait;
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'location', 'description'];
+
     public function inventories(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Inventory::class);
     }
 
-    public static function getBodega(): Warehouse
+    public static function getFarmacia(): Warehouse
     {
-        return self::firstOrCreate(['name' => 'Bodega'],[
+        return self::firstOrCreate(['name' => 'Farmacia'],[
             'description' => 'Almacén principal de suministros',
             'location' => 'bodega'
         ]);

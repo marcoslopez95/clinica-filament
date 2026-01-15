@@ -118,7 +118,16 @@ class ExamsRelationManager extends RelationManager
                     ->label('Crear examen')
                     ->visible(fn (): bool => auth()->user()->can('laboratories.details.create'))
                     ->modalHeading(false)
-                    ->form(\App\Filament\Resources\ExamResource\Schemas\ExamForm::schema())
+                    ->form(function() {
+                        return [
+                            ... \App\Filament\Resources\ExamResource\Schemas\ExamForm::schema(),
+                            \Filament\Forms\Components\Repeater::make('referenceValues')
+                                ->label('Valores Referenciales')
+                                ->schema(ReferenceValueForm::schema())
+                                ->columns(4)
+                                ->default([])
+                        ];
+                    })
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
 
@@ -180,17 +189,20 @@ class ExamsRelationManager extends RelationManager
 
                         TextInput::make('name')
                             ->label('Nombre')
+                            ->unique(column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get) {
+                                return $rule
+                                    ->where('exam_id', $get('exam_id'))
+                                    ->whereNull('deleted_at');
+                            })
                             ->required(),
 
                         TextInput::make('min_value')
                             ->label('Mínimo')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
 
                         TextInput::make('max_value')
                             ->label('Máximo')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
                     ])
                     ->action(function (array $data) {
                         ReferenceValue::create($data);

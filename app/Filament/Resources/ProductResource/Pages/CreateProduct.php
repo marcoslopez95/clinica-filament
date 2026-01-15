@@ -26,7 +26,7 @@ class CreateProduct extends CreateRecord
 
     protected function afterCreate()
     {
-        $warehouse = Warehouse::getBodega();
+        $warehouse = Warehouse::getFarmacia();
         $inventory = new Inventory([
             'stock_min' => 0,
             'amount' => 0,
