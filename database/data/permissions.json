@@ -1038,6 +1038,12 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "entries.details.batches.view",
+        "description": "Ver Lotes en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "entries.discounts.create",
         "description": "Crear Descuento en Entrada",
         "guard": "web",
@@ -1316,6 +1322,30 @@
     {
         "name": "invoices.payments.edit.view",
         "description": "Ver Modal para Editar Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.create",
+        "description": "Crear Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.edit.view",
+        "description": "Ver Modal para Editar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.edit",
+        "description": "Editar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.delete",
+        "description": "Eliminar Lote en Detalle de Factura",
         "guard": "web",
         "categoria": "Contabilidad"
     },

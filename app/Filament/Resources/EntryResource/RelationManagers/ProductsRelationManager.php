@@ -320,6 +320,10 @@ class ProductsRelationManager extends RelationManager
                     ->color('success')
                     ->icon('heroicon-m-archive-box')
                     ->visible(function (Model $record): bool {
+                        if (!auth()->user()->can('entries.details.batches.view')) {
+                            return false;
+                        }
+
                         $p = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
                         if (! $p || ! ($p->productCategory ?? null)) {
                             return false;
