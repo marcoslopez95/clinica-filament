@@ -25,7 +25,12 @@ class UnitForm
                     ->multiple()
                     ->relationship('categories', 'name')
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+                    ]),
 
                 \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

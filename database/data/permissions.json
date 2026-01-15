@@ -810,6 +810,18 @@
         "categoria": "Configuración"
     },
     {
+        "name": "reference_value_results.edit.view",
+        "description": "Ver Modal para Editar Resultados de Valores Referenciales",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "reference_value_results.edit",
+        "description": "Editar Resultados de Valores Referenciales",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "rooms.list",
         "description": "Listar Habitaciones",
         "guard": "web",

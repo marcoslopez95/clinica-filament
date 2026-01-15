@@ -18,6 +18,7 @@ use App\Models\ReferenceValue;
 use Filament\Notifications\Notification;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 use App\Filament\Actions\LoadResultsAction;
+use App\Models\Unit;
 
 use App\Enums\UnitCategoryEnum;
 use Illuminate\Database\Eloquent\Builder;
@@ -168,14 +169,13 @@ class ExamsRelationManager extends RelationManager
 
                         Select::make('unit_id')
                             ->label('Unidad')
-                            ->relationship(
-                                name: 'unit',
-                                titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->whereHas('categories', function (Builder $query) {
+                            ->options(function () {
+                                return Unit::whereHas('categories', function ($query) {
                                     $query->where('name', UnitCategoryEnum::LABORATORY->value);
                                 })
-                            )
-                            ->searchable()
+                                ->pluck('name', 'id')
+                                ->toArray();
+                            })
                             ->preload(),
 
                         TextInput::make('name')

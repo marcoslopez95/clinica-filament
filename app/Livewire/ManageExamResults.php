@@ -6,8 +6,6 @@ use App\Models\InvoiceDetail;
 use App\Models\ReferenceValueResult;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -80,10 +78,21 @@ class ManageExamResults extends Component implements HasForms, HasTable
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('reference_value_results.edit.view'))
                     ->modalHeading('Editar Resultado')
                     ->modalWidth('md')
                     ->form($this->formSchema())
                     ->action(function (ReferenceValueResult $record, array $data) {
+                        if (!auth()->user()->can('reference_value_results.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar resultados de exámenes')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         $record->update($data);
                     }),
             ]);
