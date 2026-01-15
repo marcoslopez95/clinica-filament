@@ -45,6 +45,11 @@ class QuotationsTable
             ->filters([
             ])
             ->actions([
+                \Filament\Tables\Actions\Action::make('print')
+                    ->label('Imprimir')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn ($record) => route('print.invoice', $record))
+                    ->openUrlInNewTab(),
                 CancelInvoiceAction::makeTable(),
                 MakeInvoiceAction::makeTable(),
                 EditAction::make(),

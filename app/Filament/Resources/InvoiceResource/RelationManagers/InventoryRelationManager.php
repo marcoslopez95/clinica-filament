@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\InvoiceResource\RelationManagers;
 
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 
 class InventoryRelationManager extends RelationManager
 {
@@ -21,29 +25,29 @@ class InventoryRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->label('Cantidad Actual')
                     ->numeric()
                     ->required(),
 
-                Forms\Components\Select::make('warehouse_id')
+                Select::make('warehouse_id')
                     ->label('Almacén')
                     ->relationship('warehouse', 'name')
                     ->searchable()
                     ->preload(),
 
-                Forms\Components\TextInput::make('stock_min')
+                TextInput::make('stock_min')
                     ->label('Stock Mínimo')
                     ->numeric()
                     ->required(),
 
-                Forms\Components\TextInput::make('batch')
+                TextInput::make('batch')
                     ->label('Lote'),
 
-                Forms\Components\DatePicker::make('end_date')
+                DatePicker::make('end_date')
                     ->label('Fecha de Vencimiento'),
 
-                Forms\Components\TextInput::make('observation')
+                TextInput::make('observation')
                     ->label('Observación')
                     ->columnSpanFull(),
             ]);
@@ -54,21 +58,21 @@ class InventoryRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('product.name')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('warehouse.name')
+                TextColumn::make('warehouse.name')
                     ->label('Almacén')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Cantidad Actual'),
-                Tables\Columns\TextColumn::make('stock_min')
+                TextColumn::make('stock_min')
                     ->label('Stock Mínimo'),
-                Tables\Columns\TextColumn::make('batch')
+                TextColumn::make('batch')
                     ->label('Lote'),
-                Tables\Columns\TextColumn::make('end_date')
+                TextColumn::make('end_date')
                     ->label('Vencimiento')
                     ->date(),
             ])
@@ -76,13 +80,30 @@ class InventoryRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                // No permitir crear desde aquí
+                // No permitir crear desde aquí, ya que se crean en el otro RelationManager
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('Ajustar Inventario'),
+                EditAction::make()
+                    ->label('Ajustar Inventario')
+                    ->visible(fn (): bool => auth()->user()->can('invoices.inventories.edit.view'))
+                    ->action(function (Model $record, array $data, $livewire): void {
+                        if (!auth()->user()->can('invoices.inventories.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+                    }),
             ])
             ->bulkActions([
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('invoices.inventories.view');
     }
 }

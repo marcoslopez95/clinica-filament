@@ -12,7 +12,7 @@ class RoomForm
     {
         return $form
             ->schema([
-                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema('rooms'),
 
                 TextInput::make('price')
                     ->label('Precio')

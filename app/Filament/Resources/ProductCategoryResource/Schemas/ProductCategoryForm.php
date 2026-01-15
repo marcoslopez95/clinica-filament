@@ -10,7 +10,7 @@ class ProductCategoryForm
     {
         return $form
             ->schema([
-                ...\App\Filament\Forms\Schemas\SimpleForm::schema(),
+                ...\App\Filament\Forms\Schemas\SimpleForm::schema('product_categories'),
 
                 \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

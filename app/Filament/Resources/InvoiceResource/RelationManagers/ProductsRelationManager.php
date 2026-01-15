@@ -148,13 +148,25 @@ class ProductsRelationManager extends RelationManager
                     ->label('Crear recurso')
                     ->modalHeading('Crear recurso')
                     ->modalWidth('sm')
+                    ->visible(
+                        fn () => auth()->user()->can('products.view') || auth()->user()->can('services.view')
+                    )
                     ->form([
                         Radio::make('resource')
                             ->label(false)
-                            ->options([
-                                'product' => 'Producto',
-                                'service' => 'Servicio',
-                            ])
+                            ->options(function () {
+                                $options = [];
+
+                                if (auth()->user()->can('products.view')) {
+                                    $options['product'] = 'Producto';
+                                }
+
+                                if (auth()->user()->can('services.view')) {
+                                    $options['service'] = 'Servicio';
+                                }
+
+                                return $options;
+                            })
                             ->required(),
                     ])
                     ->action(function (array $data, $livewire) {
@@ -177,6 +189,7 @@ class ProductsRelationManager extends RelationManager
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
+                    ->visible(fn (): bool => auth()->user()->can('invoices.details.attach'))
                     ->modalHeading('Añadir recurso existente a la factura')
                     ->form($this->schema())
                         ->action(function (array $data, $livewire) {
@@ -243,6 +256,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('invoices.details.edit.view'))
                     ->form(function (Form $form) {
                         return $form->schema([
                             Hidden::make('content_type')
@@ -319,6 +333,17 @@ class ProductsRelationManager extends RelationManager
                         ]);
                     })
                     ->action(function (Model $record, array $data): void {
+
+                        if (!auth()->user()->can('invoices.details.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         $record->update([
                             'content_id' => $data['content_id'],
                             'price' => $data['price'],
@@ -329,13 +354,20 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
 
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('invoices.details.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('invoices.details.bulk_delete')),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('invoices.details.view');
     }
 
     public function form(Form $form): Form

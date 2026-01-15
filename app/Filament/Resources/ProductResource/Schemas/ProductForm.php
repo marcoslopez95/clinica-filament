@@ -13,7 +13,8 @@ class ProductForm
 return [
     TextInput::make('name')
         ->label('Nombre')
-        ->required(),
+        ->required()
+        ->unique('products', ignoreRecord: true),
 
     TextInput::make('buy_price')
         ->label('Precio de Compra')
