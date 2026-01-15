@@ -47,11 +47,17 @@ class ProductsRelationManager extends RelationManager
                     $product = Product::find($state);
                     if ($product) {
                         $set('price', $product->buy_price);
+                        $set('sell_price', $product->sell_price);
                     }
                 }),
 
             TextInput::make('price')
                 ->label('Precio de compra')
+                ->numeric()
+                ->required(),
+
+            TextInput::make('sell_price')
+                ->label('Precio de venta')
                 ->numeric()
                 ->required(),
 
@@ -142,6 +148,14 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading('Añadir producto existente a la entrada')
                     ->form($this->productFormSchema())
                     ->action(function (array $data, $livewire) {
+                        $product = Product::find($data['content_id']);
+                        if ($product) {
+                            $product->update([
+                                'buy_price' => $data['price'],
+                                'sell_price' => $data['sell_price'],
+                            ]);
+                        }
+
                         $owner = $livewire->getOwnerRecord();
                         $owner
                             ->details()
