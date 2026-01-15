@@ -21,6 +21,8 @@ class Product extends Model implements Auditable
     use AuditableTrait;
     use SoftDeletes;
 
+    protected $fillable = ['name', 'buy_price', 'sell_price', 'unit_id', 'product_category_id', 'currency_id'];
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);

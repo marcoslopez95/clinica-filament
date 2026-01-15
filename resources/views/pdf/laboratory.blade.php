@@ -40,6 +40,9 @@
         .text-right {
             text-align: right;
         }
+        .text-center {
+            text-align: center;
+        }
         .payments-table {
             width: 100%;
             border-collapse: collapse;
@@ -58,15 +61,19 @@
 <body>
     <table class="header">
         <tr>
-            <td width="50%">
-                <div class="title">INFORME DE LABORATORIO</div>
+            <td width="20%">
+                <img src="{{ public_path('images/logo.png') }}" style="width: 80px; height: auto;">
+            </td>
+            <td width="40%">
+                <div class="title"></div>
                 <div><strong>Nro:</strong> {{ $record->id }}</div>
                 <div><strong>Fecha:</strong> {{ $record->date->format('d/m/Y') }}</div>
             </td>
-            <td width="50%" class="text-right">
+            <td width="40%" class="text-right">
                 <div><strong>Paciente:</strong>
                     @if($record->invoiceable_type === 'App\Models\Patient')
                         {{ $record->invoiceable->last_name }}, {{ $record->invoiceable->first_name }}
+                        <div><strong>Teléfono:</strong> {{ $record->invoiceable->phone ?? 'N/A' }}</div>
                     @else
                         {{ $record->invoiceable->name ?? 'N/A' }}
                     @endif
@@ -76,13 +83,8 @@
     </table>
 
     @foreach($record->details as $detail)
-        <div class="exam-header">
-            <table width="100%">
-                <tr>
-                    <td>{{ $detail->content->name ?? 'Examen' }}</td>
-                    <td class="text-right">Precio: {{ number_format($detail->price, 2) }}</td>
-                </tr>
-            </table>
+        <div class="exam-header text-center">
+            {{ $detail->content->name ?? 'Examen' }}
         </div>
         <table class="results-table">
             <thead>
@@ -97,7 +99,7 @@
                 @forelse($detail->referenceResults as $result)
                     <tr>
                         <td>{{ $result->referenceValue->name ?? 'N/A' }}</td>
-                        <td>{{ $result->referenceValue->unit->name ?? 'N/A' }}</td>
+                        <td>{!! $result->referenceValue->unit->name ?? 'N/A' !!}</td>
                         <td>
                             @if($result->referenceValue->min_value && $result->referenceValue->max_value)
                                 {{ $result->referenceValue->min_value }} - {{ $result->referenceValue->max_value }}
@@ -116,32 +118,5 @@
         </table>
     @endforeach
 
-    <div class="text-right" style="margin-top: 10px;">
-        <strong>TOTAL: {{ number_format($record->details->sum('subtotal'), 2) }}</strong>
-    </div>
-
-    <h3>Desglose de Pagos</h3>
-    <table class="payments-table">
-        <thead>
-            <tr>
-                <th>Método de Pago</th>
-                <th>Moneda</th>
-                <th class="text-right">Monto</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($record->payments as $payment)
-                <tr>
-                    <td>{{ $payment->paymentMethod->name ?? 'N/A' }}</td>
-                    <td>{{ $payment->currency->name ?? 'N/A' }}</td>
-                    <td class="text-right">{{ number_format($payment->amount, 2) }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="3" class="text-center">No hay pagos registrados</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
 </body>
 </html>

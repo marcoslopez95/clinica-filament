@@ -18,6 +18,7 @@ class Inventory extends Model implements Auditable
     use AuditableTrait;
     use SoftDeletes;
 
+    protected $fillable = ['product_id', 'warehouse_id', 'amount', 'stock_min', 'batch', 'end_date', 'observation'];
 
     public function product(): BelongsTo
     {

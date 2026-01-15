@@ -10,6 +10,9 @@ use Filament\Resources\Pages\ListRecords;
 
 use App\Models\Inventory;
 use App\Models\Warehouse;
+use App\Imports\InventoryImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,6 +26,37 @@ class ListInventories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('importar_inventario')
+                ->label('Importar')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('info')
+                ->form([
+                    FileUpload::make('attachment')
+                        ->label('Archivo Excel')
+                        ->required()
+                        ->disk('public')
+                        ->directory('imports')
+                ])
+                ->action(function (array $data) {
+                    $file = storage_path('app/public/' . $data['attachment']);
+
+                    try {
+                        Excel::import(new InventoryImport, $file);
+
+                        Notification::make()
+                            ->title('Importación completada')
+                            ->body('El inventario se ha importado correctamente.')
+                            ->success()
+                            ->send();
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->title('Error en la importación')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
+
             Action::make('mover_inventario')
                 ->label('Mover Varios')
                 ->icon('heroicon-o-arrows-right-left')

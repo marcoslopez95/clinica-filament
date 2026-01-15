@@ -48,7 +48,10 @@
 <body>
     <table class="header">
         <tr>
-            <td width="50%">
+            <td width="20%">
+                <img src="{{ public_path('images/logo.png') }}" style="width: 80px; height: auto;">
+            </td>
+            <td width="40%">
                 <div class="title">
                     @php
                         $typeName = match($record->invoice_type) {
@@ -63,7 +66,7 @@
                 <div><strong>Nro:</strong> {{ $record->id }}</div>
                 <div><strong>Fecha:</strong> {{ $record->date->format('d/m/Y') }}</div>
             </td>
-            <td width="50%" class="text-right">
+            <td width="40%" class="text-right">
                 <div><strong>Cliente/Proveedor:</strong>
                     @if($record->invoiceable_type === 'App\Models\Patient')
                         {{ $record->invoiceable->last_name }}, {{ $record->invoiceable->first_name }}

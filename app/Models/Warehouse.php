@@ -14,6 +14,8 @@ class Warehouse extends Model implements Auditable
     use AuditableTrait;
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'location', 'description'];
+
     public function inventories(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Inventory::class);
