@@ -1396,5 +1396,11 @@
         "description": "Eliminar Usuario",
         "guard": "web",
         "categoria": "Administración"
+    },
+    {
+        "name": "reports.list",
+        "description": "Ver Reportes de Facturas",
+        "guard": "web",
+        "categoria": "Reportes"
     }
 ]

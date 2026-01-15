@@ -17,7 +17,7 @@ enum InvoiceType: int
 			self::INVENTORY => 'Factura de Entrada',
 			self::LABORATORY => 'Laboratorio',
 			self::COTIZACION => 'Cotización',
-			self::HOSPITALIZATION => 'Hozpitaliación',
+			self::HOSPITALIZATION => 'Hospitalización',
 		};
 	}
 }

@@ -60,6 +60,7 @@ class AdminPanelProvider extends PanelProvider
                 'RRHH',
                 'Configuración',
                 'Contabilidad',
+                'Reportes',
                 'Administración',
             ]);
     }
