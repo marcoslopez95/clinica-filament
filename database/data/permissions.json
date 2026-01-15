@@ -336,6 +336,78 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "hospitalizations.payments.create",
+        "description": "Crear Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.edit",
+        "description": "Editar Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.view",
+        "description": "Ver Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.create",
+        "description": "Crear recurso en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.attach",
+        "description": "Asociar recurso existente en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.reference_values.create",
+        "description": "Crear Valor Referencial en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.edit",
+        "description": "Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.delete",
+        "description": "Eliminar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.view",
+        "description": "Ver Detalles en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "laboratories.details.attach",
         "description": "Asociar examen existente en Laboratorio",
         "guard": "web",
@@ -374,30 +446,6 @@
     {
         "name": "laboratories.details.view",
         "description": "Ver exámenes en Laboratorio",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.payments.create",
-        "description": "Crear Pago en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.payments.edit",
-        "description": "Editar Pago en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.payments.edit.view",
-        "description": "Ver Modal para Editar Pago en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.payments.view",
-        "description": "Ver Pago en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },

@@ -10,6 +10,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ use Filament\Notifications\Notification;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 use App\Filament\Actions\LoadResultsAction;
 use App\Models\Unit;
-
+use Illuminate\Validation\Rules\Unique;
 use App\Enums\UnitCategoryEnum;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -189,7 +190,7 @@ class ExamsRelationManager extends RelationManager
 
                         TextInput::make('name')
                             ->label('Nombre')
-                            ->unique(column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get) {
+                            ->unique(table: 'reference_values', column: 'name', ignoreRecord: true, modifyRuleUsing: function (Unique $rule, $get) {
                                 return $rule
                                     ->where('exam_id', $get('exam_id'))
                                     ->whereNull('deleted_at');
