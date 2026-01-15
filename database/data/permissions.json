@@ -1038,6 +1038,12 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "entries.details.taxes.view",
+        "description": "Ver Impuestos en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "entries.details.batches.view",
         "description": "Ver Lotes en Detalle de Entrada",
         "guard": "web",
@@ -1346,6 +1352,30 @@
     {
         "name": "invoice_details_batches.delete",
         "description": "Eliminar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.create",
+        "description": "Crear Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.edit.view",
+        "description": "Ver Modal para Editar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.edit",
+        "description": "Editar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.delete",
+        "description": "Eliminar Impuesto en Detalle de Factura",
         "guard": "web",
         "categoria": "Contabilidad"
     },

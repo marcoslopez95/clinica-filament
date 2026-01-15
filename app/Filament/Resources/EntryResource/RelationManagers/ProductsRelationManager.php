@@ -258,7 +258,12 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading(false)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Cerrar')
-                    ->visible(fn (Model $record): bool =>$record->quantity > 0 )
+                    ->visible(function (Model $record): bool {
+                        if (!auth()->user()->can('entries.details.taxes.view')) {
+                            return false;
+                        }
+                        return $record->quantity > 0;
+                    })
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
 
                 Action::make('return_product')
