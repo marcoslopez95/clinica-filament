@@ -68,11 +68,12 @@ class DiscountsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Nuevo ' . static::$modelLabel)
+                    ->visible(fn (): bool => auth()->user()->can('entries.discounts.create'))
                     ->form($this->discountSchema())
                     ->action(function (array $data, $livewire): void {
                         $total = (float) $livewire->getOwnerRecord()->total;
                         $discountsSum = $livewire->getOwnerRecord()->discounts()->sum('amount') + (float) ($data['amount'] ?? 0);
-                        
+
                         if ($discountsSum > $total) {
                             Notification::make()
                                 ->body("El monto de los descuentos no pueden superar al total de la factura")
@@ -80,21 +81,32 @@ class DiscountsRelationManager extends RelationManager
                                 ->send();
                             return;
                         }
-                        
+
                         $livewire->getOwnerRecord()->discounts()->create($data);
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.discounts.edit.view'))
                     ->form($this->discountSchema())
                     ->action(function (Model $record, array $data, $livewire): void {
+                        if (!auth()->user()->can('entries.discounts.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         $total = (float) $livewire->getOwnerRecord()->total;
                         $otherDiscounts = $livewire->getOwnerRecord()->discounts()
                             ->where('id', '!=', $record->id)
                             ->sum('amount');
                         $discountsSum = $otherDiscounts + (float) ($data['amount'] ?? 0);
-                        
+
                         if ($discountsSum > $total) {
                             Notification::make()
                                 ->body("El monto de los descuentos no pueden superar al total de la factura")
@@ -102,17 +114,24 @@ class DiscountsRelationManager extends RelationManager
                                 ->send();
                             return;
                         }
-                        
+
                         $record->update($data);
                         $livewire->dispatch('refreshTotal');
                     }),
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.discounts.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('entries.discounts.bulk_delete')),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('entries.discounts.view');
     }
 
     public function form(Form $form): Form

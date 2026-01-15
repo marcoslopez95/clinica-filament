@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Filament\Actions\LoadResultsAction;
 use Dom\Text;
 use \Filament\Forms\Components\Hidden;
+
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'details';
@@ -186,7 +187,7 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('content_type')
                     ->label('Tipo')
                     ->formatStateUsing(
-                        fn (string $state) 
+                        fn (string $state)
                             => ResourceType::tryFrom($state)->getName()
                     ),
 
@@ -195,6 +196,7 @@ class ProductsRelationManager extends RelationManager
 
                 Action::make('choose_resource')
                     ->label('Crear recurso')
+                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.create'))
                     ->modalHeading('Crear recurso')
                     ->modalWidth('sm')
                     ->form([
@@ -230,6 +232,7 @@ class ProductsRelationManager extends RelationManager
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
+                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.attach'))
                     ->modalHeading('Añadir producto existente a la entrada')
                     ->form($this->schema())
                         ->action(function (array $data, $livewire) {
@@ -306,6 +309,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.edit.view'))
                     ->form(function (Form $form) {
                         return $form->schema([
                             Hidden::make('content_type')
@@ -389,6 +393,16 @@ class ProductsRelationManager extends RelationManager
                         ]);
                     })
                     ->action(function (Model $record, array $data): void {
+                        if (!auth()->user()->can('hospitalizations.details.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         $record->update([
                             'content_id' => $data['content_id'],
                             'price' => $data['price'],
@@ -400,9 +414,14 @@ class ProductsRelationManager extends RelationManager
                     }),
 
                 LoadResultsAction::make(),
-                    
+
                 RefreshTotalDeleteAction::make(),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('hospitalizations.details.view');
     }
 
     public function form(Form $form): Form

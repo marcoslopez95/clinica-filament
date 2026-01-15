@@ -31,7 +31,8 @@ class DoctorForm
                     ->required(),
 
                 DatePicker::make('born_date')
-                    ->label('Fecha de Nacimiento'),
+                    ->label('Fecha de Nacimiento')
+                    ->required(),
 
                 TextInput::make('cost')
                     ->label('Costo')

@@ -15,7 +15,8 @@ class ServiceForm
             ->schema([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->unique('services', ignoreRecord: true),
 
                 TextInput::make('buy_price')
                     ->label('Precio de Compra')

@@ -88,6 +88,7 @@ class ExamsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make('add_existing')
                     ->label('Añadir examen existente')
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.attach'))
                     ->modalHeading(false)
                     ->form(fn() => self::schema($this->getOwnerRecord()))
                     ->action(function (array $data, $livewire) {
@@ -114,8 +115,18 @@ class ExamsRelationManager extends RelationManager
 
                 CreateAction::make('create_exam')
                     ->label('Crear examen')
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.create'))
                     ->modalHeading(false)
-                    ->form(\App\Filament\Resources\ExamResource\Schemas\ExamForm::schema())
+                    ->form(function() {
+                        return [
+                            ... \App\Filament\Resources\ExamResource\Schemas\ExamForm::schema(),
+                            \Filament\Forms\Components\Repeater::make('referenceValues')
+                                ->label('Valores Referenciales')
+                                ->schema(ReferenceValueForm::schema())
+                                ->columns(4)
+                                ->default([])
+                        ];
+                    })
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
 
@@ -178,17 +189,20 @@ class ExamsRelationManager extends RelationManager
 
                         TextInput::make('name')
                             ->label('Nombre')
+                            ->unique(column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get) {
+                                return $rule
+                                    ->where('exam_id', $get('exam_id'))
+                                    ->whereNull('deleted_at');
+                            })
                             ->required(),
 
                         TextInput::make('min_value')
                             ->label('Mínimo')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
 
                         TextInput::make('max_value')
                             ->label('Máximo')
-                            ->numeric()
-                            ->required(),
+                            ->numeric(),
                     ])
                     ->action(function (array $data) {
                         ReferenceValue::create($data);
@@ -208,5 +222,10 @@ class ExamsRelationManager extends RelationManager
                     DeleteBulkAction::make()
                 ])
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('laboratories.details.view');
     }
 }

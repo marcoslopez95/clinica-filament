@@ -120,6 +120,42 @@
         "categoria": "Almacén"
     },
     {
+        "name": "products.inventories.create",
+        "description": "Crear Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.edit",
+        "description": "Editar Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.view",
+        "description": "Ver Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.delete",
+        "description": "Eliminar Inventario de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.inventories.bulk_delete",
+        "description": "Eliminación Masiva de Inventarios de Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "services.list",
         "description": "Listar Servicios",
         "guard": "web",
@@ -146,6 +182,48 @@
     {
         "name": "services.delete",
         "description": "Eliminar Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.create",
+        "description": "Crear Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.attach",
+        "description": "Asociar Producto existente en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.edit.view",
+        "description": "Ver Modal para Editar Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.edit",
+        "description": "Editar Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.view",
+        "description": "Ver Productos en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.delete",
+        "description": "Eliminar Producto en Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.products.bulk_delete",
+        "description": "Eliminación Masiva de Productos en Servicio",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -208,6 +286,162 @@
         "description": "Eliminar Modo de Inventario",
         "guard": "web",
         "categoria": "Almacén"
+    },
+    {
+        "name": "hozpitaliaciones.list",
+        "description": "Listar Hozpitaliaciones",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.view",
+        "description": "Ver Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.create",
+        "description": "Crear Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.edit",
+        "description": "Editar Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hozpitaliaciones.delete",
+        "description": "Eliminar Hozpitaliación",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.inventories.edit",
+        "description": "Editar Inventario en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.inventories.view",
+        "description": "Ver Inventario en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.create",
+        "description": "Crear Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.edit",
+        "description": "Editar Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.payments.view",
+        "description": "Ver Pago en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.attach",
+        "description": "Asociar Detalle existente en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.edit",
+        "description": "Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.view",
+        "description": "Ver Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.delete",
+        "description": "Eliminar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.create",
+        "description": "Crear Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.attach",
+        "description": "Asociar Detalle existente en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.delete",
+        "description": "Eliminar Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.view",
+        "description": "Ver Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.create",
+        "description": "Crear Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.edit",
+        "description": "Editar Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.view",
+        "description": "Ver Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
     },
     {
         "name": "warehouses.list",
@@ -416,6 +650,42 @@
     {
         "name": "exams.delete",
         "description": "Eliminar Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.create",
+        "description": "Crear Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.edit.view",
+        "description": "Ver Modal para Editar Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.edit",
+        "description": "Editar Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.view",
+        "description": "Ver Valores Referenciales en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.delete",
+        "description": "Eliminar Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.bulk_delete",
+        "description": "Eliminación Masiva de Valores Referenciales en Examen",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -750,6 +1020,156 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "entries.discounts.create",
+        "description": "Crear Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.edit",
+        "description": "Editar Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.edit.view",
+        "description": "Ver Modal para Editar Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.delete",
+        "description": "Eliminar Descuento en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.bulk_delete",
+        "description": "Eliminación Masiva de Descuentos en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.create",
+        "description": "Crear Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.edit",
+        "description": "Editar Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.payments.view",
+        "description": "Ver Pago en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.inventories.edit",
+        "description": "Editar Inventario en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.inventories.view",
+        "description": "Ver Inventario en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.create",
+        "description": "Crear Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.edit",
+        "description": "Editar Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.edit.view",
+        "description": "Ver Modal para Editar Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.view",
+        "description": "Ver Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.delete",
+        "description": "Eliminar Reembolso en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.refunds.bulk_delete",
+        "description": "Eliminación Masiva de Reembolsos en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.create",
+        "description": "Crear Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.attach",
+        "description": "Asociar Detalle existente en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.edit",
+        "description": "Editar Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.view",
+        "description": "Ver Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.delete",
+        "description": "Eliminar Detalle en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.return",
+        "description": "Devolver Producto en Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "expenses.list",
         "description": "Listar Gastos",
         "guard": "web",
@@ -780,36 +1200,6 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hozpitaliaciones.list",
-        "description": "Listar Hozpitaliaciones",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.view",
-        "description": "Ver Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.create",
-        "description": "Crear Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.edit",
-        "description": "Editar Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hozpitaliaciones.delete",
-        "description": "Eliminar Hozpitaliación",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
         "name": "invoices.list",
         "description": "Listar Facturas",
         "guard": "web",
@@ -836,6 +1226,84 @@
     {
         "name": "invoices.delete",
         "description": "Eliminar Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.inventories.edit",
+        "description": "Editar Inventario en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.inventories.view",
+        "description": "Ver Inventario en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.view",
+        "description": "Ver detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.edit.view",
+        "description": "Editar detalle de Factura Modal",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.edit",
+        "description": "Editar detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.delete",
+        "description": "Eliminar detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.attach",
+        "description": "Crear detalle de Factura con recurso existente",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.create",
+        "description": "Crear Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.edit",
+        "description": "Editar Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoices.payments.view",
+        "description": "Ver Pago en Factura",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -928,5 +1396,11 @@
         "description": "Eliminar Usuario",
         "guard": "web",
         "categoria": "Administración"
+    },
+    {
+        "name": "reports.list",
+        "description": "Ver Reportes de Facturas",
+        "guard": "web",
+        "categoria": "Reportes"
     }
 ]
