@@ -336,6 +336,48 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "laboratories.details.attach",
+        "description": "Asociar examen existente en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.create",
+        "description": "Crear examen en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_values.create",
+        "description": "Crear Valor Referencial en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.delete",
+        "description": "Eliminar examen en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.bulk_delete",
+        "description": "Eliminación Masiva de exámenes en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.view",
+        "description": "Ver exámenes en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "hospitalizations.payments.create",
         "description": "Crear Pago en Hospitalización",
         "guard": "web",
@@ -360,66 +402,6 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.attach",
-        "description": "Asociar Detalle existente en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.details.edit",
-        "description": "Editar Detalle en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.details.edit.view",
-        "description": "Ver Modal para Editar Detalle en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.details.view",
-        "description": "Ver Detalle en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.details.delete",
-        "description": "Eliminar Detalle en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "hospitalizations.details.bulk_delete",
-        "description": "Eliminación Masiva de Detalles en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "laboratories.details.create",
-        "description": "Crear Detalle en Laboratorio",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "laboratories.details.attach",
-        "description": "Asociar Detalle existente en Laboratorio",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "laboratories.details.delete",
-        "description": "Eliminar Detalle en Laboratorio",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "laboratories.details.view",
-        "description": "Ver Detalle en Laboratorio",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
         "name": "laboratories.payments.create",
         "description": "Crear Pago en Laboratorio",
         "guard": "web",
@@ -440,6 +422,30 @@
     {
         "name": "laboratories.payments.view",
         "description": "Ver Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.delete",
+        "description": "Eliminar Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_values.create",
+        "description": "Crear Valor Referencial en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },

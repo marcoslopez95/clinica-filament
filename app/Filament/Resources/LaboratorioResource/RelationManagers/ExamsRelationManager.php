@@ -10,7 +10,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Illuminate\Database\Eloquent\Model;
@@ -167,6 +166,7 @@ class ExamsRelationManager extends RelationManager
                     }),
                 CreateAction::make('create_reference_value')
                     ->label('Crear valor referencial')
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.reference_values.create'))
                     ->modalHeading(false)
                     ->modalWidth('md')
                     ->form([
@@ -213,14 +213,17 @@ class ExamsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                LoadResultsAction::make(),
+                LoadResultsAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.reference_value_results.add')),
 
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                ])
+                        ->visible(fn (): bool => auth()->user()->can('laboratories.details.bulk_delete')),
+                ]),
             ]);
     }
 
