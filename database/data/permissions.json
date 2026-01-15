@@ -348,6 +348,36 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "inventories.import.view",
+        "description": "Ver Modal para Importar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.import",
+        "description": "Importar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move_several.view",
+        "description": "Ver Modal para Mover Varios Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move_several",
+        "description": "Mover Varios Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move.view",
+        "description": "Ver Opción para Mover Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "hospitalizations.inventories.view",
         "description": "Ver Inventario en Hospitalización",
         "guard": "web",

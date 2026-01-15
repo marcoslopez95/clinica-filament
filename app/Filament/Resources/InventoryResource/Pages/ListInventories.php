@@ -223,7 +223,7 @@ class ListInventories extends ListRecords
 
             Action::make('modo_inventario')
                 ->label('Mover')
-                ->visible(fn(): bool => auth()->user()->can('inventories.move.view'))
+                ->visible(fn(): bool => auth()->user()->can('inventory_modes.list'))
                 ->url(InventoryModeResource::getUrl('index')),
 
             CreateAction::make(),
