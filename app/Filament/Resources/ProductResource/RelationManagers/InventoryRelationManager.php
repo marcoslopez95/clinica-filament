@@ -35,7 +35,7 @@ class InventoryRelationManager extends RelationManager
                     ->required()
                     ->default(0),
 
-                Select::make('warehouse_id') 
+                Select::make('warehouse_id')
                     ->label('Almacén')
                     ->relationship('warehouse', 'name')
                     ->searchable()
@@ -77,7 +77,7 @@ class InventoryRelationManager extends RelationManager
 
                 TextColumn::make('batch')
                     ->label('Lote'),
-                    
+
                 TextColumn::make('end_date')
                     ->label('Vencimiento')
                     ->date(),
@@ -87,14 +87,14 @@ class InventoryRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->visible(fn (RelationManager $livewire): bool => 
-                        $livewire->getOwnerRecord()->inventory === null && 
+                    ->visible(fn (RelationManager $livewire): bool =>
+                        $livewire->getOwnerRecord()->inventory === null &&
                         auth()->user()->can('products.inventories.create')
                     ),
             ])
             ->actions([
                 EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('products.inventories.edit'))    
+                    ->visible(fn (): bool => auth()->user()->can('products.inventories.edit'))
                     ->action(function (array $data, $record) {
                         if (!auth()->user()->can('products.inventories.edit')) {
                             Notification::make()
@@ -105,7 +105,7 @@ class InventoryRelationManager extends RelationManager
 
                             return;
                         }
-                        
+
                         $record->update([
                             'amount' => $data['amount'],
                             'warehouse_id' => $data['warehouse_id'],

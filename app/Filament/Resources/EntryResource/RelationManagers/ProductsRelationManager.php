@@ -106,31 +106,22 @@ class ProductsRelationManager extends RelationManager
                             'currency_id' => $data['currency_id'],
                         ]);
 
-                        $warehouse = Warehouse::where('name', 'Bodega')->first();
-                        if (! $warehouse) {
-                            Notification::make()
-                                ->body('Bodega no encontrada')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
+                        $warehouse = Warehouse::getFarmacia();
 
-                        if (Inventory::where('warehouse_id', $warehouse->id)
-                            ->whereHas('product', fn($q) => $q->where('name', $product->name))
-                            ->exists()) {
-                                Notification::make()
-                                    ->body('Este producto ya existe en el inventario de la Bodega')
-                                    ->danger()
-                                    ->send();
-                                return;
-                        }
+                        $inventory = Inventory::where('warehouse_id', $warehouse->id)
+                            ->where('product_id', $product->id)
+                            ->first();
 
-                        Inventory::create([
-                            'product_id' => $product->id,
-                            'warehouse_id' => $warehouse->id,
-                            'stock_min' => 0,
-                            'amount' => 0,
-                        ]);
+                        if ($inventory) {
+                            $inventory->increment('amount', $data['quantity']);
+                        } else {
+                            Inventory::create([
+                                'product_id' => $product->id,
+                                'warehouse_id' => $warehouse->id,
+                                'stock_min' => 0,
+                                'amount' => $data['quantity'],
+                            ]);
+                        }
 
                         $owner = $livewire->getOwnerRecord();
                         $owner
@@ -160,6 +151,23 @@ class ProductsRelationManager extends RelationManager
                                 'price' => $data['price'],
                                 'quantity' => $data['quantity'],
                             ]);
+
+                        $warehouse = Warehouse::getFarmacia();
+
+                        $inventory = Inventory::where('warehouse_id', $warehouse->id)
+                            ->where('product_id', $data['content_id'])
+                            ->first();
+
+                        if ($inventory) {
+                            $inventory->increment('amount', $data['quantity']);
+                        } else {
+                            Inventory::create([
+                                'product_id' => $data['content_id'],
+                                'warehouse_id' => $warehouse->id,
+                                'stock_min' => 0,
+                                'amount' => $data['quantity'],
+                            ]);
+                        }
 
                         $livewire->dispatch('refreshTotal');
                     }),
