@@ -194,41 +194,64 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
 
-                Action::make('choose_resource')
-                    ->label('Crear recurso')
-                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.create'))
-                    ->modalHeading('Crear recurso')
-                    ->modalWidth('sm')
-                    ->form([
-                        Radio::make('resource')
-                            ->label(false)
-                            ->options([
-                                'product' => 'Producto',
-                                'exam' => 'Examen',
-                                'room' => 'Habitación',
-                                'service' => 'Servicio',
-                            ])
-                            ->required(),
-                    ])
-                    ->action(function (array $data, $livewire) {
-                        $map = [
-                            'product' => ProductResource::class,
-                            'exam' => ExamResource::class,
-                            'room' => RoomResource::class,
-                            'service' => ServiceResource::class,
-                        ];
+            Action::make('choose_resource')
+                ->label('Crear recurso')
+                ->modalHeading('Crear recurso')
+                ->modalWidth('sm')
+                ->visible(fn (): bool => 
+                    auth()->user()->can('hospitalizations.details.create') && 
+                    (
+                        auth()->user()->can('products.view') || 
+                        auth()->user()->can('exams.view') || 
+                        auth()->user()->can('rooms.view') || 
+                        auth()->user()->can('services.view')
+                    )
+                )
+                ->form([
+                    Radio::make('resource')
+                        ->label(false)
+                        ->options(function () {
+                            $options = [];
 
-                        $key = $data['resource'] ?? null;
-                        if (! $key || ! isset($map[$key])) {
-                            Notification::make()->danger()->body('Seleccione un recurso válido')->send();
-                            return;
-                        }
+                            if (auth()->user()->can('products.view')) {
+                                $options['product'] = 'Producto';
+                            }
 
-                        $resourceClass = $map[$key];
-                        $url = $resourceClass::getUrl('create');
+                            if (auth()->user()->can('exams.view')) {
+                                $options['exam'] = 'Examen';
+                            }
 
-                        return redirect($url);
-                    }),
+                            if (auth()->user()->can('rooms.view')) {
+                                $options['room'] = 'Habitación';
+                            }
+
+                            if (auth()->user()->can('services.view')) {
+                                $options['service'] = 'Servicio';
+                            }
+
+                            return $options;
+                        })
+                        ->required(),
+                ])
+                ->action(function (array $data, $livewire) {
+                    $map = [
+                        'product' => ProductResource::class,
+                        'exam' => ExamResource::class,
+                        'room' => RoomResource::class,
+                        'service' => ServiceResource::class,
+                    ];
+
+                    $key = $data['resource'] ?? null;
+                    if (! $key || ! isset($map[$key])) {
+                        Notification::make()->danger()->body('Seleccione un recurso válido')->send();
+                        return;
+                    }
+
+                    $resourceClass = $map[$key];
+                    $url = $resourceClass::getUrl('create');
+
+                    return redirect($url);
+                }),
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
