@@ -654,6 +654,42 @@
         "categoria": "Configuración"
     },
     {
+        "name": "exams.reference_values.create",
+        "description": "Crear Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.edit.view",
+        "description": "Ver Modal para Editar Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.edit",
+        "description": "Editar Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.view",
+        "description": "Ver Valores Referenciales en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.delete",
+        "description": "Eliminar Valor Referencial en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.reference_values.bulk_delete",
+        "description": "Eliminación Masiva de Valores Referenciales en Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "payment_methods.list",
         "description": "Listar Métodos de Pago",
         "guard": "web",

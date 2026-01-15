@@ -12,10 +12,16 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 class ReferenceValuesRelationManager extends RelationManager
 {
     protected static string $relationship = 'referenceValues';
+
+    protected static ?string $title = 'Valores referencial';
+    protected static ?string $modelLabel = 'Valor referencial';
+    protected static ?string $pluralModelLabel = 'Valores referenciales';
 
     public function form(Form $form): Form
     {
@@ -43,16 +49,38 @@ class ReferenceValuesRelationManager extends RelationManager
             ->filters([
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('exams.reference_values.create')),
             ])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('exams.reference_values.edit.view'))
+                    ->action(function (Model $record, array $data): void {
+                        if (!auth()->user()->can('exams.reference_values.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar este elemento')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $record->update($data);
+                    }),
+                DeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('exams.reference_values.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('exams.reference_values.bulk_delete')),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord($ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()->can('exams.reference_values.view');
     }
 }
