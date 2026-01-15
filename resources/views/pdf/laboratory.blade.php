@@ -74,6 +74,8 @@
                     @if($record->invoiceable_type === 'App\Models\Patient')
                         {{ $record->invoiceable->last_name }}, {{ $record->invoiceable->first_name }}
                         <div><strong>Teléfono:</strong> {{ $record->invoiceable->phone ?? 'N/A' }}</div>
+                        <div><strong>Cédula:</strong> {{ $record->invoiceable->dni ?? 'N/A' }}</div>
+                        <div><strong>Edad:</strong> {{ $record->invoiceable->age ?? 'N/A' }}</div>
                     @else
                         {{ $record->invoiceable->name ?? 'N/A' }}
                     @endif

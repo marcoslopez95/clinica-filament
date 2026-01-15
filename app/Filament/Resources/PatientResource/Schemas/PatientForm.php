@@ -31,7 +31,14 @@ class PatientForm
                 ->required()
                 ->live(onBlur: true)
                 ->afterStateUpdated(function (Set $set, ?string $state) {
-                    $set('age', $state ? \Carbon\Carbon::parse($state)->age : null);
+                    if (!$state) {
+                        $set('age', null);
+                        return;
+                    }
+
+                    $birthdate = \Carbon\Carbon::parse($state);
+                    $age = (int) $birthdate->diffInYears(\Carbon\Carbon::now()); // ← (int) para redondear
+                    $set('age', $age);
                 }),
 
             TextInput::make('age')

@@ -26,6 +26,9 @@ class PatientsTable
                 TextColumn::make('last_name')
                     ->label('Apellido'),
 
+                TextColumn::make('age')
+                    ->label('Edad'),
+
                 TextColumn::make('typeDocument.name')
                     ->label('Tipo de Documento')
                     ->searchable()
