@@ -45,6 +45,11 @@ class PermissionCategoryResource extends Resource
         return auth()->user()->can('categories.delete');
     }
 
+    public static function canBulkDelete(): bool
+    {
+        return auth()->user()->can('categories.bulk_delete');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

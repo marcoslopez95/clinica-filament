@@ -30,6 +30,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "roles.bulk_delete",
+        "description": "Eliminación Masiva de Roles",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "permissions.list",
         "description": "Listar Permisos",
         "guard": "web",
@@ -60,6 +66,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "permissions.bulk_delete",
+        "description": "Eliminación Masiva de Permisos",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "categories.list",
         "description": "Listar Categorías de Permisos",
         "guard": "web",
@@ -86,6 +98,12 @@
     {
         "name": "categories.delete",
         "description": "Eliminar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Permisos",
         "guard": "web",
         "categoria": "Seguridad"
     },

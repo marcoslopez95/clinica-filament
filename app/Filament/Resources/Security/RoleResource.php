@@ -45,6 +45,11 @@ class RoleResource extends Resource
         return auth()->user()->can('roles.delete');
     }
 
+    public static function canBulkDelete(): bool
+    {
+        return auth()->user()->can('roles.bulk_delete');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
