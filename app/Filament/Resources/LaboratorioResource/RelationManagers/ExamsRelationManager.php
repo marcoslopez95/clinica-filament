@@ -10,7 +10,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +20,7 @@ use App\Filament\Actions\LoadResultsAction;
 use App\Models\Unit;
 use Illuminate\Validation\Rules\Unique;
 use App\Enums\UnitCategoryEnum;
-use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ReferenceValueResource\Schemas\ReferenceValueForm;
 
 class ExamsRelationManager extends RelationManager
 {
@@ -89,7 +88,7 @@ class ExamsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make('add_existing')
                     ->label('Añadir examen existente')
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.attach'))
+                    ->visible(fn(): bool => auth()->user()->can('laboratories.details.attach'))
                     ->modalHeading(false)
                     ->form(fn() => self::schema($this->getOwnerRecord()))
                     ->action(function (array $data, $livewire) {
@@ -116,15 +115,15 @@ class ExamsRelationManager extends RelationManager
 
                 CreateAction::make('create_exam')
                     ->label('Crear examen')
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.create'))
+                    ->visible(fn(): bool => auth()->user()->can('laboratories.details.create'))
                     ->modalHeading(false)
-                    ->form(function() {
+                    ->form(function () {
                         return [
-                            ... \App\Filament\Resources\ExamResource\Schemas\ExamForm::schema(),
+                            ...\App\Filament\Resources\ExamResource\Schemas\ExamForm::schema(),
                             \Filament\Forms\Components\Repeater::make('referenceValues')
                                 ->label('Valores Referenciales')
                                 ->schema(ReferenceValueForm::schema())
-                                ->columns(4)
+                                ->columns(false)
                                 ->default([])
                         ];
                     })
@@ -167,7 +166,7 @@ class ExamsRelationManager extends RelationManager
                     }),
                 CreateAction::make('create_reference_value')
                     ->label('Crear valor referencial')
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.reference_values.create'))
+                    ->visible(fn(): bool => auth()->user()->can('laboratories.details.reference_values.create'))
                     ->modalHeading(false)
                     ->modalWidth('md')
                     ->form([
@@ -183,8 +182,8 @@ class ExamsRelationManager extends RelationManager
                                 return Unit::whereHas('categories', function ($query) {
                                     $query->where('name', UnitCategoryEnum::LABORATORY->value);
                                 })
-                                ->pluck('name', 'id')
-                                ->toArray();
+                                    ->pluck('name', 'id')
+                                    ->toArray();
                             })
                             ->preload(),
 
@@ -215,15 +214,15 @@ class ExamsRelationManager extends RelationManager
             ])
             ->actions([
                 LoadResultsAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.reference_value_results.add')),
+                    ->visible(fn(): bool => auth()->user()->can('laboratories.details.reference_value_results.add')),
 
                 RefreshTotalDeleteAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.details.delete')),
+                    ->visible(fn(): bool => auth()->user()->can('laboratories.details.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn (): bool => auth()->user()->can('laboratories.details.bulk_delete')),
+                        ->visible(fn(): bool => auth()->user()->can('laboratories.details.bulk_delete')),
                 ]),
             ]);
     }

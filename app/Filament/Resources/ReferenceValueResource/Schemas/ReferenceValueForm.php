@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 
 use App\Enums\UnitCategoryEnum;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Unit;
 
 class ReferenceValueForm
 {
@@ -18,7 +19,7 @@ class ReferenceValueForm
             TextInput::make('name')
                 ->label(false)
                 ->placeholder('Nombre')
-                ->unique(column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get, $livewire) {
+                ->unique(table: 'reference_values', column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get, $livewire) {
                     $examId = $get('exam_id');
 
                     // Si no hay exam_id en el formulario actual (podría ser un RelationManager),
@@ -49,13 +50,11 @@ class ReferenceValueForm
 
             Select::make('unit_id')
                 ->label(false)
-                ->relationship(
-                    name: 'unit',
-                    titleAttribute: 'name',
-                    modifyQueryUsing: fn (Builder $query) => $query->whereHas('categories', function (Builder $query) {
+                ->options(function () {
+                    return Unit::whereHas('categories', function (Builder $query) {
                         $query->where('name', UnitCategoryEnum::LABORATORY->value);
-                    })
-                )
+                    })->pluck('name', 'id');
+                })
                 ->placeholder('Unidad')
                 ->searchable()
                 ->preload(),
