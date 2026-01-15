@@ -19,6 +19,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Filament\Forms\Components\Grid;
 
 class ListInventories extends ListRecords
 {
@@ -31,6 +32,7 @@ class ListInventories extends ListRecords
                 ->label('Importar')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('info')
+                ->visible(fn(): bool => auth()->user()->can('inventories.import.view'))
                 ->form([
                     FileUpload::make('attachment')
                         ->label('Archivo Excel')
@@ -39,6 +41,15 @@ class ListInventories extends ListRecords
                         ->directory('imports')
                 ])
                 ->action(function (array $data) {
+                    if (!auth()->user()->can('inventories.import')) {
+                        Notification::make()
+                            ->title('Acceso denegado')
+                            ->body('No tienes permiso para importar inventario')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
                     $file = storage_path('app/public/' . $data['attachment']);
 
                     try {
@@ -61,6 +72,7 @@ class ListInventories extends ListRecords
             Action::make('mover_inventario')
                 ->label('Mover Varios')
                 ->icon('heroicon-o-arrows-right-left')
+                ->visible(fn(): bool => auth()->user()->can('inventories.move_several.view'))
                 ->modalWidth(MaxWidth::FiveExtraLarge)
                 ->form([
                     Select::make('from_warehouse_id')
@@ -74,7 +86,7 @@ class ListInventories extends ListRecords
                         ->options(Warehouse::pluck('name', 'id'))
                         ->required()
                         ->reactive(),
-                    \Filament\Forms\Components\Grid::make(3)
+                    Grid::make(3)
                         ->schema([
                             Placeholder::make('product_header')
                                 ->label('Producto')
@@ -152,6 +164,15 @@ class ListInventories extends ListRecords
                         ->collapsible()
                 ])
                 ->action(function (array $data): void {
+                    if (!auth()->user()->can('inventories.move_several')) {
+                        Notification::make()
+                            ->title('Acceso denegado')
+                            ->body('No tienes permiso para mover varios inventarios')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
                     if ($data['from_warehouse_id'] === $data['to_warehouse_id']) {
                         Notification::make()
                             ->title('Error')
@@ -202,6 +223,7 @@ class ListInventories extends ListRecords
 
             Action::make('modo_inventario')
                 ->label('Mover')
+                ->visible(fn(): bool => auth()->user()->can('inventories.move.view'))
                 ->url(InventoryModeResource::getUrl('index')),
 
             CreateAction::make(),
