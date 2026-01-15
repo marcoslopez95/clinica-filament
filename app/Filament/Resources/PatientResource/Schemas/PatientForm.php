@@ -31,6 +31,10 @@ class PatientForm
                 ->label('Dirección')
                 ->required(),
 
+            TextInput::make('phone')
+                ->label('Teléfono')
+                ->tel(),
+
         ];
     }
 
