@@ -34,14 +34,21 @@ class ToPayInvoiceable
                             $set('per_pay_invoiceable', self::recalculateBalance($currency, $livewire));
                         }
                     })
-                    ->default(fn(RelationManager $livewire): string => self::recalculateBalance(
-                        $livewire->ownerRecord->currency,
-                        $livewire)
+                    ->default(
+                        function (RelationManager $livewire) {
+                            $currency = $livewire->ownerRecord->currency ?? null;
+
+                            if ($currency) {
+                                return self::recalculateBalance($currency, $livewire);
+                            }
+
+                            return '0.00';
+                        }
                     ),
             ]);
     }
 
-    public static function recalculateBalance(Currency $currency,RelationManager $livewire): string
+    public static function recalculateBalance(Currency $currency, RelationManager $livewire): string
     {
         $balance = $currency->exchange * $livewire->ownerRecord->balance;
         return Helper::formatCurrency($balance, $currency);
