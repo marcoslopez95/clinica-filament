@@ -288,6 +288,54 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "laboratories.details.create",
+        "description": "Crear Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.attach",
+        "description": "Asociar Detalle existente en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.delete",
+        "description": "Eliminar Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.view",
+        "description": "Ver Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+        {
+        "name": "laboratories.payments.create",
+        "description": "Crear Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.edit",
+        "description": "Editar Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.payments.view",
+        "description": "Ver Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "warehouses.list",
         "description": "Listar Almacenes",
         "guard": "web",
