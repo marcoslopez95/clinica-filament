@@ -13,11 +13,13 @@ class TypeDocumentForm
             ->schema([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->unique(ignorable: true),
 
                 TextInput::make('code')
                     ->label('Código')
-                    ->required(),
+                    ->required()
+                    ->unique(ignorable: true),
 
                 \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

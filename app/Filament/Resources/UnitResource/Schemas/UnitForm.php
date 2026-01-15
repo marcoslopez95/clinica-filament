@@ -14,11 +14,13 @@ class UnitForm
             ->schema([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->unique(ignorable: true),
 
                 TextInput::make('symbol')
                     ->label('Símbolo')
-                    ->required(),
+                    ->required()
+                    ->unique(ignorable: true),
 
                 Select::make('categories')
                     ->label('Categorías')

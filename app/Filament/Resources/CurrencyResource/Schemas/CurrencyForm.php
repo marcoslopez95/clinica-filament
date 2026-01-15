@@ -17,11 +17,13 @@ class CurrencyForm
             ->schema([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->unique(ignorable: true),
 
                 TextInput::make('symbol')
                     ->label('Símbolo')
-                    ->required(),
+                    ->required()
+                    ->unique(ignorable: true),
 
                 TextInput::make('exchange')
                     ->label('Tasa de Cambio')

@@ -12,7 +12,8 @@ class ExamForm
         return [
             TextInput::make('name')
                 ->label('Nombre')
-                ->required(),
+                ->required()
+                ->unique(ignorable: true),
 
             TextInput::make('price')
                 ->label('Precio')
