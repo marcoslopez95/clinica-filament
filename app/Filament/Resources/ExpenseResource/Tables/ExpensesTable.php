@@ -53,7 +53,7 @@ class ExpensesTable
                     ->label('Tasa de Cambio')
                     ->sortable(),
 
-            ...\App\Filament\Forms\Tables\TimestampTable::columns(),
+                ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
 
             ->actions([
@@ -67,7 +67,7 @@ class ExpensesTable
                     ->label('Exportar Excel')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
-                    ->action(fn (Table $table) => Excel::download(
+                    ->action(fn(Table $table) => Excel::download(
                         new ExpensesExport($table->getFilteredTableQuery()->get()),
                         'reporte-gastos-' . now()->format('Y-m-d') . '.xlsx'
                     )),
@@ -91,21 +91,21 @@ class ExpensesTable
 
                         $mpdf->WriteHTML($html);
                         return Response::streamDownload(
-                            fn () => print($mpdf->Output('', 'S')),
+                            fn() => print($mpdf->Output('', 'S')),
                             'reporte-gastos-' . now()->format('Y-m-d') . '.pdf'
                         );
                     }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('expenses.bulk_delete')),
+
                     BulkAction::make('exportSelectedExcel')
                         ->label('Exportar Excel (Seleccionados)')
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
-                        ->action(fn (Collection $records) => Excel::download(
+                        ->action(fn(Collection $records) => Excel::download(
                             new ExpensesExport($records),
                             'gastos-seleccionados-' . now()->format('Y-m-d') . '.xlsx'
                         )),
@@ -121,7 +121,7 @@ class ExpensesTable
                             ]);
                             $mpdf->WriteHTML($html);
                             return Response::streamDownload(
-                                fn () => print($mpdf->Output('', 'S')),
+                                fn() => print($mpdf->Output('', 'S')),
                                 'gastos-seleccionados-' . now()->format('Y-m-d') . '.pdf'
                             );
                         }),
@@ -151,8 +151,8 @@ class ExpensesTable
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['from'], fn ($query) => $query->whereDate('created_at', '>=', $data['from']))
-                            ->when($data['until'], fn ($query) => $query->whereDate('created_at', '<=', $data['until']));
+                            ->when($data['from'], fn($query) => $query->whereDate('created_at', '>=', $data['from']))
+                            ->when($data['until'], fn($query) => $query->whereDate('created_at', '<=', $data['until']));
                     })
                     ->label('Fecha'),
             ]);

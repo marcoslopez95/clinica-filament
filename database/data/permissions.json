@@ -144,6 +144,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "products.bulk_delete",
+        "description": "Eliminación Masiva de Productos",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "products.inventories.create",
         "description": "Crear Inventario de Producto",
         "guard": "web",
@@ -206,6 +212,12 @@
     {
         "name": "services.delete",
         "description": "Eliminar Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.bulk_delete",
+        "description": "Eliminación Masiva de Servicios",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -320,6 +332,12 @@
     {
         "name": "inventory_modes.delete",
         "description": "Eliminar Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.bulk_delete",
+        "description": "Eliminación Masiva de Modos de Inventario",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -594,6 +612,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "warehouses.bulk_delete",
+        "description": "Eliminación Masiva de Almacenes",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "doctors.list",
         "description": "Listar Doctores",
         "guard": "web",
@@ -620,6 +644,12 @@
     {
         "name": "doctors.delete",
         "description": "Eliminar Doctor",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "doctors.bulk_delete",
+        "description": "Eliminación Masiva de Doctores",
         "guard": "web",
         "categoria": "RRHH"
     },
@@ -654,6 +684,12 @@
         "categoria": "RRHH"
     },
     {
+        "name": "patients.bulk_delete",
+        "description": "Eliminación Masiva de Pacientes",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
         "name": "specializations.list",
         "description": "Listar Especializaciones",
         "guard": "web",
@@ -680,6 +716,12 @@
     {
         "name": "specializations.delete",
         "description": "Eliminar Especialización",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.bulk_delete",
+        "description": "Eliminación Masiva de Especializaciones",
         "guard": "web",
         "categoria": "RRHH"
     },
@@ -714,6 +756,12 @@
         "categoria": "RRHH"
     },
     {
+        "name": "departments.bulk_delete",
+        "description": "Eliminación Masiva de Departamentos",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
         "name": "currencies.list",
         "description": "Listar Monedas",
         "guard": "web",
@@ -744,6 +792,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "currencies.bulk_delete",
+        "description": "Eliminación Masiva de Monedas",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "exams.list",
         "description": "Listar Exámenes",
         "guard": "web",
@@ -770,6 +824,12 @@
     {
         "name": "exams.delete",
         "description": "Eliminar Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.bulk_delete",
+        "description": "Eliminación Masiva de Exámenes",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -840,6 +900,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "payment_methods.bulk_delete",
+        "description": "Eliminación Masiva de Métodos de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "product_categories.list",
         "description": "Listar Categorías de Productos",
         "guard": "web",
@@ -866,6 +932,12 @@
     {
         "name": "product_categories.delete",
         "description": "Eliminar Categoría de Producto",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Producto",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -930,6 +1002,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "reference_values.bulk_delete",
+        "description": "Eliminación Masiva de Valores de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "reference_value_results.edit.view",
         "description": "Ver Modal para Editar Resultados de Valores Referenciales",
         "guard": "web",
@@ -972,6 +1050,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "rooms.bulk_delete",
+        "description": "Eliminación Masiva de Habitaciones",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "service_categories.list",
         "description": "Listar Categorías de Servicios",
         "guard": "web",
@@ -998,6 +1082,12 @@
     {
         "name": "service_categories.delete",
         "description": "Eliminar Categoría de Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "service_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Servicio",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -1032,6 +1122,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "suppliers.bulk_delete",
+        "description": "Eliminación Masiva de Proveedores",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "type_documents.list",
         "description": "Listar Tipos de Documentos",
         "guard": "web",
@@ -1058,6 +1154,12 @@
     {
         "name": "type_documents.delete",
         "description": "Eliminar Tipo de Documento",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "type_documents.bulk_delete",
+        "description": "Eliminación Masiva de Tipos de Documento",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -1092,6 +1194,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "units.bulk_delete",
+        "description": "Eliminación Masiva de Unidades de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "unit_categories.list",
         "description": "Listar Categorías de Unidades",
         "guard": "web",
@@ -1118,6 +1226,12 @@
     {
         "name": "unit_categories.delete",
         "description": "Eliminar Categoría de Unidad",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "unit_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Unidad",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -1346,6 +1460,12 @@
     {
         "name": "expenses.delete",
         "description": "Eliminar Gasto",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "expenses.bulk_delete",
+        "description": "Eliminación Masiva de Gastos",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -1592,6 +1712,12 @@
     {
         "name": "users.delete",
         "description": "Eliminar Usuario",
+        "guard": "web",
+        "categoria": "Administración"
+    },
+    {
+        "name": "users.bulk_delete",
+        "description": "Eliminación Masiva de Usuarios",
         "guard": "web",
         "categoria": "Administración"
     },
