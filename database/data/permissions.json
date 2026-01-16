@@ -96,6 +96,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "categories.update",
+        "description": "Actualizar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "categories.delete",
         "description": "Eliminar Categoría de Permiso",
         "guard": "web",
@@ -272,6 +278,12 @@
     {
         "name": "inventories.delete",
         "description": "Eliminar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.bulk_delete",
+        "description": "Eliminación Masiva de Inventarios",
         "guard": "web",
         "categoria": "Almacén"
     },

@@ -45,11 +45,6 @@ class PermissionResource extends Resource
         return auth()->user()->can('permissions.delete');
     }
 
-    public static function canBulkDelete(): bool
-    {
-        return auth()->user()->can('permissions.bulk_delete');
-    }
-
     public static function form(Form $form): Form
     {
         return $form

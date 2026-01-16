@@ -53,10 +53,20 @@ class InventoryForm
 
             Select::make('product_id')
                 ->label('Producto')
-                ->options(fn ($get) => Product::when($get('warehouse_id'), fn($q, $warehouseId)
-                    => $q->whereNotIn('id', Inventory::where('warehouse_id', $warehouseId)
-                        ->pluck('product_id')->toArray()))->pluck('name', 'id'))
-                ->disabled(fn ($get) => ! $get('warehouse_id'))
+                ->options(function ($get, ?Inventory $record) {
+                    $warehouseId = $get('warehouse_id');
+
+                    return Product::query()
+                        ->when($warehouseId, function ($query) use ($warehouseId, $record) {
+                            $usedProductIds = Inventory::where('warehouse_id', $warehouseId)
+                                ->when($record, fn($q) => $q->where('id', '!=', $record->id))
+                                ->pluck('product_id');
+
+                            $query->whereNotIn('id', $usedProductIds);
+                        })
+                        ->pluck('name', 'id');
+                })
+                ->disabled(fn($get) => ! $get('warehouse_id'))
                 ->required()
                 ->searchable()
                 ->createOptionForm(

@@ -19,6 +19,6 @@ class UserSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // $user->roles()->sync(1);
+        $user->roles()->sync(1);
     }
 }

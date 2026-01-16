@@ -45,11 +45,6 @@ class RoleResource extends Resource
         return auth()->user()->can('roles.delete');
     }
 
-    public static function canBulkDelete(): bool
-    {
-        return auth()->user()->can('roles.bulk_delete');
-    }
-
     public static function form(Form $form): Form
     {
         return $form
@@ -69,7 +64,7 @@ class RoleResource extends Resource
                         Forms\Components\CheckboxList::make('permissions')
                             ->label('Permisos')
                             ->relationship('permissions', 'description')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->description} ({$record->name})")
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->description} ({$record->name})")
                             ->columns(2)
                             ->searchable()
                             ->bulkToggleable()
@@ -105,7 +100,8 @@ class RoleResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('roles.bulk_delete')),
                 ]),
             ]);
     }
