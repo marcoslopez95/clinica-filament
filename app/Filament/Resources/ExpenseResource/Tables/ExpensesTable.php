@@ -67,8 +67,8 @@ class ExpensesTable
                     ->label('Exportar Excel')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
-                    ->action(fn(Table $table) => Excel::download(
-                        new ExpensesExport($table->getFilteredTableQuery()->get()),
+                    ->action(fn($livewire) => Excel::download(
+                        new ExpensesExport($livewire->getFilteredTableQuery()->get()),
                         'reporte-gastos-' . now()->format('Y-m-d') . '.xlsx'
                     )),
 
@@ -76,8 +76,8 @@ class ExpensesTable
                     ->label('Exportar PDF')
                     ->icon('heroicon-o-document-text')
                     ->color('danger')
-                    ->action(function (Table $table) {
-                        $expenses = $table->getFilteredTableQuery()->get();
+                    ->action(function ($livewire) {
+                        $expenses = $livewire->getFilteredTableQuery()->get();
                         $html = view('pdf.expenses-report', ['expenses' => $expenses])->render();
 
                         $mpdf = new Mpdf([

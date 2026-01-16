@@ -60,8 +60,8 @@ class InventoriesTable
                     ->label('Exportar Excel')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
-                    ->action(fn(Table $table) => Excel::download(
-                        new InventoryExport($table->getFilteredTableQuery()->get()),
+                    ->action(fn($livewire) => Excel::download(
+                        new InventoryExport($livewire->getFilteredTableQuery()->get()),
                         'reporte-inventario-' . now()->format('Y-m-d') . '.xlsx'
                     )),
             ])
