@@ -45,6 +45,7 @@ class InventoryForm
                 ->label('Almacén')
                 ->relationship('warehouse', 'name')
                 ->searchable()
+                ->required()
                 ->preload()
                 ->reactive()
                 ->afterStateUpdated(function ($state, $set) {

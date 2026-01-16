@@ -54,6 +54,7 @@ class PatientForm
 
             TextInput::make('phone')
                 ->label('Teléfono')
+                ->required()
                 ->tel(),
 
         ];

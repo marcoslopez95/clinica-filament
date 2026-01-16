@@ -22,8 +22,6 @@ class ReferenceValueForm
                 ->unique(table: 'reference_values', column: 'name', ignoreRecord: true, modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $get, $livewire) {
                     $examId = $get('exam_id');
 
-                    // Si no hay exam_id en el formulario actual (podría ser un RelationManager),
-                    // intentamos obtenerlo del registro padre.
                     if (!$examId && $livewire instanceof \Filament\Resources\RelationManagers\RelationManager) {
                         $examId = $livewire->getOwnerRecord()->id;
                     }
@@ -32,7 +30,7 @@ class ReferenceValueForm
                         ->where('exam_id', $examId)
                         ->whereNull('deleted_at');
                 })
-                ->required(),
+                ->markAsRequired(false),
 
             TextInput::make('min_value')
                 ->label(false)
