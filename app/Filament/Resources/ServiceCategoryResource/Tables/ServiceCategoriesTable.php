@@ -21,7 +21,7 @@ class ServiceCategoriesTable
                 ...\App\Filament\Forms\Tables\SimpleTable::columns(),
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -30,9 +30,8 @@ class ServiceCategoriesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('service_categories.bulk_delete')),
                 ]),
             ]);
     }

@@ -114,7 +114,8 @@ class InventoryModesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('inventory_modes.bulk_delete')),
                 ]),
             ]);
     }

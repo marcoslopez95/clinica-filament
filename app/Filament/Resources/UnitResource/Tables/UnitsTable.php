@@ -44,9 +44,8 @@ class UnitsTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('units.bulk_delete')),
                 ]),
             ]);
     }

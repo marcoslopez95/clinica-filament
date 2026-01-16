@@ -11,7 +11,7 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 
- 
+
 use Filament\Tables\Table;
 
 class ProductCategoriesTable
@@ -23,9 +23,7 @@ class ProductCategoriesTable
                 ...\App\Filament\Forms\Tables\SimpleTable::columns(),
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            ->filters([
-                
-            ])
+            ->filters([])
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -34,9 +32,8 @@ class ProductCategoriesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('product_categories.bulk_delete')),
                 ]),
             ]);
     }

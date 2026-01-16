@@ -54,9 +54,8 @@ class InvoiceDetailTaxesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('invoice_detail_taxes.bulk_delete')),
                 ]),
             ]);
     }

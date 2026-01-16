@@ -66,7 +66,8 @@ class ProductServiceDetailResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('product_service_details.bulk_delete')),
                 ]),
             ]);
     }

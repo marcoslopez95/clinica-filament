@@ -30,7 +30,7 @@ class TypeDocumentsTable
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -39,9 +39,8 @@ class TypeDocumentsTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('type_documents.bulk_delete')),
                 ]),
             ]);
     }
