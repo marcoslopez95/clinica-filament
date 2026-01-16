@@ -5,6 +5,7 @@ namespace App\Filament\Resources\LaboratorioResource\RelationManagers;
 use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
 use App\Services\Helper;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -58,9 +59,7 @@ class PaymentsRelationManager extends RelationManager
                     ->afterStateUpdated(function (Set $set, mixed $state, RelationManager $livewire) {
                         $currency = Currency::find($state);
                         $set('exchange', $currency->exchange ?? 0);
-                        $invoice = $livewire->ownerRecord;
-
-                        if ($currency && $invoice->currency_id != $currency->id) {
+                        if ($currency) {
                             $set('per_pay_invoiceable', ToPayInvoiceable::recalculateBalance($currency, $livewire));
                         }
                     }),

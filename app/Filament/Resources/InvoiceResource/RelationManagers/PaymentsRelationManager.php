@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -51,7 +52,7 @@ class PaymentsRelationManager extends RelationManager
                     ->disabled(fn(Get $get) => !$get('payment_method_id'))
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, mixed $state,RelationManager $livewire) {
+                    ->afterStateUpdated(function (Set $set, mixed $state, RelationManager $livewire) {
                         $currency = Currency::find($state);
                         $set('exchange', $currency->exchange ?? 0);
                         if ($currency) {
@@ -123,7 +124,7 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }

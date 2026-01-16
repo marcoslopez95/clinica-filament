@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ServiceResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
@@ -57,11 +58,8 @@ class ProductsRelationManager extends RelationManager
                 ->searchable()
                 ->required(),
 
-            Select::make('currency_id')
-                ->label('Moneda')
-                ->required()
-                ->options(fn() => Currency::pluck('name', 'id'))
-                ->searchable(),
+            Hidden::make('currency_id')
+                ->default(1),
 
             TextInput::make('quantity')
                 ->label('Cantidad')
@@ -115,11 +113,8 @@ class ProductsRelationManager extends RelationManager
                             ->searchable()
                             ->required(),
 
-                        Select::make('currency_id')
-                            ->label('Moneda')
-                            ->required()
-                            ->options(fn() => Currency::pluck('name', 'id'))
-                            ->searchable(),
+                        Hidden::make('currency_id')
+                            ->default(1),
 
                         TextInput::make('quantity')
                             ->label('Cantidad')
@@ -201,11 +196,8 @@ class ProductsRelationManager extends RelationManager
                             ->searchable()
                             ->required(),
 
-                        Select::make('currency_id')
-                            ->label('Moneda')
-                            ->required()
-                            ->options(fn() => Currency::pluck('name', 'id'))
-                            ->searchable(),
+                        Hidden::make('currency_id')
+                            ->default(1),
 
                         TextInput::make('quantity')
                             ->label('Cantidad')
@@ -219,7 +211,7 @@ class ProductsRelationManager extends RelationManager
                             $data['sell_price'] = $record->product->sell_price;
                             $data['unit_id'] = $record->product->unit_id;
                             $data['product_category_id'] = $record->product->product_category_id;
-                            $data['currency_id'] = $record->product->currency_id;
+                            $data['currency_id'] = 1;
                         }
                         $data['quantity'] = $record->quantity;
                         return $data;
@@ -234,7 +226,7 @@ class ProductsRelationManager extends RelationManager
 
                             return;
                         }
-                        
+
                         if ($record->product) {
                             $record->product->update([
                                 'name' => $data['name'],

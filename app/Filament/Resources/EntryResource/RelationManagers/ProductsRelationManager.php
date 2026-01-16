@@ -212,7 +212,7 @@ class ProductsRelationManager extends RelationManager
                             $data['sell_price'] = $product->sell_price;
                             $data['unit_id'] = $product->unit_id;
                             $data['product_category_id'] = $product->product_category_id;
-                            $data['currency_id'] = $product->currency_id;
+                            $data['currency_id'] = 1;
                             $data['content_id'] = $product->id;
                         }
 
