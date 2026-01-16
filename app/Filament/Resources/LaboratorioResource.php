@@ -3,10 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Enums\InvoiceType;
-use App\Filament\Resources\InvoiceResource\Schemas\InvoiceForm;
+use App\Filament\Resources\OperatingRoomResource\Schemas\InvoiceForm;
 use App\Filament\Resources\LaboratorioResource\Pages;
 use App\Filament\Resources\LaboratorioResource\RelationManagers;
-use App\Filament\Resources\InvoiceResource\Tables\InvoicesTable;
+use App\Filament\Resources\OperatingRoomResource\Tables\InvoicesTable;
 use App\Models\Invoice;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

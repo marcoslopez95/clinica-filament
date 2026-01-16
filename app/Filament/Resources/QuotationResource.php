@@ -69,7 +69,7 @@ class QuotationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Resources\InvoiceResource\RelationManagers\ProductsRelationManager::class,
+            \App\Filament\Resources\QuotationResource\RelationManagers\ProductsRelationManager::class,
         ];
     }
 

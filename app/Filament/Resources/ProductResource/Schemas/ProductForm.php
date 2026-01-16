@@ -6,6 +6,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
+use App\Enums\UnitCategoryEnum;
+use App\Models\Unit;
+use Illuminate\Database\Eloquent\Builder;
+
 class ProductForm
 {
     public static function schema(): array
@@ -29,12 +33,11 @@ return [
     Select::make('unit_id')
         ->label('Unidad')
         ->required()
-        ->options(fn() => \App\Models\Unit::pluck('name', 'id'))
-        ->searchable(),
-
-    Select::make('product_id')
-        ->label('Producto')
-        ->options(fn() => \App\Models\Product::pluck('name', 'id'))
+        ->options(function () {
+            return Unit::whereHas('categories', function (Builder $query) {
+                $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+            })->pluck('name', 'id');
+        })
         ->searchable(),
 
     Select::make('product_category_id')

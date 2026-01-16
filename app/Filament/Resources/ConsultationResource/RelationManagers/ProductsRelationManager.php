@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\RelationManagers;
+namespace App\Filament\Resources\ConsultationResource\RelationManagers;
 
 use App\Models\Product;
 use App\Models\Service;
@@ -22,7 +22,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Hidden;
 use App\Filament\Actions\RefreshTotalDeleteAction;
-use App\Models\Inventory;
+use App\Enums\ServiceCategory;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -30,7 +30,7 @@ class ProductsRelationManager extends RelationManager
 
     protected static ?string $modelLabel = 'Producto';
     protected static ?string $pluralModelLabel = 'Productos';
-    protected static ?string $title = 'Productos de la factura';
+    protected static ?string $title = 'Productos de la consulta';
 
     protected function schema(): array
     {
@@ -81,7 +81,9 @@ class ProductsRelationManager extends RelationManager
                     $used = $owner->details()
                         ->where('content_type', Service::class)->pluck('content_id')->toArray();
 
-                    return Service::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                    return Service::query()
+                        ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
+                        ->where('category_id', ServiceCategory::CONSULT->value)
                         ->pluck('name', 'id');
                 })
                 ->searchable()
@@ -135,7 +137,7 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('content_type')
                     ->label('Tipo')
                     ->formatStateUsing(
-                        fn (string $state) => match ($state) {
+                        fn(string $state) => match ($state) {
                             Product::class => 'Producto',
                             Service::class => 'Servicio',
                             default => 'Desconocido'
@@ -149,7 +151,7 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading('Crear recurso')
                     ->modalWidth('sm')
                     ->visible(
-                        fn () => auth()->user()->can('products.view') || auth()->user()->can('services.view')
+                        fn() => auth()->user()->can('products.view') || auth()->user()->can('services.view')
                     )
                     ->form([
                         Radio::make('resource')
@@ -189,78 +191,79 @@ class ProductsRelationManager extends RelationManager
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
-                    ->visible(fn (): bool => auth()->user()->can('invoices.details.attach'))
+                    ->visible(fn(): bool => auth()->user()->can('consultations.details.attach'))
                     ->modalHeading('Añadir recurso existente a la factura')
                     ->form($this->schema())
-                        ->action(function (array $data, $livewire) {
-                            $owner = $livewire->getOwnerRecord();
+                    ->action(function (array $data, $livewire) {
+                        $owner = $livewire->getOwnerRecord();
 
-                            $selectedId = null;
-                            switch ($data['content_type'] ?? null) {
-                                case Product::class:
-                                    $selectedId = $data['product_id'] ?? null;
-                                    break;
-                                case Service::class:
-                                    $selectedId = $data['service_id'] ?? null;
-                                    break;
-                            }
+                        $selectedId = null;
+                        switch ($data['content_type'] ?? null) {
+                            case Product::class:
+                                $selectedId = $data['product_id'] ?? null;
+                                break;
+                            case Service::class:
+                                $selectedId = $data['service_id'] ?? null;
+                                break;
+                        }
 
-                            if (! $selectedId) {
-                                Notification::make()
-                                    ->body('Seleccione un elemento válido para el tipo elegido')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
+                        if (! $selectedId) {
+                            Notification::make()
+                                ->body('Seleccione un elemento válido para el tipo elegido')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
 
-                            if ($owner->details()
-                                ->where('content_type', $data['content_type'])
-                                ->where('content_id', $selectedId)
-                                ->exists()) {
-                                Notification::make()
-                                    ->body('El elemento ya fue agregado a los detalles')
-                                    ->danger()
-                                    ->send();
+                        if ($owner->details()
+                            ->where('content_type', $data['content_type'])
+                            ->where('content_id', $selectedId)
+                            ->exists()
+                        ) {
+                            Notification::make()
+                                ->body('El elemento ya fue agregado a los detalles')
+                                ->danger()
+                                ->send();
 
-                                return;
-                            }
+                            return;
+                        }
 
-                            $price = $data['price'] ?? null;
-                            if (!$price) {
-                                $model = match ($data['content_type']) {
-                                    Product::class => Product::find($selectedId),
-                                    Service::class => Service::find($selectedId),
+                        $price = $data['price'] ?? null;
+                        if (!$price) {
+                            $model = match ($data['content_type']) {
+                                Product::class => Product::find($selectedId),
+                                Service::class => Service::find($selectedId),
+                                default => null,
+                            };
+
+                            if ($model) {
+                                $price = match ($data['content_type']) {
+                                    Product::class => $model->sell_price ?? null,
+                                    Service::class => $model->sell_price ?? null,
                                     default => null,
                                 };
-
-                                if ($model) {
-                                    $price = match ($data['content_type']) {
-                                        Product::class => $model->sell_price ?? null,
-                                        Service::class => $model->sell_price ?? null,
-                                        default => null,
-                                    };
-                                }
                             }
+                        }
 
-                            $owner
-                                ->details()
-                                ->create([
-                                    'content_id' => $selectedId,
-                                    'content_type' => $data['content_type'],
-                                    'price' => $price,
-                                    'quantity' => $data['quantity'] ?? 1,
-                                ]);
+                        $owner
+                            ->details()
+                            ->create([
+                                'content_id' => $selectedId,
+                                'content_type' => $data['content_type'],
+                                'price' => $price,
+                                'quantity' => $data['quantity'] ?? 1,
+                            ]);
 
-                            $livewire->dispatch('refreshTotal');
-                        }),
+                        $livewire->dispatch('refreshTotal');
+                    }),
             ])
             ->actions([
                 EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('invoices.details.edit.view'))
+                    ->visible(fn(): bool => auth()->user()->can('consultations.details.edit.view'))
                     ->form(function (Form $form) {
                         return $form->schema([
                             Hidden::make('content_type')
-                                ->default(fn (?Model $record) => $record->content_type ?? Product::class),
+                                ->default(fn(?Model $record) => $record->content_type ?? Product::class),
 
                             Select::make('content_id')
                                 ->label('Elemento')
@@ -334,7 +337,7 @@ class ProductsRelationManager extends RelationManager
                     })
                     ->action(function (Model $record, array $data): void {
 
-                        if (!auth()->user()->can('invoices.details.edit')) {
+                        if (!auth()->user()->can('consultations.details.edit')) {
                             Notification::make()
                                 ->title('Acceso denegado')
                                 ->body('No tienes permiso para editar este elemento')
@@ -355,19 +358,19 @@ class ProductsRelationManager extends RelationManager
                     }),
 
                 RefreshTotalDeleteAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('invoices.details.delete')),
+                    ->visible(fn(): bool => auth()->user()->can('consultations.details.delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn (): bool => auth()->user()->can('invoices.details.bulk_delete')),
+                        ->visible(fn(): bool => auth()->user()->can('consultations.details.bulk_delete')),
                 ]),
             ]);
     }
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return auth()->user()->can('invoices.details.view');
+        return auth()->user()->can('consultations.details.view');
     }
 
     public function form(Form $form): Form

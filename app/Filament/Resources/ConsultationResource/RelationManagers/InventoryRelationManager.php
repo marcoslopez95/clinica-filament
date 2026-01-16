@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\RelationManagers;
+namespace App\Filament\Resources\ConsultationResource\RelationManagers;
 
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -85,9 +85,9 @@ class InventoryRelationManager extends RelationManager
             ->actions([
                 EditAction::make()
                     ->label('Ajustar Inventario')
-                    ->visible(fn (): bool => auth()->user()->can('invoices.inventories.edit.view'))
+                    ->visible(fn(): bool => auth()->user()->can('consultations.inventories.edit.view'))
                     ->action(function (Model $record, array $data, $livewire): void {
-                        if (!auth()->user()->can('invoices.inventories.edit')) {
+                        if (!auth()->user()->can('consultations.inventories.edit')) {
                             Notification::make()
                                 ->title('Acceso denegado')
                                 ->body('No tienes permiso para editar este elemento')
@@ -98,12 +98,11 @@ class InventoryRelationManager extends RelationManager
                         }
                     }),
             ])
-            ->bulkActions([
-            ]);
+            ->bulkActions([]);
     }
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return auth()->user()->can('invoices.inventories.view');
+        return auth()->user()->can('consultations.inventories.view');
     }
 }

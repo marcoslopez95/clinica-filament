@@ -2,17 +2,14 @@
 
 namespace App\Filament\Forms\Components;
 
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Hidden;
 use App\Models\Currency;
 
 class CurrencySelect
 {
-    public static function make(): Select
+    public static function make(): Hidden
     {
-        return Select::make('currency_id')
-            ->label('Moneda')
-            ->options(fn() => Currency::pluck('name', 'id')->toArray())
-            ->required()
-            ->preload();
+        return Hidden::make('currency_id')
+            ->default(1);
     }
 }

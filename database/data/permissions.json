@@ -372,6 +372,144 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "consultations.list",
+        "description": "Listar Consultas",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.create",
+        "description": "Crear Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.edit",
+        "description": "Editar Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.delete",
+        "description": "Eliminar Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.details.view",
+        "description": "Ver Detalles en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.details.attach",
+        "description": "Asociar recurso existente en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.details.edit",
+        "description": "Editar Detalle en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.details.delete",
+        "description": "Eliminar Detalle en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.payments.view",
+        "description": "Ver Pagos en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.payments.create",
+        "description": "Crear Pago en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.payments.edit.view",
+        "description": "Ver Modal para Editar Pago en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.payments.edit",
+        "description": "Editar Pago en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.inventories.view",
+        "description": "Ver Inventario en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.inventories.edit.view",
+        "description": "Ver Modal para Editar Inventario en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "consultations.inventories.edit",
+        "description": "Editar Inventario en Consulta",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.details.view",
+        "description": "Ver Detalles en Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.details.attach",
+        "description": "Asociar recurso existente en Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.details.edit.view",
+        "description": "Ver Modal para Editar Detalle en Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.details.edit",
+        "description": "Editar Detalle en Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.details.delete",
+        "description": "Eliminar Detalle en Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "quotations.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Cotización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "hospitalizations.inventories.edit",
         "description": "Editar Inventario en Hospitalización",
         "guard": "web",

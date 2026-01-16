@@ -9,16 +9,17 @@ enum InvoiceType: int
 	case LABORATORY = 3;
 	case COTIZACION = 4;
 	case HOSPITALIZATION = 5;
+	case CONSULT = 6;
 
 	public function getName(): string
 	{
 		return match ($this) {
-			self::DEFAULT => 'Factura',
+			self::DEFAULT => 'Quirofano',
 			self::INVENTORY => 'Factura de Entrada',
 			self::LABORATORY => 'Laboratorio',
 			self::COTIZACION => 'Cotización',
 			self::HOSPITALIZATION => 'Hospitalización',
+			self::CONSULT => 'Consulta externa',
 		};
 	}
 }
-

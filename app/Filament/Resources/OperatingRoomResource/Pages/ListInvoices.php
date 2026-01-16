@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\Pages;
+namespace App\Filament\Resources\OperatingRoomResource\Pages;
 
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\OperatingRoomResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListInvoices extends ListRecords
 {
-    protected static string $resource = InvoiceResource::class;
+    protected static string $resource = OperatingRoomResource::class;
 
     protected function getHeaderActions(): array
     {

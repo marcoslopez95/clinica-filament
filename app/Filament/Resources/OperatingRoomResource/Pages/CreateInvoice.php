@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\Pages;
+namespace App\Filament\Resources\OperatingRoomResource\Pages;
 
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\OperatingRoomResource;
 use App\Models\Invoice;
 use App\Models\Patient;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateInvoice extends CreateRecord
 {
-    protected static string $resource = InvoiceResource::class;
+    protected static string $resource = OperatingRoomResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -20,9 +20,7 @@ class CreateInvoice extends CreateRecord
         ];
     }
 
-    protected function afterCreate():void
-    {
-    }
+    protected function afterCreate(): void {}
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

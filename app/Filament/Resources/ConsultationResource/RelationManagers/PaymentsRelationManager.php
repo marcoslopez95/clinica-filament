@@ -1,25 +1,22 @@
 <?php
 
-namespace App\Filament\Resources\LaboratorioResource\RelationManagers;
+namespace App\Filament\Resources\ConsultationResource\RelationManagers;
 
 use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
 use App\Services\Helper;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 
 class PaymentsRelationManager extends RelationManager
@@ -34,7 +31,6 @@ class PaymentsRelationManager extends RelationManager
             ->schema([
                 ToPayInvoiceable::make()
                     ->dehydrated(false),
-
                 Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
@@ -91,8 +87,8 @@ class PaymentsRelationManager extends RelationManager
 
                 TextColumn::make('amount')
                     ->label('Monto')
-
                     ->state(fn($record) => Helper::formatCurrency($record->amount, $record->currency)),
+
                 TextColumn::make('exchange')
                     ->label('Tasa de Cambio'),
 
@@ -102,17 +98,17 @@ class PaymentsRelationManager extends RelationManager
                     ->sortable(),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.payments.create'))
+                Tables\Actions\CreateAction::make()
+                    ->visible(fn(): bool => auth()->user()->can('consultations.payments.create'))
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
             ->actions([
-                EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('laboratories.payments.edit.view'))
+                Tables\Actions\EditAction::make()
+                    ->visible(fn(): bool => auth()->user()->can('consultations.payments.edit.view'))
                     ->action(function (Model $record, array $data, $livewire): void {
-                        if (!auth()->user()->can('laboratories.payments.edit')) {
+                        if (!auth()->user()->can('consultations.payments.edit')) {
                             Notification::make()
                                 ->title('Acceso denegado')
                                 ->body('No tienes permiso para editar este elemento')
@@ -127,14 +123,12 @@ class PaymentsRelationManager extends RelationManager
                     }),
             ])
             ->bulkActions([
-                BulkActionGroup::make([
-
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return auth()->user()->can('laboratories.payments.view');
+        return auth()->user()->can('consultations.payments.view');
     }
 }

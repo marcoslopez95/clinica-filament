@@ -9,10 +9,12 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class InvoicesExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $invoices;
+    protected $isDetailed;
 
-    public function __construct($invoices)
+    public function __construct($invoices, $isDetailed = false)
     {
         $this->invoices = $invoices;
+        $this->isDetailed = $isDetailed;
     }
 
     public function collection()

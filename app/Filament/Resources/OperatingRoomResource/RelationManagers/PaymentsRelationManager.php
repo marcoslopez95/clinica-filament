@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\RelationManagers;
+namespace App\Filament\Resources\OperatingRoomResource\RelationManagers;
 
 use App\Filament\Forms\Components\Invoiceable\ToPayInvoiceable;
 use App\Models\Currency;
@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -29,7 +30,7 @@ class PaymentsRelationManager extends RelationManager
         return $form
             ->schema([
                 ToPayInvoiceable::make()
-                ->dehydrated(false),
+                    ->dehydrated(false),
                 Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
@@ -51,7 +52,7 @@ class PaymentsRelationManager extends RelationManager
                     ->disabled(fn(Get $get) => !$get('payment_method_id'))
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, mixed $state,RelationManager $livewire) {
+                    ->afterStateUpdated(function (Set $set, mixed $state, RelationManager $livewire) {
                         $currency = Currency::find($state);
                         $set('exchange', $currency->exchange ?? 0);
                         if ($currency) {
@@ -98,14 +99,14 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('invoices.payments.create'))
+                    ->visible(fn(): bool => auth()->user()->can('invoices.payments.create'))
                     ->after(function ($livewire) {
                         $livewire->dispatch('refreshTotal');
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn (): bool => auth()->user()->can('invoices.payments.edit.view'))
+                    ->visible(fn(): bool => auth()->user()->can('invoices.payments.edit.view'))
                     ->action(function (Model $record, array $data, $livewire): void {
                         if (!auth()->user()->can('invoices.payments.edit')) {
                             Notification::make()
@@ -122,9 +123,7 @@ class PaymentsRelationManager extends RelationManager
                     }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 

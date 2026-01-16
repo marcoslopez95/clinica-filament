@@ -33,9 +33,23 @@ class Product extends Model implements Auditable
         return $this->belongsTo(Unit::class);
     }
 
-    public function product(): BelongsTo
+    public function bundleProducts(): BelongsToMany
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsToMany(Product::class, 'product_product', 'parent_id', 'child_id')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->bundleProducts();
+    }
+
+    public function parentProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_product', 'child_id', 'parent_id')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
     }
 
     public function productCategory(): BelongsTo

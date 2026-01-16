@@ -36,10 +36,6 @@ class ProductsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('product.name')
-                    ->label('Producto')
-                    ->searchable()
-                    ->sortable(),
 
                 TextColumn::make('productCategory.name')
                     ->label('Categoría')

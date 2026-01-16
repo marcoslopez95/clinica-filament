@@ -20,11 +20,8 @@ class RoomForm
                     ->required()
                     ->step(0.01),
 
-                Select::make('currency_id')
-                    ->label('Moneda')
-                    ->options(fn() => \App\Models\Currency::pluck('name', 'id')->toArray())
-                    ->searchable()
-                    ->required(),
+                \Filament\Forms\Components\Hidden::make('currency_id')
+                    ->default(1),
 
                 \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

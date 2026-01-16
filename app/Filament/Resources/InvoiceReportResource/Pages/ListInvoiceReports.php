@@ -6,6 +6,7 @@ use App\Filament\Resources\InvoiceReportResource;
 use App\Exports\InvoicesExport;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Pages\ListRecords;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
@@ -21,19 +22,32 @@ class ListInvoiceReports extends ListRecords
                 Action::make('exportExcel')
                     ->label('Exportar Excel')
                     ->icon('heroicon-o-document-plus')
-                    ->action(function () {
+                    ->form([
+                        Toggle::make('is_detailed')
+                            ->label('Detallado')
+                            ->default(false),
+                    ])
+                    ->action(function (array $data) {
                         $records = $this->getFilteredTableQuery()->get();
-                        return Excel::download(new InvoicesExport($records), 'reporte-facturas-filtrado.xlsx');
+                        return Excel::download(new InvoicesExport($records, $data['is_detailed'] ?? false), 'reporte-facturas-filtrado.xlsx');
                     }),
 
                 Action::make('exportPdf')
                     ->label('Exportar PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('danger')
-                    ->action(function () {
+                    ->form([
+                        Toggle::make('is_detailed')
+                            ->label('Detallado')
+                            ->default(false),
+                    ])
+                    ->action(function (array $data) {
                         $records = $this->getFilteredTableQuery()->get();
                         $mpdf = new Mpdf();
-                        $html = view('pdf.invoices-report', ['invoices' => $records])->render();
+                        $html = view('pdf.invoices-report', [
+                            'invoices' => $records,
+                            'is_detailed' => $data['is_detailed'] ?? false
+                        ])->render();
                         $mpdf->WriteHTML($html);
                         return response()->streamDownload(fn () => print($mpdf->Output('', 'S')), 'reporte-facturas-filtrado.pdf');
                     }),

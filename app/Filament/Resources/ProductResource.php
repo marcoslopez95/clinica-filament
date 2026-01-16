@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Filament\Resources\ProductResource\RelationManagers\InventoryRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\BundleProductsRelationManager;
 
 class ProductResource extends Resource
 {
@@ -60,6 +61,7 @@ class ProductResource extends Resource
     {
         return [
             InventoryRelationManager::class,
+            BundleProductsRelationManager::class,
         ];
     }
 

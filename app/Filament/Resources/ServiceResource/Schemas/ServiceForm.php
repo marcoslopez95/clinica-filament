@@ -7,6 +7,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 
+use App\Enums\UnitCategoryEnum;
+use App\Models\Unit;
+use Illuminate\Database\Eloquent\Builder;
+
 class ServiceForm
 {
     public static function configure(Form $form): Form
@@ -31,7 +35,12 @@ class ServiceForm
                 Select::make('unit_id')
                     ->label('Unidad')
                     ->required()
-                    ->relationship('unit', 'name')
+                    ->options(function () {
+                        return Unit::whereHas('categories', function (Builder $query) {
+                            $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                        })->pluck('name', 'id');
+                    })
+                    ->searchable()
                     ->preload(),
 
                 Select::make('service_category_id')

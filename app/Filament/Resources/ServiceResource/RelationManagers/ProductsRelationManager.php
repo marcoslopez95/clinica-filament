@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ServiceResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
@@ -18,6 +19,9 @@ use App\Models\Currency;
 use App\Models\Product;
 use App\Models\Unit;
 use App\Models\ProductCategory;
+
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -46,7 +50,11 @@ class ProductsRelationManager extends RelationManager
             Select::make('unit_id')
                 ->label('Unidad')
                 ->required()
-                ->options(fn() => Unit::pluck('name', 'id'))
+                ->options(function () {
+                    return Unit::whereHas('categories', function (Builder $query) {
+                        $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                    })->pluck('name', 'id');
+                })
                 ->searchable()
                 ->required(),
 
@@ -57,11 +65,8 @@ class ProductsRelationManager extends RelationManager
                 ->searchable()
                 ->required(),
 
-            Select::make('currency_id')
-                ->label('Moneda')
-                ->required()
-                ->options(fn() => Currency::pluck('name', 'id'))
-                ->searchable(),
+            Hidden::make('currency_id')
+                ->default(1),
 
             TextInput::make('quantity')
                 ->label('Cantidad')
@@ -104,7 +109,11 @@ class ProductsRelationManager extends RelationManager
                         Select::make('unit_id')
                             ->label('Unidad')
                             ->required()
-                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->options(function () {
+                                return Unit::whereHas('categories', function (Builder $query) {
+                                    $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->required(),
 
@@ -115,11 +124,8 @@ class ProductsRelationManager extends RelationManager
                             ->searchable()
                             ->required(),
 
-                        Select::make('currency_id')
-                            ->label('Moneda')
-                            ->required()
-                            ->options(fn() => Currency::pluck('name', 'id'))
-                            ->searchable(),
+                        Hidden::make('currency_id')
+                            ->default(1),
 
                         TextInput::make('quantity')
                             ->label('Cantidad')
@@ -190,7 +196,11 @@ class ProductsRelationManager extends RelationManager
                         Select::make('unit_id')
                             ->label('Unidad')
                             ->required()
-                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->options(function () {
+                                return Unit::whereHas('categories', function (Builder $query) {
+                                    $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->required(),
 
@@ -201,11 +211,8 @@ class ProductsRelationManager extends RelationManager
                             ->searchable()
                             ->required(),
 
-                        Select::make('currency_id')
-                            ->label('Moneda')
-                            ->required()
-                            ->options(fn() => Currency::pluck('name', 'id'))
-                            ->searchable(),
+                        Hidden::make('currency_id')
+                            ->default(1),
 
                         TextInput::make('quantity')
                             ->label('Cantidad')
@@ -219,7 +226,7 @@ class ProductsRelationManager extends RelationManager
                             $data['sell_price'] = $record->product->sell_price;
                             $data['unit_id'] = $record->product->unit_id;
                             $data['product_category_id'] = $record->product->product_category_id;
-                            $data['currency_id'] = $record->product->currency_id;
+                            $data['currency_id'] = 1;
                         }
                         $data['quantity'] = $record->quantity;
                         return $data;
@@ -234,7 +241,7 @@ class ProductsRelationManager extends RelationManager
 
                             return;
                         }
-                        
+
                         if ($record->product) {
                             $record->product->update([
                                 'name' => $data['name'],
