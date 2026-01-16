@@ -51,6 +51,7 @@ class InventoryImport implements ToCollection, WithHeadingRow
                     'sell_price' => $precioVenta,
                     'buy_price' => $precioCompra,
                     'unit_id' => $unitId,
+                    'currency_id' => 1,
                 ]
             );
 
