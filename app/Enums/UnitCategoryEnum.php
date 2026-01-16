@@ -2,13 +2,8 @@
 
 namespace App\Enums;
 
-enum UnitCategoryEnum: string
+enum UnitCategoryEnum: int
 {
-    case LABORATORY = 'Laboratorio';
-    case GENERAL = 'General';
-
-    public function label(): string
-    {
-        return $this->value;
-    }
+    case LABORATORY = 1;
+    case PHARMACY = 2;
 }

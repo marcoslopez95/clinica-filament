@@ -18,6 +18,11 @@ use App\Models\Warehouse;
 use Filament\Notifications\Notification;
 use App\Filament\Actions\RefreshTotalDeleteAction;
 
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
+
+use App\Models\Unit;
+
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'details';
@@ -37,6 +42,9 @@ class ProductsRelationManager extends RelationManager
                         ->where('content_type', Product::class)->pluck('content_id')->toArray();
 
                     return Product::whereHas('inventory')
+                        ->whereHas('unit.categories', function (Builder $query) {
+                            $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                        })
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                         ->pluck('name', 'id');
                 })

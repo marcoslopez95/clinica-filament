@@ -50,7 +50,7 @@ class ReferenceValueForm
                 ->label(false)
                 ->options(function () {
                     return Unit::whereHas('categories', function (Builder $query) {
-                        $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                        $query->where('unit_categories.id', UnitCategoryEnum::LABORATORY->value);
                     })->pluck('name', 'id');
                 })
                 ->placeholder('Unidad')

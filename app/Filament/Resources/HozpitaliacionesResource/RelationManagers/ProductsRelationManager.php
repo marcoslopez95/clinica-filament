@@ -27,6 +27,9 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Actions\LoadResultsAction;
 use \Filament\Forms\Components\Hidden;
+use App\Enums\UnitCategoryEnum;
+use App\Models\Unit;
+use Illuminate\Database\Eloquent\Builder;
 use App\Enums\ServiceCategory;
 
 class ProductsRelationManager extends RelationManager
@@ -67,6 +70,9 @@ class ProductsRelationManager extends RelationManager
                         ->where('content_type', Product::class)->pluck('content_id')->toArray();
 
                     return Product::whereHas('inventory')
+                        ->whereHas('unit.categories', function (Builder $query) {
+                            $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                        })
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                         ->pluck('name', 'id');
                 })
@@ -350,7 +356,7 @@ class ProductsRelationManager extends RelationManager
                             ->label('Unidad')
                             ->options(function () {
                                 return Unit::whereHas('categories', function ($query) {
-                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                                    $query->where('unit_categories.id', UnitCategoryEnum::LABORATORY->value);
                                 })
                                     ->pluck('name', 'id')
                                     ->toArray();

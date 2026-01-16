@@ -20,6 +20,9 @@ use App\Models\Product;
 use App\Models\Unit;
 use App\Models\ProductCategory;
 
+use App\Enums\UnitCategoryEnum;
+use Illuminate\Database\Eloquent\Builder;
+
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'productDetails';
@@ -47,7 +50,11 @@ class ProductsRelationManager extends RelationManager
             Select::make('unit_id')
                 ->label('Unidad')
                 ->required()
-                ->options(fn() => Unit::pluck('name', 'id'))
+                ->options(function () {
+                    return Unit::whereHas('categories', function (Builder $query) {
+                        $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                    })->pluck('name', 'id');
+                })
                 ->searchable()
                 ->required(),
 
@@ -102,7 +109,11 @@ class ProductsRelationManager extends RelationManager
                         Select::make('unit_id')
                             ->label('Unidad')
                             ->required()
-                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->options(function () {
+                                return Unit::whereHas('categories', function (Builder $query) {
+                                    $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->required(),
 
@@ -185,7 +196,11 @@ class ProductsRelationManager extends RelationManager
                         Select::make('unit_id')
                             ->label('Unidad')
                             ->required()
-                            ->options(fn() => Unit::pluck('name', 'id'))
+                            ->options(function () {
+                                return Unit::whereHas('categories', function (Builder $query) {
+                                    $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->required(),
 
