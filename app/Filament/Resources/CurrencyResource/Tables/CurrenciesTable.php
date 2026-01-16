@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CurrencyResource\Tables;
 
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -23,8 +24,11 @@ class CurrenciesTable
                 TextColumn::make('name')->label('Nombre')->searchable()->sortable(),
                 TextColumn::make('symbol')->label('Símbolo'),
                 TextColumn::make('exchange')->label('Tasa de Cambio'),
+                IconColumn::make('is_main')
+                    ->label('Principal')
+                    ->boolean(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

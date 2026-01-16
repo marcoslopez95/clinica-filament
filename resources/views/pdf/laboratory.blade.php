@@ -74,6 +74,7 @@
                     @if($record->invoiceable_type === 'App\Models\Patient')
                         {{ $record->invoiceable->last_name }}, {{ $record->invoiceable->first_name }}
                         <div><strong>Teléfono:</strong> {{ $record->invoiceable->phone ?? 'N/A' }}</div>
+                        <div><strong>Cédula:</strong> {{ $record->invoiceable->full_document ?? 'N/A' }}</div>
                     @else
                         {{ $record->invoiceable->name ?? 'N/A' }}
                     @endif
@@ -90,15 +91,16 @@
             <thead>
                 <tr>
                     <th>Valor Referencial</th>
+                    <th>Resultado</th>
                     <th>Unidad</th>
                     <th>Rango/Valor Ref.</th>
-                    <th>Resultado</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($detail->referenceResults as $result)
                     <tr>
                         <td>{{ $result->referenceValue->name ?? 'N/A' }}</td>
+                        <td>{{ $result->result }}</td>
                         <td>{!! $result->referenceValue->unit->name ?? 'N/A' !!}</td>
                         <td>
                             @if($result->referenceValue->min_value && $result->referenceValue->max_value)
@@ -107,7 +109,7 @@
                                 {{ $result->referenceValue->min_value ?: $result->referenceValue->max_value ?: 'N/A' }}
                             @endif
                         </td>
-                        <td>{{ $result->result }}</td>
+
                     </tr>
                 @empty
                     <tr>

@@ -20,6 +20,7 @@ class CurrencyFactory extends Factory
             'name' => $this->faker->currencyCode(),
             'symbol' => $this->faker->currencyCode(),
             'exchange' => $this->faker->randomFloat(2, 1, 100),
+            'is_main' => false,
         ];
     }
 }
