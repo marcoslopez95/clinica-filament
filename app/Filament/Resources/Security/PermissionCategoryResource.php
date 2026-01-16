@@ -77,19 +77,7 @@ class PermissionCategoryResource extends Resource
                 //
             ])
             ->actions([
-                EditAction::make()
-                    ->action(function (PermissionCategory $record, array $data) {
-                        if (!auth()->user()->can('categories.update')) {
-                            Notification::make()
-                                ->title('Acceso denegado')
-                                ->body('No tienes permiso para actualizar categorías')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
-
-                        $record->update($data);
-                    }),
+                EditAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

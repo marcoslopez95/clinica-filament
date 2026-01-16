@@ -312,6 +312,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "inventory_modes.move",
+        "description": "Mover Stock entre Almacenes",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "inventory_modes.delete",
         "description": "Eliminar Modo de Inventario",
         "guard": "web",
@@ -1154,6 +1160,12 @@
     {
         "name": "entries.details.batches.view",
         "description": "Ver Lotes en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.view",
+        "description": "Ver Descuentos en Entrada",
         "guard": "web",
         "categoria": "Contabilidad"
     },
