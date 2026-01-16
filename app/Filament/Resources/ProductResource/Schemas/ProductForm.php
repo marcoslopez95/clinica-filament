@@ -32,11 +32,6 @@ return [
         ->options(fn() => \App\Models\Unit::pluck('name', 'id'))
         ->searchable(),
 
-    Select::make('product_id')
-        ->label('Producto')
-        ->options(fn() => \App\Models\Product::pluck('name', 'id'))
-        ->searchable(),
-
     Select::make('product_category_id')
         ->label('Categoría')
         ->required()
