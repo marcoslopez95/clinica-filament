@@ -6,8 +6,6 @@ use App\Models\InvoiceDetail;
 use App\Models\ReferenceValueResult;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -16,6 +14,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Livewire\Component;
 use Filament\Notifications\Notification;
+use App\Models\Exam;
 
 class ManageExamResults extends Component implements HasForms, HasTable
 {
@@ -27,6 +26,20 @@ class ManageExamResults extends Component implements HasForms, HasTable
     public function mount(InvoiceDetail $record): void
     {
         $this->invoiceDetail = $record;
+
+        if ($this->invoiceDetail->content_type === Exam::class && $this->invoiceDetail->content) {
+            $exam = $this->invoiceDetail->content;
+            $existingRefValueIds = $this->invoiceDetail->referenceResults()->pluck('reference_value_id')->toArray();
+
+            foreach ($exam->referenceValues as $rv) {
+                if (!in_array($rv->id, $existingRefValueIds)) {
+                    $this->invoiceDetail->referenceResults()->create([
+                        'reference_value_id' => $rv->id,
+                        'result' => null,
+                    ]);
+                }
+            }
+        }
     }
 
     private function formSchema(): array
@@ -80,10 +93,21 @@ class ManageExamResults extends Component implements HasForms, HasTable
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('reference_value_results.edit.view'))
                     ->modalHeading('Editar Resultado')
                     ->modalWidth('md')
                     ->form($this->formSchema())
                     ->action(function (ReferenceValueResult $record, array $data) {
+                        if (!auth()->user()->can('reference_value_results.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar resultados de exámenes')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         $record->update($data);
                     }),
             ]);

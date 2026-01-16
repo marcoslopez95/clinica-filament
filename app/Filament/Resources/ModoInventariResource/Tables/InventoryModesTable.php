@@ -40,7 +40,7 @@ class InventoryModesTable
             ->filters([
                 SelectFilter::make('exclude_warehouse')
                     ->label('Almacén (excluir)')
-                    ->options(fn () => Warehouse::pluck('name', 'id')->toArray())
+                    ->options(fn() => Warehouse::pluck('name', 'id')->toArray())
                     ->default(
                         Warehouse::where('name', 'Bodega')->value('id') // por defecto "Bodega"
                     )
@@ -53,23 +53,24 @@ class InventoryModesTable
             ->actions([
                 Action::make('move_stock')
                     ->label('Mover Stock')
+                    ->visible(fn(): bool => auth()->user()->can('inventory_modes.move'))
                     ->icon('heroicon-o-arrows-right-left')
                     ->form([
                         TextInput::make('current_amount')
                             ->label('Cantidad actual')
                             ->disabled()
-                            ->default(fn (Inventory $record) => $record->amount),
+                            ->default(fn(Inventory $record) => $record->amount),
                         TextInput::make('move_amount')
                             ->label('Cantidad a mover')
                             ->numeric()
                             ->required()
                             ->minValue(1)
-                            ->maxValue(fn (Inventory $record) => $record->amount),
+                            ->maxValue(fn(Inventory $record) => $record->amount),
                         Select::make('target_warehouse_id')
                             ->label('Almacén destino')
                             ->options(Warehouse::pluck('name', 'id'))
                             ->required()
-                            ->default(fn (Inventory $record) => $record->warehouse_id),
+                            ->default(fn(Inventory $record) => $record->warehouse_id),
                     ])
                     ->action(function (Inventory $record, array $data): void {
                         $moveAmount = $data['move_amount'];

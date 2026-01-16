@@ -70,6 +70,7 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
             ->headerActions([
                 CreateAction::make()
                     ->label('Añadir Impuesto')
+                    ->visible(fn (): bool => auth()->user()->can('invoice_details_taxes.create'))
                     ->modalHeading('Crear Impuesto')
                     ->modalWidth('md')
                     ->form($this->Schema())
@@ -99,10 +100,20 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('invoice_details_taxes.edit.view'))
                     ->modalHeading('Editar Impuesto')
                     ->modalWidth('md')
                     ->form($this->Schema())
                     ->action(function (InvoiceDetailTax $record, array $data) {
+                        if (!auth()->user()->can('invoice_details_taxes.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar impuestos')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
                         $subtotal = (float) ($this->invoiceDetail->price ?? 0) * (float) ($this->invoiceDetail->quantity ?? 0);
                         $currentTaxesSum = $this->invoiceDetail->taxes()
                             ->where('id', '!=', $record->id)
@@ -128,7 +139,8 @@ class ManageInvoiceDetailTaxes extends Component implements HasForms, HasTable
                         $this->dispatch('refreshTotal');
                     }),
                     
-                    RefreshTotalDeleteAction::make(),
+                    RefreshTotalDeleteAction::make()
+                        ->visible(fn (): bool => auth()->user()->can('invoice_details_taxes.delete')),
             ]);
     }
 

@@ -51,7 +51,7 @@ class InventoriesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->visible(fn(): bool => auth()->user()->can('inventories.bulk_delete')),
                 ]),
             ]);
     }

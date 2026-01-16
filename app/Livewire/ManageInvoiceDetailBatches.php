@@ -43,6 +43,9 @@ class ManageInvoiceDetailBatches extends Component implements HasForms, HasTable
             ->headerActions([
                 CreateAction::make()
                     ->label('Añadir Lote')
+                    ->visible(
+                        fn (): bool => auth()->user()->can('invoice_details_batches.create')
+                    )
                     ->modalHeading('Crear Lote')
                     ->modalWidth('md')
                     ->form($this->schema())
@@ -67,10 +70,22 @@ class ManageInvoiceDetailBatches extends Component implements HasForms, HasTable
             ])
             ->actions([
                 EditAction::make()
+                    ->visible(
+                        fn (): bool => auth()->user()->can('invoice_details_batches.edit.view')
+                    )
                     ->modalHeading('Editar Lote')
                     ->modalWidth('md')
                     ->form($this->schema())
                     ->action(function (ProductBatchDetail $record, array $data) {
+                        if (!auth()->user()->can('invoice_details_batches.edit')) {
+                            Notification::make()
+                                ->title('Acceso denegado')
+                                ->body('No tienes permiso para editar lotes')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
                         $currentSum = $this->invoiceDetail->batchDetails()
                             ->where('id', '!=', $record->id)
                             ->sum('quantity');
@@ -92,6 +107,9 @@ class ManageInvoiceDetailBatches extends Component implements HasForms, HasTable
                     }),
 
                 DeleteAction::make()
+                    ->visible(
+                        fn (): bool => auth()->user()->can('invoice_details_batches.delete')
+                    )
                     ->after(fn() => $this->dispatch('refreshTotal')),
             ]);
     }

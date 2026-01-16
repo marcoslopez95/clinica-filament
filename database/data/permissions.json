@@ -30,6 +30,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "roles.bulk_delete",
+        "description": "Eliminación Masiva de Roles",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "permissions.list",
         "description": "Listar Permisos",
         "guard": "web",
@@ -60,6 +66,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "permissions.bulk_delete",
+        "description": "Eliminación Masiva de Permisos",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "categories.list",
         "description": "Listar Categorías de Permisos",
         "guard": "web",
@@ -84,8 +96,20 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "categories.update",
+        "description": "Actualizar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "categories.delete",
         "description": "Eliminar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Permisos",
         "guard": "web",
         "categoria": "Seguridad"
     },
@@ -258,6 +282,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "inventories.bulk_delete",
+        "description": "Eliminación Masiva de Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "inventory_modes.list",
         "description": "Listar Modos de Inventario",
         "guard": "web",
@@ -278,6 +308,12 @@
     {
         "name": "inventory_modes.edit",
         "description": "Editar Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.move",
+        "description": "Mover Stock entre Almacenes",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -330,6 +366,36 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "inventories.import.view",
+        "description": "Ver Modal para Importar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.import",
+        "description": "Importar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move_several.view",
+        "description": "Ver Modal para Mover Varios Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move_several",
+        "description": "Mover Varios Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move.view",
+        "description": "Ver Opción para Mover Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "hospitalizations.inventories.view",
         "description": "Ver Inventario en Hospitalización",
         "guard": "web",
@@ -360,14 +426,20 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.attach",
-        "description": "Asociar Detalle existente en Hospitalización",
+        "name": "hospitalizations.details.create",
+        "description": "Crear recurso en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.edit",
-        "description": "Editar Detalle en Hospitalización",
+        "name": "hospitalizations.details.attach",
+        "description": "Asociar recurso existente en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.reference_values.create",
+        "description": "Crear Valor Referencial en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -378,8 +450,14 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.view",
-        "description": "Ver Detalle en Hospitalización",
+        "name": "hospitalizations.details.edit",
+        "description": "Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -390,32 +468,50 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.bulk_delete",
-        "description": "Eliminación Masiva de Detalles en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "laboratories.details.create",
-        "description": "Crear Detalle en Laboratorio",
+        "name": "hospitalizations.details.view",
+        "description": "Ver Detalles en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
         "name": "laboratories.details.attach",
-        "description": "Asociar Detalle existente en Laboratorio",
+        "description": "Asociar examen existente en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.create",
+        "description": "Crear examen en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_values.create",
+        "description": "Crear Valor Referencial en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
         "name": "laboratories.details.delete",
-        "description": "Eliminar Detalle en Laboratorio",
+        "description": "Eliminar examen en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.bulk_delete",
+        "description": "Eliminación Masiva de exámenes en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
         "name": "laboratories.details.view",
-        "description": "Ver Detalle en Laboratorio",
+        "description": "Ver exámenes en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -440,6 +536,30 @@
     {
         "name": "laboratories.payments.view",
         "description": "Ver Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.delete",
+        "description": "Eliminar Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_values.create",
+        "description": "Crear Valor Referencial en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -810,6 +930,18 @@
         "categoria": "Configuración"
     },
     {
+        "name": "reference_value_results.edit.view",
+        "description": "Ver Modal para Editar Resultados de Valores Referenciales",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "reference_value_results.edit",
+        "description": "Editar Resultados de Valores Referenciales",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "rooms.list",
         "description": "Listar Habitaciones",
         "guard": "web",
@@ -1016,6 +1148,24 @@
     {
         "name": "entries.delete",
         "description": "Eliminar Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.taxes.view",
+        "description": "Ver Impuestos en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.batches.view",
+        "description": "Ver Lotes en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.view",
+        "description": "Ver Descuentos en Entrada",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -1298,6 +1448,54 @@
     {
         "name": "invoices.payments.edit.view",
         "description": "Ver Modal para Editar Pago en Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.create",
+        "description": "Crear Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.edit.view",
+        "description": "Ver Modal para Editar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.edit",
+        "description": "Editar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.delete",
+        "description": "Eliminar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.create",
+        "description": "Crear Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.edit.view",
+        "description": "Ver Modal para Editar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.edit",
+        "description": "Editar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.delete",
+        "description": "Eliminar Impuesto en Detalle de Factura",
         "guard": "web",
         "categoria": "Contabilidad"
     },

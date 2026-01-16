@@ -36,7 +36,13 @@ class ToPayInvoiceable
                         }
                     })
                     ->default(function(RelationManager $livewire): string {
-                        return Helper::formatCurrency($livewire->ownerRecord->balance, $livewire->ownerRecord->currency);
+                        $currency = $livewire->ownerRecord->currency ?? null;
+
+                        if ($currency) {
+                            return Helper::formatCurrency($livewire->ownerRecord->balance, $livewire->ownerRecord->currency);
+                        }
+
+                        return '0.00';
                     }),
             ]);
     }
