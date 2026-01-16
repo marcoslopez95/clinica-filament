@@ -180,7 +180,7 @@ class ExamsRelationManager extends RelationManager
                             ->label('Unidad')
                             ->options(function () {
                                 return Unit::whereHas('categories', function ($query) {
-                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                                    $query->where('unit_categories.id', UnitCategoryEnum::LABORATORY->value);
                                 })
                                     ->pluck('name', 'id')
                                     ->toArray();

@@ -26,8 +26,11 @@ use App\Filament\Actions\RefreshTotalDeleteAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Actions\LoadResultsAction;
-use Dom\Text;
 use \Filament\Forms\Components\Hidden;
+
+use App\Enums\UnitCategoryEnum;
+use App\Models\Unit;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -67,6 +70,9 @@ class ProductsRelationManager extends RelationManager
                         ->where('content_type', Product::class)->pluck('content_id')->toArray();
 
                     return Product::whereHas('inventory')
+                        ->whereHas('unit.categories', function (Builder $query) {
+                            $query->where('unit_categories.id', UnitCategoryEnum::PHARMACY->value);
+                        })
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                         ->pluck('name', 'id');
                 })
@@ -198,12 +204,12 @@ class ProductsRelationManager extends RelationManager
                 ->label('Crear recurso')
                 ->modalHeading('Crear recurso')
                 ->modalWidth('sm')
-                ->visible(fn (): bool => 
-                    auth()->user()->can('hospitalizations.details.create') && 
+                ->visible(fn (): bool =>
+                    auth()->user()->can('hospitalizations.details.create') &&
                     (
-                        auth()->user()->can('products.view') || 
-                        auth()->user()->can('exams.view') || 
-                        auth()->user()->can('rooms.view') || 
+                        auth()->user()->can('products.view') ||
+                        auth()->user()->can('exams.view') ||
+                        auth()->user()->can('rooms.view') ||
                         auth()->user()->can('services.view')
                     )
                 )
@@ -346,7 +352,7 @@ class ProductsRelationManager extends RelationManager
                             ->label('Unidad')
                             ->options(function () {
                                 return Unit::whereHas('categories', function ($query) {
-                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                                    $query->where('unit_categories.id', UnitCategoryEnum::LABORATORY->value);
                                 })
                                 ->pluck('name', 'id')
                                 ->toArray();
