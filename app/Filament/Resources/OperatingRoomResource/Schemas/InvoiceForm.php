@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\Schemas;
+namespace App\Filament\Resources\OperatingRoomResource\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -25,12 +25,12 @@ class InvoiceForm
                     ->searchable()
                     ->required()
                     ->createOptionForm(\App\Filament\Resources\PatientResource\Schemas\PatientForm::schema())
-                    ->createOptionUsing(fn (array $data) => Patient::create($data)->id)
+                    ->createOptionUsing(fn(array $data) => Patient::create($data)->id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $patient = $state ? Patient::find($state) : null;
 
-                        $set('full_name', $patient ? $patient->first_name . ($patient->last_name ? ' ' . $patient->last_name : '') : null );
+                        $set('full_name', $patient ? $patient->first_name . ($patient->last_name ? ' ' . $patient->last_name : '') : null);
                         $set('dni', $patient?->full_document ?? null);
                         $set('type_document_id', $patient?->typeDocument?->id ?? null);
                     }),

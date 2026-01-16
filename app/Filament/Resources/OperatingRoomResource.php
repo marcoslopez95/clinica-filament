@@ -3,10 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Enums\InvoiceStatus;
-use App\Filament\Resources\InvoiceResource\Pages;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
-use App\Filament\Resources\InvoiceResource\Schemas\InvoiceForm;
-use App\Filament\Resources\InvoiceResource\Tables\InvoicesTable;
+use App\Filament\Resources\OperatingRoomResource\Pages;
+use App\Filament\Resources\OperatingRoomResource\RelationManagers;
+use App\Filament\Resources\OperatingRoomResource\Schemas\InvoiceForm;
+use App\Filament\Resources\OperatingRoomResource\Tables\InvoicesTable;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Patient;
@@ -21,17 +21,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class InvoiceResource extends Resource
+class OperatingRoomResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $slug = 'invoices';
+    protected static ?string $slug = 'operating-room';
 
     protected static ?string $navigationGroup = 'Contabilidad';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?string $modelLabel = 'Factura';
-    protected static ?string $pluralModelLabel = 'Facturas';
-    protected static ?string $navigationLabel = 'Facturas';
+    protected static ?string $modelLabel = 'Quirofano';
+    protected static ?string $pluralModelLabel = 'Quirofanos';
+    protected static ?string $navigationLabel = 'Quirofanos';
 
     public static function canViewAny(): bool
     {

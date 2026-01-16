@@ -2,68 +2,65 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Filament\Resources\ConsultationResource\Pages;
+use App\Filament\Resources\ConsultationResource\RelationManagers;
 use App\Filament\Resources\OperatingRoomResource\Schemas\InvoiceForm;
-use App\Filament\Resources\HozpitaliacionesResource\Pages;
-use App\Filament\Resources\HozpitaliacionesResource\RelationManagers;
 use App\Filament\Resources\OperatingRoomResource\Tables\InvoicesTable;
 use App\Models\Invoice;
-use App\Enums\InvoiceType;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class HozpitaliacionesResource extends Resource
+class ConsultationResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $slug = 'hospitalizacion';
+    protected static ?string $slug = 'consultations';
 
     protected static ?string $navigationGroup = 'Contabilidad';
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?string $modelLabel = 'Hospitalización';
-    protected static ?string $pluralModelLabel = 'Hospitalizaciones';
-    protected static ?string $navigationLabel = 'Hospitalizaciones';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $modelLabel = 'Consulta';
+    protected static ?string $pluralModelLabel = 'Consultas';
+    protected static ?string $navigationLabel = 'Consultas';
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->can('hozpitaliaciones.list');
+        return auth()->user()->can('consultations.list');
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()->can('hozpitaliaciones.create');
+        return auth()->user()->can('consultations.create');
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()->can('hozpitaliaciones.edit');
+        return auth()->user()->can('consultations.edit');
     }
 
     public static function canDelete($record): bool
     {
-        return auth()->user()->can('hozpitaliaciones.delete');
+        return auth()->user()->can('consultations.delete');
     }
 
     public static function form(Form $form): Form
     {
-        // reuse invoice form
         return InvoiceForm::configure($form);
     }
 
     public static function table(Table $table): Table
     {
-        // reuse invoice table
         return InvoicesTable::table($table);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListHozpitaliaciones::route('/'),
-            'create' => Pages\CreateHozpitaliacion::route('/create'),
-            'edit' => Pages\EditHozpitaliacion::route('/{record}/edit'),
+            'index' => Pages\ListConsultations::route('/'),
+            'create' => Pages\CreateConsultation::route('/create'),
+            'edit' => Pages\EditConsultation::route('/{record}/edit'),
         ];
     }
 
@@ -78,7 +75,7 @@ class HozpitaliacionesResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('invoice_type', InvoiceType::HOSPITALIZATION->value);
+        return parent::getEloquentQuery()->where('invoice_type', InvoiceType::CONSULT->value);
     }
 
     public static function getGloballySearchableAttributes(): array

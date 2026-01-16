@@ -1,18 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\Pages;
+namespace App\Filament\Resources\ConsultationResource\Pages;
 
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\ConsultationResource;
 use App\Filament\Actions\CancelInvoiceAction;
-use App\Services\Helper;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditInvoice extends EditRecord
+class EditConsultation extends EditRecord
 {
-    protected static string $resource = InvoiceResource::class;
+    protected static string $resource = ConsultationResource::class;
 
     protected $listeners = [
         'refreshTotal' => 'refreshTotal',
@@ -32,15 +28,14 @@ class EditInvoice extends EditRecord
             \Filament\Actions\Action::make('print')
                 ->label('Imprimir')
                 ->icon('heroicon-o-printer')
-                ->url(fn ($record) => route('print.invoice', $record))
+                ->url(fn($record) => route('print.invoice', $record))
                 ->openUrlInNewTab(),
             CancelInvoiceAction::makeForm(),
         ];
     }
 
-    protected function afterSave():void
+    protected function afterSave(): void
     {
         $this->refreshTotal();
     }
-
 }

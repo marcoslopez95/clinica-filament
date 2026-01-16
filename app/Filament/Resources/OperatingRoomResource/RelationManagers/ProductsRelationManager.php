@@ -1,33 +1,28 @@
 <?php
 
-namespace App\Filament\Resources\HozpitaliacionesResource\RelationManagers;
+namespace App\Filament\Resources\OperatingRoomResource\RelationManagers;
 
-use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\Exam;
 use App\Models\Service;
-use App\Models\Room;
-use App\Enums\ResourceType;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Radio;
 use App\Filament\Resources\ProductResource;
-use App\Filament\Resources\ExamResource;
 use App\Filament\Resources\ServiceResource;
-use App\Filament\Resources\RoomResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\EditAction;
-use App\Filament\Actions\RefreshTotalDeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
-use App\Filament\Actions\LoadResultsAction;
-use \Filament\Forms\Components\Hidden;
-use App\Enums\ServiceCategory;
+use Filament\Forms\Components\Hidden;
+use App\Filament\Actions\RefreshTotalDeleteAction;
+use App\Models\Inventory;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -35,25 +30,22 @@ class ProductsRelationManager extends RelationManager
 
     protected static ?string $modelLabel = 'Producto';
     protected static ?string $pluralModelLabel = 'Productos';
-    protected static ?string $title = 'Detalles de Productos';
+    protected static ?string $title = 'Productos del quirofano';
 
     protected function schema(): array
     {
         return [
             Select::make('content_type')
                 ->label('Tipo de contenido')
-                ->options(function () {
-                    return collect(ResourceType::cases())
-                        ->mapWithKeys(fn($case) => [$case->value => $case->getName()])
-                        ->toArray();
-                })
+                ->options([
+                    Product::class => 'Producto',
+                    Service::class => 'Servicio',
+                ])
                 ->required()
                 ->reactive()
                 ->afterStateUpdated(function ($state, $set) {
                     $set('product_id', null);
-                    $set('exam_id', null);
                     $set('service_id', null);
-                    $set('room_id', null);
                     $set('name', null);
                     $set('price', null);
                     $set('quantity', null);
@@ -82,28 +74,6 @@ class ProductsRelationManager extends RelationManager
                     }
                 }),
 
-            Select::make('exam_id')
-                ->label('Examen')
-                ->options(function () {
-                    $owner = $this->getOwnerRecord();
-                    $used = $owner->details()
-                        ->where('content_type', Exam::class)->pluck('content_id')->toArray();
-
-                    return Exam::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                        ->pluck('name', 'id');
-                })
-                ->searchable()
-                ->required(fn($get) => $get('content_type') === Exam::class)
-                ->visible(fn($get) => $get('content_type') === Exam::class)
-                ->reactive()
-                ->afterStateUpdated(function ($state, $set) {
-                    $exam = Exam::find($state);
-                    if ($exam) {
-                        $set('name', $exam->name);
-                        $set('price', $exam->price);
-                    }
-                }),
-
             Select::make('service_id')
                 ->label('Servicio')
                 ->options(function () {
@@ -113,7 +83,7 @@ class ProductsRelationManager extends RelationManager
 
                     return Service::query()
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                        ->where('category_id', \App\Enums\ServiceCategory::HOSPITALIZATION->value)
+                        ->where('category_id', \App\Enums\ServiceCategory::DEFAULT->value)
                         ->pluck('name', 'id');
                 })
                 ->searchable()
@@ -124,28 +94,7 @@ class ProductsRelationManager extends RelationManager
                     $service = Service::find($state);
                     if ($service) {
                         $set('name', $service->name);
-                        $set('price', $service->buy_price);
-                    }
-                }),
-            Select::make('room_id')
-                ->label('Habitación')
-                ->options(function () {
-                    $owner = $this->getOwnerRecord();
-                    $used = $owner->details()
-                        ->where('content_type', Room::class)->pluck('content_id')->toArray();
-
-                    return Room::when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                        ->pluck('name', 'id');
-                })
-                ->searchable()
-                ->required(fn($get) => $get('content_type') === Room::class)
-                ->visible(fn($get) => $get('content_type') === Room::class)
-                ->reactive()
-                ->afterStateUpdated(function ($state, $set) {
-                    $room = Room::find($state);
-                    if ($room) {
-                        $set('name', $room->name);
-                        $set('price', $room->price ?? null);
+                        $set('price', $service->sell_price ?? null);
                     }
                 }),
 
@@ -163,8 +112,7 @@ class ProductsRelationManager extends RelationManager
             TextInput::make('quantity')
                 ->label('Cantidad')
                 ->numeric()
-                ->required(fn($get) => in_array($get('content_type'), [Product::class, Service::class]))
-                ->visible(fn($get) => in_array($get('content_type'), [Product::class, Service::class])),
+                ->required(),
         ];
     }
 
@@ -189,10 +137,12 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('content_type')
                     ->label('Tipo')
                     ->formatStateUsing(
-                        fn(string $state)
-                        => ResourceType::tryFrom($state)->getName()
+                        fn(string $state) => match ($state) {
+                            Product::class => 'Producto',
+                            Service::class => 'Servicio',
+                            default => 'Desconocido'
+                        }
                     ),
-
             ])
             ->headerActions([
 
@@ -201,14 +151,7 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading('Crear recurso')
                     ->modalWidth('sm')
                     ->visible(
-                        fn(): bool =>
-                        auth()->user()->can('hospitalizations.details.create') &&
-                            (
-                                auth()->user()->can('products.view') ||
-                                auth()->user()->can('exams.view') ||
-                                auth()->user()->can('rooms.view') ||
-                                auth()->user()->can('services.view')
-                            )
+                        fn() => auth()->user()->can('products.view') || auth()->user()->can('services.view')
                     )
                     ->form([
                         Radio::make('resource')
@@ -218,14 +161,6 @@ class ProductsRelationManager extends RelationManager
 
                                 if (auth()->user()->can('products.view')) {
                                     $options['product'] = 'Producto';
-                                }
-
-                                if (auth()->user()->can('exams.view')) {
-                                    $options['exam'] = 'Examen';
-                                }
-
-                                if (auth()->user()->can('rooms.view')) {
-                                    $options['room'] = 'Habitación';
                                 }
 
                                 if (auth()->user()->can('services.view')) {
@@ -239,8 +174,6 @@ class ProductsRelationManager extends RelationManager
                     ->action(function (array $data, $livewire) {
                         $map = [
                             'product' => ProductResource::class,
-                            'exam' => ExamResource::class,
-                            'room' => RoomResource::class,
                             'service' => ServiceResource::class,
                         ];
 
@@ -258,8 +191,8 @@ class ProductsRelationManager extends RelationManager
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
-                    ->visible(fn(): bool => auth()->user()->can('hospitalizations.details.attach'))
-                    ->modalHeading('Añadir producto existente a la entrada')
+                    ->visible(fn(): bool => auth()->user()->can('invoices.details.attach'))
+                    ->modalHeading('Añadir recurso existente a la factura')
                     ->form($this->schema())
                     ->action(function (array $data, $livewire) {
                         $owner = $livewire->getOwnerRecord();
@@ -269,14 +202,8 @@ class ProductsRelationManager extends RelationManager
                             case Product::class:
                                 $selectedId = $data['product_id'] ?? null;
                                 break;
-                            case Exam::class:
-                                $selectedId = $data['exam_id'] ?? null;
-                                break;
                             case Service::class:
                                 $selectedId = $data['service_id'] ?? null;
-                                break;
-                            case Room::class:
-                                $selectedId = $data['room_id'] ?? null;
                                 break;
                         }
 
@@ -305,18 +232,14 @@ class ProductsRelationManager extends RelationManager
                         if (!$price) {
                             $model = match ($data['content_type']) {
                                 Product::class => Product::find($selectedId),
-                                Exam::class => Exam::find($selectedId),
                                 Service::class => Service::find($selectedId),
-                                Room::class => Room::find($selectedId),
                                 default => null,
                             };
 
                             if ($model) {
                                 $price = match ($data['content_type']) {
                                     Product::class => $model->sell_price ?? null,
-                                    Exam::class => $model->price ?? null,
-                                    Service::class => $model->buy_price ?? $model->sell_price ?? null,
-                                    Room::class => $model->price ?? null,
+                                    Service::class => $model->sell_price ?? null,
                                     default => null,
                                 };
                             }
@@ -328,63 +251,15 @@ class ProductsRelationManager extends RelationManager
                                 'content_id' => $selectedId,
                                 'content_type' => $data['content_type'],
                                 'price' => $price,
-                                'quantity' => in_array($data['content_type'] ?? '', [Product::class, Service::class]) ? ($data['quantity'] ?? 1) : null,
+                                'quantity' => $data['quantity'] ?? 1,
                             ]);
 
                         $livewire->dispatch('refreshTotal');
                     }),
-
-                CreateAction::make('create_reference_value')
-                    ->label('Crear valor referencial')
-                    ->visible(fn(): bool => auth()->user()->can('hospitalizations.details.reference_values.create'))
-                    ->modalHeading(false)
-                    ->modalWidth('md')
-                    ->form([
-
-                        Select::make('exam_id')
-                            ->label('Examen')
-                            ->options(fn() => Exam::all()->pluck('name', 'id'))
-                            ->required(),
-
-                        Select::make('unit_id')
-                            ->label('Unidad')
-                            ->options(function () {
-                                return Unit::whereHas('categories', function ($query) {
-                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
-                                })
-                                    ->pluck('name', 'id')
-                                    ->toArray();
-                            })
-                            ->preload(),
-
-                        TextInput::make('name')
-                            ->label('Nombre')
-                            ->unique(table: 'reference_values', column: 'name', ignoreRecord: true, modifyRuleUsing: function (Unique $rule, $get) {
-                                return $rule
-                                    ->where('exam_id', $get('exam_id'))
-                                    ->whereNull('deleted_at');
-                            })
-                            ->required(),
-
-                        TextInput::make('min_value')
-                            ->label('Mínimo')
-                            ->numeric(),
-
-                        TextInput::make('max_value')
-                            ->label('Máximo')
-                            ->numeric(),
-                    ])
-                    ->action(function (array $data) {
-                        ReferenceValue::create($data);
-                        Notification::make()
-                            ->title('Valor referencial creado')
-                            ->success()
-                            ->send();
-                    }),
             ])
             ->actions([
                 EditAction::make()
-                    ->visible(fn(): bool => auth()->user()->can('hospitalizations.details.edit.view'))
+                    ->visible(fn(): bool => auth()->user()->can('invoices.details.edit.view'))
                     ->form(function (Form $form) {
                         return $form->schema([
                             Hidden::make('content_type')
@@ -404,9 +279,7 @@ class ProductsRelationManager extends RelationManager
                                     $used = $query->pluck('content_id')->toArray();
 
                                     $model = match ($contentType) {
-                                        Exam::class   => Exam::class,
                                         Service::class => Service::class,
-                                        Room::class   => Room::class,
                                         Product::class => Product::class,
                                         default       => null,
                                     };
@@ -425,7 +298,6 @@ class ProductsRelationManager extends RelationManager
                                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
                                         ->pluck('name', 'id');
                                 })
-
                                 ->searchable()
                                 ->required()
                                 ->reactive()
@@ -435,8 +307,6 @@ class ProductsRelationManager extends RelationManager
 
                                     $model = match ($contentType) {
                                         Service::class => Service::find($contentId),
-                                        Exam::class    => Exam::find($contentId),
-                                        Room::class    => Room::find($contentId),
                                         Product::class => Product::find($contentId),
                                         default        => null,
                                     };
@@ -447,7 +317,6 @@ class ProductsRelationManager extends RelationManager
 
                                     $price = match ($contentType) {
                                         Service::class, Product::class => $model->sell_price ?? null,
-                                        Exam::class, Room::class       => $model->price ?? null,
                                         default                        => null,
                                     };
 
@@ -463,12 +332,12 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('quantity')
                                 ->label('Cantidad')
                                 ->numeric()
-                                ->required()
-                                ->readOnly(fn($get) => ($get('content_type') === Product::class) ? ! Inventory::where('product_id', $get('content_id'))->exists() : false),
+                                ->required(),
                         ]);
                     })
                     ->action(function (Model $record, array $data): void {
-                        if (!auth()->user()->can('hospitalizations.details.edit')) {
+
+                        if (!auth()->user()->can('invoices.details.edit')) {
                             Notification::make()
                                 ->title('Acceso denegado')
                                 ->body('No tienes permiso para editar este elemento')
@@ -488,17 +357,20 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
 
-                LoadResultsAction::make()
-                    ->visible(fn(): bool => auth()->user()->can('hospitalizations.details.reference_value_results.add')),
-
                 RefreshTotalDeleteAction::make()
-                    ->visible(fn(): bool => auth()->user()->can('hospitalizations.details.delete')),
+                    ->visible(fn(): bool => auth()->user()->can('invoices.details.delete')),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('invoices.details.bulk_delete')),
+                ]),
             ]);
     }
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return auth()->user()->can('hospitalizations.details.view');
+        return auth()->user()->can('invoices.details.view');
     }
 
     public function form(Form $form): Form

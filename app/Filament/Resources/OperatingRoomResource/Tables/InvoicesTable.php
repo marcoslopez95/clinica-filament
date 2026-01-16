@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\InvoiceResource\Tables;
+namespace App\Filament\Resources\OperatingRoomResource\Tables;
 
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\EditAction;
@@ -41,14 +41,12 @@ class InvoicesTable
 
                 \App\Filament\Forms\Columns\CancellationColumn::make(),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 \Filament\Tables\Actions\Action::make('print')
                     ->label('Imprimir')
                     ->icon('heroicon-o-printer')
-                    ->url(fn ($record) => route('print.invoice', $record))
+                    ->url(fn($record) => route('print.invoice', $record))
                     ->openUrlInNewTab(),
                 CancelInvoiceAction::makeTable(),
                 EditAction::make(),
