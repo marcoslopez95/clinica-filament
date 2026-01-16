@@ -4,20 +4,22 @@ namespace App\Filament\Resources\InventoryResource\Pages;
 
 use App\Filament\Resources\InventoryResource;
 use App\Filament\Resources\InventoryModeResource;
-use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
-
+use App\Imports\InventoryImport;
 use App\Models\Inventory;
 use App\Models\Warehouse;
-use App\Imports\InventoryImport;
-use Maatwebsite\Excel\Facades\Excel;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Forms\Components\Grid;
 
 class ListInventories extends ListRecords
 {
@@ -30,6 +32,7 @@ class ListInventories extends ListRecords
                 ->label('Importar')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('info')
+                ->visible(fn(): bool => auth()->user()->can('inventories.import.view'))
                 ->form([
                     FileUpload::make('attachment')
                         ->label('Archivo Excel')
@@ -38,6 +41,15 @@ class ListInventories extends ListRecords
                         ->directory('imports')
                 ])
                 ->action(function (array $data) {
+                    if (!auth()->user()->can('inventories.import')) {
+                        Notification::make()
+                            ->title('Acceso denegado')
+                            ->body('No tienes permiso para importar inventario')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
                     $file = storage_path('app/public/' . $data['attachment']);
 
                     try {
@@ -60,6 +72,7 @@ class ListInventories extends ListRecords
             Action::make('mover_inventario')
                 ->label('Mover Varios')
                 ->icon('heroicon-o-arrows-right-left')
+                ->visible(fn(): bool => auth()->user()->can('inventories.move_several.view'))
                 ->modalWidth(MaxWidth::FiveExtraLarge)
                 ->form([
                     Select::make('from_warehouse_id')
@@ -67,23 +80,23 @@ class ListInventories extends ListRecords
                         ->options(Warehouse::pluck('name', 'id'))
                         ->required()
                         ->reactive()
-                        ->afterStateUpdated(fn ($set) => $set('items', [])),
+                        ->afterStateUpdated(fn($set) => $set('items', [])),
                     Select::make('to_warehouse_id')
                         ->label('Almacén Destino')
                         ->options(Warehouse::pluck('name', 'id'))
                         ->required()
                         ->reactive(),
-                    \Filament\Forms\Components\Grid::make(3)
+                    Grid::make(3)
                         ->schema([
-                            \Filament\Forms\Components\Placeholder::make('product_header')
+                            Placeholder::make('product_header')
                                 ->label('Producto')
                                 ->content('')
                                 ->extraAttributes(['class' => 'font-bold']),
-                            \Filament\Forms\Components\Placeholder::make('stock_header')
+                            Placeholder::make('stock_header')
                                 ->label('Stock Actual')
                                 ->content('')
                                 ->extraAttributes(['class' => 'font-bold']),
-                            \Filament\Forms\Components\Placeholder::make('quantity_header')
+                            Placeholder::make('quantity_header')
                                 ->label('Cantidad a mover')
                                 ->content('')
                                 ->extraAttributes(['class' => 'font-bold']),
@@ -133,7 +146,7 @@ class ListInventories extends ListRecords
                                 ->required()
                                 ->minValue(1)
                                 ->rules([
-                                    fn (callable $get) => function (string $attribute, $value, $fail) use ($get) {
+                                    fn(callable $get) => function (string $attribute, $value, $fail) use ($get) {
                                         $inventoryId = $get('inventory_id');
                                         if ($inventoryId) {
                                             $inventory = Inventory::find($inventoryId);
@@ -147,10 +160,19 @@ class ListInventories extends ListRecords
                         ->columns(3)
                         ->defaultItems(1)
                         ->addActionLabel('Añadir producto')
-                        ->itemLabel(fn (array $state): ?string => $state['inventory_id'] ? null : 'Nuevo producto')
+                        ->itemLabel(fn(array $state): ?string => $state['inventory_id'] ? null : 'Nuevo producto')
                         ->collapsible()
                 ])
                 ->action(function (array $data): void {
+                    if (!auth()->user()->can('inventories.move_several')) {
+                        Notification::make()
+                            ->title('Acceso denegado')
+                            ->body('No tienes permiso para mover varios inventarios')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
                     if ($data['from_warehouse_id'] === $data['to_warehouse_id']) {
                         Notification::make()
                             ->title('Error')
@@ -160,7 +182,7 @@ class ListInventories extends ListRecords
                         return;
                     }
 
-                    \DB::transaction(function () use ($data) {
+                    DB::transaction(function () use ($data) {
                         foreach ($data['items'] as $item) {
                             $sourceInventory = Inventory::find($item['inventory_id']);
                             $quantity = $item['quantity'];
@@ -201,6 +223,7 @@ class ListInventories extends ListRecords
 
             Action::make('modo_inventario')
                 ->label('Mover')
+                ->visible(fn(): bool => auth()->user()->can('inventory_modes.list'))
                 ->url(InventoryModeResource::getUrl('index')),
 
             CreateAction::make(),

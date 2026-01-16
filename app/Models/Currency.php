@@ -18,6 +18,23 @@ class Currency extends Model implements Auditable
     use AuditableTrait;
     use SoftDeletes;
 
+    protected $casts = [
+        'is_main' => 'boolean',
+    ];
+
+    protected static function booted()
+    {
+        static::saving(function ($currency) {
+            if ($currency->is_main) {
+                // Forzar tasa de cambio a 1 si es la moneda principal
+                $currency->exchange = 1;
+
+                // Desmarcar otras monedas como principales
+                static::where('id', '!=', $currency->id)->update(['is_main' => false]);
+            }
+        });
+    }
+
     public function paymentMethods(): BelongsToMany
     {
         return $this->belongsToMany(PaymentMethod::class);

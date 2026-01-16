@@ -5,6 +5,8 @@ namespace App\Filament\Resources\PatientResource\Schemas;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Illuminate\Database\Eloquent\Model;
 
 class PatientForm
 {
@@ -21,11 +23,30 @@ class PatientForm
             \App\Filament\Forms\Components\TypeDocumentSelect::make(),
 
             TextInput::make('dni')
-                ->label('Número de Documento'),
+                ->label('Número de Documento')
+                ->required(),
 
             DatePicker::make('born_date')
                 ->label('Fecha de Nacimiento')
-                ->required(),
+                ->required()
+                ->live(onBlur: true)
+                ->afterStateUpdated(function (Set $set, ?string $state) {
+                    if (!$state) {
+                        $set('age', null);
+                        return;
+                    }
+
+                    $birthdate = \Carbon\Carbon::parse($state);
+                    $age = (int) $birthdate->diffInYears(\Carbon\Carbon::now()); // ← (int) para redondear
+                    $set('age', $age);
+                }),
+
+            TextInput::make('age')
+                ->label('Edad')
+                ->disabled()
+                ->dehydrated()
+                ->required()
+                ->numeric(),
 
             TextInput::make('address')
                 ->label('Dirección')
@@ -33,6 +54,7 @@ class PatientForm
 
             TextInput::make('phone')
                 ->label('Teléfono')
+                ->required()
                 ->tel(),
 
         ];
@@ -45,5 +67,4 @@ class PatientForm
             \App\Filament\Forms\Schemas\TimestampForm::schema(),
         ]);
     }
-
 }

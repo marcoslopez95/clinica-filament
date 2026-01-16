@@ -48,7 +48,8 @@ class UsersTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('users.bulk_delete')),
                 ]),
             ]);
     }

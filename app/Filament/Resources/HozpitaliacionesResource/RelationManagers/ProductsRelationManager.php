@@ -194,41 +194,64 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
 
-                Action::make('choose_resource')
-                    ->label('Crear recurso')
-                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.create'))
-                    ->modalHeading('Crear recurso')
-                    ->modalWidth('sm')
-                    ->form([
-                        Radio::make('resource')
-                            ->label(false)
-                            ->options([
-                                'product' => 'Producto',
-                                'exam' => 'Examen',
-                                'room' => 'Habitación',
-                                'service' => 'Servicio',
-                            ])
-                            ->required(),
-                    ])
-                    ->action(function (array $data, $livewire) {
-                        $map = [
-                            'product' => ProductResource::class,
-                            'exam' => ExamResource::class,
-                            'room' => RoomResource::class,
-                            'service' => ServiceResource::class,
-                        ];
+            Action::make('choose_resource')
+                ->label('Crear recurso')
+                ->modalHeading('Crear recurso')
+                ->modalWidth('sm')
+                ->visible(fn (): bool => 
+                    auth()->user()->can('hospitalizations.details.create') && 
+                    (
+                        auth()->user()->can('products.view') || 
+                        auth()->user()->can('exams.view') || 
+                        auth()->user()->can('rooms.view') || 
+                        auth()->user()->can('services.view')
+                    )
+                )
+                ->form([
+                    Radio::make('resource')
+                        ->label(false)
+                        ->options(function () {
+                            $options = [];
 
-                        $key = $data['resource'] ?? null;
-                        if (! $key || ! isset($map[$key])) {
-                            Notification::make()->danger()->body('Seleccione un recurso válido')->send();
-                            return;
-                        }
+                            if (auth()->user()->can('products.view')) {
+                                $options['product'] = 'Producto';
+                            }
 
-                        $resourceClass = $map[$key];
-                        $url = $resourceClass::getUrl('create');
+                            if (auth()->user()->can('exams.view')) {
+                                $options['exam'] = 'Examen';
+                            }
 
-                        return redirect($url);
-                    }),
+                            if (auth()->user()->can('rooms.view')) {
+                                $options['room'] = 'Habitación';
+                            }
+
+                            if (auth()->user()->can('services.view')) {
+                                $options['service'] = 'Servicio';
+                            }
+
+                            return $options;
+                        })
+                        ->required(),
+                ])
+                ->action(function (array $data, $livewire) {
+                    $map = [
+                        'product' => ProductResource::class,
+                        'exam' => ExamResource::class,
+                        'room' => RoomResource::class,
+                        'service' => ServiceResource::class,
+                    ];
+
+                    $key = $data['resource'] ?? null;
+                    if (! $key || ! isset($map[$key])) {
+                        Notification::make()->danger()->body('Seleccione un recurso válido')->send();
+                        return;
+                    }
+
+                    $resourceClass = $map[$key];
+                    $url = $resourceClass::getUrl('create');
+
+                    return redirect($url);
+                }),
 
                 CreateAction::make('add_existing')
                     ->label('Añadir existente')
@@ -306,6 +329,54 @@ class ProductsRelationManager extends RelationManager
 
                             $livewire->dispatch('refreshTotal');
                         }),
+
+                CreateAction::make('create_reference_value')
+                    ->label('Crear valor referencial')
+                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.reference_values.create'))
+                    ->modalHeading(false)
+                    ->modalWidth('md')
+                    ->form([
+
+                        Select::make('exam_id')
+                            ->label('Examen')
+                            ->options(fn() => Exam::all()->pluck('name', 'id'))
+                            ->required(),
+
+                        Select::make('unit_id')
+                            ->label('Unidad')
+                            ->options(function () {
+                                return Unit::whereHas('categories', function ($query) {
+                                    $query->where('name', UnitCategoryEnum::LABORATORY->value);
+                                })
+                                ->pluck('name', 'id')
+                                ->toArray();
+                            })
+                            ->preload(),
+
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->unique(table: 'reference_values', column: 'name', ignoreRecord: true, modifyRuleUsing: function (Unique $rule, $get) {
+                                return $rule
+                                    ->where('exam_id', $get('exam_id'))
+                                    ->whereNull('deleted_at');
+                            })
+                            ->required(),
+
+                        TextInput::make('min_value')
+                            ->label('Mínimo')
+                            ->numeric(),
+
+                        TextInput::make('max_value')
+                            ->label('Máximo')
+                            ->numeric(),
+                    ])
+                    ->action(function (array $data) {
+                        ReferenceValue::create($data);
+                        Notification::make()
+                            ->title('Valor referencial creado')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->actions([
                 EditAction::make()
@@ -413,9 +484,11 @@ class ProductsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTotal');
                     }),
 
-                LoadResultsAction::make(),
+                LoadResultsAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.reference_value_results.add')),
 
-                RefreshTotalDeleteAction::make(),
+                RefreshTotalDeleteAction::make()
+                    ->visible(fn (): bool => auth()->user()->can('hospitalizations.details.delete')),
             ]);
     }
 

@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SecuritySeeder::class,
             UserSeeder::class,
-            // ExpenseCategorySeeder::class,
-            // TypeDocumentSeeder::class,
-            // ProductCategorySeeder::class,
-            // WarehouseSeeder::class,
+            ExpenseCategorySeeder::class,
+            TypeDocumentSeeder::class,
+            ProductCategorySeeder::class,
+            WarehouseSeeder::class,
         ]);
     }
 }

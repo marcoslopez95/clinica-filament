@@ -17,13 +17,14 @@ class RoomForm
                 TextInput::make('price')
                     ->label('Precio')
                     ->numeric()
+                    ->required()
                     ->step(0.01),
 
                 Select::make('currency_id')
                     ->label('Moneda')
-                    ->options(fn () => \App\Models\Currency::pluck('name', 'id')->toArray())
+                    ->options(fn() => \App\Models\Currency::pluck('name', 'id')->toArray())
                     ->searchable()
-                    ->nullable(),
+                    ->required(),
 
                 \App\Filament\Forms\Schemas\TimestampForm::schema(),
             ]);

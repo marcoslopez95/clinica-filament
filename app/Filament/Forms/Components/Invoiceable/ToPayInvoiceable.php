@@ -29,15 +29,21 @@ class ToPayInvoiceable
                         } elseif ($livewire->ownerRecord && $livewire->ownerRecord->currency) {
                             $currency = $livewire->ownerRecord->currency;
                         }
+                        $invoice = $livewire->ownerRecord;
 
-                        if ($currency) {
+                        if ($currency && $invoice->currency_id != $currency->id) {
                             $set('per_pay_invoiceable', self::recalculateBalance($currency, $livewire));
                         }
                     })
-                    ->default(fn(RelationManager $livewire): string => self::recalculateBalance(
-                        $livewire->ownerRecord->currency,
-                        $livewire)
-                    ),
+                    ->default(function(RelationManager $livewire): string {
+                        $currency = $livewire->ownerRecord->currency ?? null;
+
+                        if ($currency) {
+                            return Helper::formatCurrency($livewire->ownerRecord->balance, $livewire->ownerRecord->currency);
+                        }
+
+                        return '0.00';
+                    }),
             ]);
     }
 

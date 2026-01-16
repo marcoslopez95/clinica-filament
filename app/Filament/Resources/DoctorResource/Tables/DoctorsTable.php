@@ -36,16 +36,16 @@ class DoctorsTable
                 TextColumn::make('born_date')
                     ->label('Fecha de Nacimiento')
                     ->date(),
-                    
+
                 TextColumn::make('cost')
                     ->label('Costo'),
-                    
+
                 TextColumn::make('specialization.name')
                     ->label('Especialización'),
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -54,9 +54,8 @@ class DoctorsTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('doctors.bulk_delete')),
                 ]),
             ]);
     }

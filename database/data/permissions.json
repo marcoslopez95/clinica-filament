@@ -30,6 +30,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "roles.bulk_delete",
+        "description": "Eliminación Masiva de Roles",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "permissions.list",
         "description": "Listar Permisos",
         "guard": "web",
@@ -60,6 +66,12 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "permissions.bulk_delete",
+        "description": "Eliminación Masiva de Permisos",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "categories.list",
         "description": "Listar Categorías de Permisos",
         "guard": "web",
@@ -84,8 +96,20 @@
         "categoria": "Seguridad"
     },
     {
+        "name": "categories.update",
+        "description": "Actualizar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
         "name": "categories.delete",
         "description": "Eliminar Categoría de Permiso",
+        "guard": "web",
+        "categoria": "Seguridad"
+    },
+    {
+        "name": "categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Permisos",
         "guard": "web",
         "categoria": "Seguridad"
     },
@@ -116,6 +140,12 @@
     {
         "name": "products.delete",
         "description": "Eliminar Producto",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "products.bulk_delete",
+        "description": "Eliminación Masiva de Productos",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -182,6 +212,12 @@
     {
         "name": "services.delete",
         "description": "Eliminar Servicio",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "services.bulk_delete",
+        "description": "Eliminación Masiva de Servicios",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -258,6 +294,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "inventories.bulk_delete",
+        "description": "Eliminación Masiva de Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "inventory_modes.list",
         "description": "Listar Modos de Inventario",
         "guard": "web",
@@ -282,8 +324,20 @@
         "categoria": "Almacén"
     },
     {
+        "name": "inventory_modes.move",
+        "description": "Mover Stock entre Almacenes",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "inventory_modes.delete",
         "description": "Eliminar Modo de Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventory_modes.bulk_delete",
+        "description": "Eliminación Masiva de Modos de Inventario",
         "guard": "web",
         "categoria": "Almacén"
     },
@@ -330,6 +384,36 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "inventories.import.view",
+        "description": "Ver Modal para Importar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.import",
+        "description": "Importar Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move_several.view",
+        "description": "Ver Modal para Mover Varios Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move_several",
+        "description": "Mover Varios Inventarios",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
+        "name": "inventories.move.view",
+        "description": "Ver Opción para Mover Inventario",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "hospitalizations.inventories.view",
         "description": "Ver Inventario en Hospitalización",
         "guard": "web",
@@ -360,14 +444,20 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.attach",
-        "description": "Asociar Detalle existente en Hospitalización",
+        "name": "hospitalizations.details.create",
+        "description": "Crear recurso en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.edit",
-        "description": "Editar Detalle en Hospitalización",
+        "name": "hospitalizations.details.attach",
+        "description": "Asociar recurso existente en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.reference_values.create",
+        "description": "Crear Valor Referencial en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -378,8 +468,14 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.view",
-        "description": "Ver Detalle en Hospitalización",
+        "name": "hospitalizations.details.edit",
+        "description": "Editar Detalle en Hospitalización",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "hospitalizations.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -390,32 +486,50 @@
         "categoria": "Contabilidad"
     },
     {
-        "name": "hospitalizations.details.bulk_delete",
-        "description": "Eliminación Masiva de Detalles en Hospitalización",
-        "guard": "web",
-        "categoria": "Contabilidad"
-    },
-    {
-        "name": "laboratories.details.create",
-        "description": "Crear Detalle en Laboratorio",
+        "name": "hospitalizations.details.view",
+        "description": "Ver Detalles en Hospitalización",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
         "name": "laboratories.details.attach",
-        "description": "Asociar Detalle existente en Laboratorio",
+        "description": "Asociar examen existente en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.create",
+        "description": "Crear examen en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_values.create",
+        "description": "Crear Valor Referencial en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
         "name": "laboratories.details.delete",
-        "description": "Eliminar Detalle en Laboratorio",
+        "description": "Eliminar examen en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.bulk_delete",
+        "description": "Eliminación Masiva de exámenes en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
     {
         "name": "laboratories.details.view",
-        "description": "Ver Detalle en Laboratorio",
+        "description": "Ver exámenes en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -440,6 +554,30 @@
     {
         "name": "laboratories.payments.view",
         "description": "Ver Pago en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.delete",
+        "description": "Eliminar Detalle en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.bulk_delete",
+        "description": "Eliminación Masiva de Detalles en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_values.create",
+        "description": "Crear Valor Referencial en Laboratorio",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "laboratories.details.reference_value_results.add",
+        "description": "Cargar Resultados de Valores Referenciales en Laboratorio",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -474,6 +612,12 @@
         "categoria": "Almacén"
     },
     {
+        "name": "warehouses.bulk_delete",
+        "description": "Eliminación Masiva de Almacenes",
+        "guard": "web",
+        "categoria": "Almacén"
+    },
+    {
         "name": "doctors.list",
         "description": "Listar Doctores",
         "guard": "web",
@@ -500,6 +644,12 @@
     {
         "name": "doctors.delete",
         "description": "Eliminar Doctor",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "doctors.bulk_delete",
+        "description": "Eliminación Masiva de Doctores",
         "guard": "web",
         "categoria": "RRHH"
     },
@@ -534,6 +684,12 @@
         "categoria": "RRHH"
     },
     {
+        "name": "patients.bulk_delete",
+        "description": "Eliminación Masiva de Pacientes",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
         "name": "specializations.list",
         "description": "Listar Especializaciones",
         "guard": "web",
@@ -560,6 +716,12 @@
     {
         "name": "specializations.delete",
         "description": "Eliminar Especialización",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
+        "name": "specializations.bulk_delete",
+        "description": "Eliminación Masiva de Especializaciones",
         "guard": "web",
         "categoria": "RRHH"
     },
@@ -594,6 +756,12 @@
         "categoria": "RRHH"
     },
     {
+        "name": "departments.bulk_delete",
+        "description": "Eliminación Masiva de Departamentos",
+        "guard": "web",
+        "categoria": "RRHH"
+    },
+    {
         "name": "currencies.list",
         "description": "Listar Monedas",
         "guard": "web",
@@ -624,6 +792,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "currencies.bulk_delete",
+        "description": "Eliminación Masiva de Monedas",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "exams.list",
         "description": "Listar Exámenes",
         "guard": "web",
@@ -650,6 +824,12 @@
     {
         "name": "exams.delete",
         "description": "Eliminar Examen",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "exams.bulk_delete",
+        "description": "Eliminación Masiva de Exámenes",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -720,6 +900,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "payment_methods.bulk_delete",
+        "description": "Eliminación Masiva de Métodos de Pago",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "product_categories.list",
         "description": "Listar Categorías de Productos",
         "guard": "web",
@@ -746,6 +932,12 @@
     {
         "name": "product_categories.delete",
         "description": "Eliminar Categoría de Producto",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "product_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Producto",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -810,6 +1002,24 @@
         "categoria": "Configuración"
     },
     {
+        "name": "reference_values.bulk_delete",
+        "description": "Eliminación Masiva de Valores de Referencia",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "reference_value_results.edit.view",
+        "description": "Ver Modal para Editar Resultados de Valores Referenciales",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "reference_value_results.edit",
+        "description": "Editar Resultados de Valores Referenciales",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "rooms.list",
         "description": "Listar Habitaciones",
         "guard": "web",
@@ -836,6 +1046,12 @@
     {
         "name": "rooms.delete",
         "description": "Eliminar Habitación",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "rooms.bulk_delete",
+        "description": "Eliminación Masiva de Habitaciones",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -870,6 +1086,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "service_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Servicio",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "suppliers.list",
         "description": "Listar Proveedores",
         "guard": "web",
@@ -896,6 +1118,12 @@
     {
         "name": "suppliers.delete",
         "description": "Eliminar Proveedor",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "suppliers.bulk_delete",
+        "description": "Eliminación Masiva de Proveedores",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -930,6 +1158,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "type_documents.bulk_delete",
+        "description": "Eliminación Masiva de Tipos de Documento",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "units.list",
         "description": "Listar Unidades de Medida",
         "guard": "web",
@@ -956,6 +1190,12 @@
     {
         "name": "units.delete",
         "description": "Eliminar Unidad de Medida",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
+        "name": "units.bulk_delete",
+        "description": "Eliminación Masiva de Unidades de Medida",
         "guard": "web",
         "categoria": "Configuración"
     },
@@ -990,6 +1230,12 @@
         "categoria": "Configuración"
     },
     {
+        "name": "unit_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Unidad",
+        "guard": "web",
+        "categoria": "Configuración"
+    },
+    {
         "name": "entries.list",
         "description": "Listar Entradas",
         "guard": "web",
@@ -1016,6 +1262,24 @@
     {
         "name": "entries.delete",
         "description": "Eliminar Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.taxes.view",
+        "description": "Ver Impuestos en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.details.batches.view",
+        "description": "Ver Lotes en Detalle de Entrada",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "entries.discounts.view",
+        "description": "Ver Descuentos en Entrada",
         "guard": "web",
         "categoria": "Contabilidad"
     },
@@ -1200,6 +1464,12 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "expenses.bulk_delete",
+        "description": "Eliminación Masiva de Gastos",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "invoices.list",
         "description": "Listar Facturas",
         "guard": "web",
@@ -1302,6 +1572,54 @@
         "categoria": "Contabilidad"
     },
     {
+        "name": "invoice_details_batches.create",
+        "description": "Crear Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.edit.view",
+        "description": "Ver Modal para Editar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.edit",
+        "description": "Editar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_batches.delete",
+        "description": "Eliminar Lote en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.create",
+        "description": "Crear Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.edit.view",
+        "description": "Ver Modal para Editar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.edit",
+        "description": "Editar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
+        "name": "invoice_details_taxes.delete",
+        "description": "Eliminar Impuesto en Detalle de Factura",
+        "guard": "web",
+        "categoria": "Contabilidad"
+    },
+    {
         "name": "invoices.payments.view",
         "description": "Ver Pago en Factura",
         "guard": "web",
@@ -1394,6 +1712,12 @@
     {
         "name": "users.delete",
         "description": "Eliminar Usuario",
+        "guard": "web",
+        "categoria": "Administración"
+    },
+    {
+        "name": "users.bulk_delete",
+        "description": "Eliminación Masiva de Usuarios",
         "guard": "web",
         "categoria": "Administración"
     },

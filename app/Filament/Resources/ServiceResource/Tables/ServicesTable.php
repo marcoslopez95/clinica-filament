@@ -43,7 +43,7 @@ class ServicesTable
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -52,9 +52,8 @@ class ServicesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('services.bulk_delete')),
                 ]),
             ]);
     }

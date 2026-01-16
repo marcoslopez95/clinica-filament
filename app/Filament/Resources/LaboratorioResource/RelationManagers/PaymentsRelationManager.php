@@ -33,7 +33,7 @@ class PaymentsRelationManager extends RelationManager
             ->schema([
                 ToPayInvoiceable::make()
                     ->dehydrated(false),
-                    
+
                 Select::make('payment_method_id')
                     ->relationship('paymentMethod', 'name')
                     ->label('Método de Pago')
@@ -58,7 +58,9 @@ class PaymentsRelationManager extends RelationManager
                     ->afterStateUpdated(function (Set $set, mixed $state, RelationManager $livewire) {
                         $currency = Currency::find($state);
                         $set('exchange', $currency->exchange ?? 0);
-                        if ($currency) {
+                        $invoice = $livewire->ownerRecord;
+
+                        if ($currency && $invoice->currency_id != $currency->id) {
                             $set('per_pay_invoiceable', ToPayInvoiceable::recalculateBalance($currency, $livewire));
                         }
                     }),
@@ -127,7 +129,7 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    
+
                 ]),
             ]);
     }

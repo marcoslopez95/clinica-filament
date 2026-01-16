@@ -258,7 +258,12 @@ class ProductsRelationManager extends RelationManager
                     ->modalHeading(false)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Cerrar')
-                    ->visible(fn (Model $record): bool =>$record->quantity > 0 )
+                    ->visible(function (Model $record): bool {
+                        if (!auth()->user()->can('entries.details.taxes.view')) {
+                            return false;
+                        }
+                        return $record->quantity > 0;
+                    })
                     ->modalContent(fn (Model $record) => view('filament.actions.manage-taxes', ['record' => $record])),
 
                 Action::make('return_product')
@@ -320,6 +325,10 @@ class ProductsRelationManager extends RelationManager
                     ->color('success')
                     ->icon('heroicon-m-archive-box')
                     ->visible(function (Model $record): bool {
+                        if (!auth()->user()->can('entries.details.batches.view')) {
+                            return false;
+                        }
+
                         $p = $record->content_type === Product::class ? $record->content : ($record->product ?? null);
                         if (! $p || ! ($p->productCategory ?? null)) {
                             return false;

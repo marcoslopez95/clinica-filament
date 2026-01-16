@@ -26,6 +26,9 @@ class PatientsTable
                 TextColumn::make('last_name')
                     ->label('Apellido'),
 
+                TextColumn::make('age')
+                    ->label('Edad'),
+
                 TextColumn::make('typeDocument.name')
                     ->label('Tipo de Documento')
                     ->searchable()
@@ -55,9 +58,8 @@ class PatientsTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('patients.bulk_delete')),
                 ]),
             ]);
     }

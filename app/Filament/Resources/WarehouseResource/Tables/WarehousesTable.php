@@ -32,7 +32,7 @@ class WarehousesTable
 
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
-            
+
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -41,7 +41,8 @@ class WarehousesTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn(): bool => auth()->user()->can('warehouses.bulk_delete')),
                 ]),
             ]);
     }
