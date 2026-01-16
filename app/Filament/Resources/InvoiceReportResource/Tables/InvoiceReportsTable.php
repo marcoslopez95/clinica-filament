@@ -21,6 +21,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
@@ -186,9 +187,17 @@ class InvoiceReportsTable
                     ->label('PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('danger')
-                    ->action(function ($record) {
+                    ->form([
+                        Toggle::make('is_detailed')
+                            ->label('Detallado')
+                            ->default(false),
+                    ])
+                    ->action(function ($record, array $data) {
                         $mpdf = new Mpdf();
-                        $html = view('pdf.invoices-report', ['invoices' => collect([$record])])->render();
+                        $html = view('pdf.invoices-report', [
+                            'invoices' => collect([$record]),
+                            'is_detailed' => $data['is_detailed'] ?? false
+                        ])->render();
                         $mpdf->WriteHTML($html);
                         return response()->streamDownload(fn () => print($mpdf->Output('', 'S')), "factura-{$record->invoice_number}.pdf");
                     }),
@@ -198,15 +207,28 @@ class InvoiceReportsTable
                     BulkAction::make('exportExcel')
                         ->label('Exportar Excel')
                         ->icon('heroicon-o-document-plus')
-                        ->action(fn (Collection $records) => Excel::download(new InvoicesExport($records), 'reporte-facturas.xlsx')),
+                        ->form([
+                            Toggle::make('is_detailed')
+                                ->label('Detallado')
+                                ->default(false),
+                        ])
+                        ->action(fn (Collection $records, array $data) => Excel::download(new InvoicesExport($records, $data['is_detailed'] ?? false), 'reporte-facturas.xlsx')),
 
                     BulkAction::make('exportPdf')
                         ->label('Exportar PDF')
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('danger')
-                        ->action(function (Collection $records) {
+                        ->form([
+                            Toggle::make('is_detailed')
+                                ->label('Detallado')
+                                ->default(false),
+                        ])
+                        ->action(function (Collection $records, array $data) {
                             $mpdf = new Mpdf();
-                            $html = view('pdf.invoices-report', ['invoices' => $records])->render();
+                            $html = view('pdf.invoices-report', [
+                                'invoices' => $records,
+                                'is_detailed' => $data['is_detailed'] ?? false
+                            ])->render();
                             $mpdf->WriteHTML($html);
                             return response()->streamDownload(fn () => print($mpdf->Output('', 'S')), 'reporte-facturas.pdf');
                         }),
