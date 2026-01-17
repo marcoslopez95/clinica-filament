@@ -11,6 +11,11 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use App\Exports\ProductExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Database\Eloquent\Collection;
 
 use Filament\Tables\Table;
 
@@ -68,10 +73,28 @@ class ProductsTable
                 RestoreAction::make(),
                 ForceDeleteAction::make(),
             ])
+            ->headerActions([
+                Action::make('exportExcel')
+                    ->label('Exportar Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(fn($livewire) => Excel::download(
+                        new ProductExport($livewire->getFilteredTableQuery()->get()),
+                        'reporte-productos-' . now()->format('Y-m-d') . '.xlsx'
+                    )),
+            ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->visible(fn(): bool => auth()->user()->can('products.bulk_delete')),
+                    BulkAction::make('exportSelectedExcel')
+                        ->label('Exportar Excel (Seleccionados)')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('success')
+                        ->action(fn(Collection $records) => Excel::download(
+                            new ProductExport($records),
+                            'productos-seleccionados-' . now()->format('Y-m-d') . '.xlsx'
+                        )),
                 ]),
             ]);
     }
