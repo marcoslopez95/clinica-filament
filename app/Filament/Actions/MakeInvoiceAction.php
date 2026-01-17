@@ -17,9 +17,9 @@ class MakeInvoiceAction
             ->color('success')
             ->requiresConfirmation()
             ->action(fn (Invoice $record) => $record->update([
-                'invoice_type' => InvoiceType::DEFAULT->value,
+                'is_quotation' => false,
             ]))
-            ->hidden(fn (Invoice $record) => $record->invoice_type === InvoiceType::DEFAULT->value);
+            ->visible(fn (Invoice $record) => $record->is_quotation);
     }
 
     public static function makeForm(): FormAction
@@ -30,8 +30,8 @@ class MakeInvoiceAction
             ->color('success')
             ->requiresConfirmation()
             ->action(fn (Invoice $record) => $record->update([
-                'invoice_type' => InvoiceType::DEFAULT->value,
+                'is_quotation' => false,
             ]))
-            ->hidden(fn (Invoice $record) => $record->invoice_type === InvoiceType::DEFAULT->value);
+            ->visible(fn (Invoice $record) => $record->is_quotation);
     }
 }

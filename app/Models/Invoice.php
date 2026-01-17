@@ -38,6 +38,7 @@ class Invoice extends Model implements Auditable
             'status'       => InvoiceStatus::class,
             'invoice_type' => InvoiceType::class,
             'is_expired'   => 'boolean',
+            'is_quotation' => 'boolean',
         ];
     }
 

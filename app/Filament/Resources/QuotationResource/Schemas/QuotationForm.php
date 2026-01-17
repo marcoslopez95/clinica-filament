@@ -8,6 +8,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use App\Models\Patient;
+use App\Enums\InvoiceType;
+use Filament\Forms\Components\Hidden;
 
 class QuotationForm
 {
@@ -16,6 +18,20 @@ class QuotationForm
         return $form
             ->schema([
                 \App\Filament\Forms\Components\StatusPlaceholder::make(),
+
+                Hidden::make('is_quotation')->default(true),
+
+                Select::make('invoice_type')
+                    ->label('Tipo de cotización')
+                    ->options([
+                        InvoiceType::DEFAULT->value => InvoiceType::DEFAULT->getName(),
+                        InvoiceType::LABORATORY->value => InvoiceType::LABORATORY->getName(),
+                        InvoiceType::HOSPITALIZATION->value => InvoiceType::HOSPITALIZATION->getName(),
+                        InvoiceType::CONSULT->value => InvoiceType::CONSULT->getName(),
+                    ])
+                    ->default(InvoiceType::DEFAULT->value)
+                    ->required()
+                    ->live(),
 
                 Select::make('invoiceable_id')
                     ->label('Paciente')

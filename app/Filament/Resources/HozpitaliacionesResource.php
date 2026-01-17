@@ -78,7 +78,9 @@ class HozpitaliacionesResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('invoice_type', InvoiceType::HOSPITALIZATION->value);
+        return parent::getEloquentQuery()
+            ->where('invoice_type', InvoiceType::HOSPITALIZATION->value)
+            ->where('is_quotation', false);
     }
 
     public static function getGloballySearchableAttributes(): array

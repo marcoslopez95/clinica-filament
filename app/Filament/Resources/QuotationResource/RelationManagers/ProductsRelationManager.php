@@ -4,6 +4,8 @@ namespace App\Filament\Resources\QuotationResource\RelationManagers;
 
 use App\Models\Product;
 use App\Models\Service;
+use App\Enums\InvoiceType;
+use App\Enums\ServiceCategory;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
@@ -80,9 +82,18 @@ class ProductsRelationManager extends RelationManager
                     $used = $owner->details()
                         ->where('content_type', Service::class)->pluck('content_id')->toArray();
 
+                    $categoryMap = [
+                        InvoiceType::DEFAULT->value => ServiceCategory::DEFAULT->value,
+                        InvoiceType::LABORATORY->value => ServiceCategory::LABORATORY->value,
+                        InvoiceType::HOSPITALIZATION->value => ServiceCategory::HOSPITALIZATION->value,
+                        InvoiceType::CONSULT->value => ServiceCategory::CONSULT->value,
+                    ];
+
+                    $targetCategory = $categoryMap[$owner->invoice_type->value] ?? ServiceCategory::QUOTATION->value;
+
                     return Service::query()
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                        ->where('category_id', \App\Enums\ServiceCategory::QUOTATION->value)
+                        ->where('service_category_id', $targetCategory)
                         ->pluck('name', 'id');
                 })
                 ->searchable()

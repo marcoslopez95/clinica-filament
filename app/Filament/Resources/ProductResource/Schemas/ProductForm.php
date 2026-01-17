@@ -4,7 +4,9 @@ namespace App\Filament\Resources\ProductResource\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 
 use App\Enums\UnitCategoryEnum;
 use App\Models\Unit;
@@ -23,12 +25,27 @@ return [
     TextInput::make('buy_price')
         ->label('Precio de Compra')
         ->required()
-        ->numeric(),
+        ->numeric()
+        ->live(),
 
     TextInput::make('sell_price')
         ->label('Precio de Venta')
         ->required()
-        ->numeric(),
+        ->numeric()
+        ->live(),
+
+    Placeholder::make('profit_margin_display')
+        ->label('Porcentaje de Ganancia')
+        ->content(function (Get $get) {
+            $buyPrice = (float) $get('buy_price');
+            $sellPrice = (float) $get('sell_price');
+
+            if ($buyPrice > 0) {
+                $profit = (($sellPrice - $buyPrice) / $buyPrice) * 100;
+                return number_format($profit, 2) . '%';
+            }
+            return '0.00%';
+        }),
 
     Select::make('unit_id')
         ->label('Unidad')

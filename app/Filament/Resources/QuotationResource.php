@@ -75,6 +75,6 @@ class QuotationResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('invoice_type', InvoiceType::COTIZACION->value);
+        return parent::getEloquentQuery()->where('is_quotation', true);
     }
 }

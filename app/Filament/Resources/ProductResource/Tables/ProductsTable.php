@@ -31,6 +31,18 @@ class ProductsTable
                 TextColumn::make('sell_price')
                     ->label('Precio de Venta'),
 
+                TextColumn::make('profit_margin')
+                    ->label('Porcentaje de Ganancia')
+                    ->getStateUsing(function ($record) {
+                        if ($record->buy_price > 0) {
+                            $profit = (($record->sell_price - $record->buy_price) / $record->buy_price) * 100;
+                            return number_format($profit, 2) . '%';
+                        }
+                        return '0.00%';
+                    })
+                    ->badge()
+                    ->color(fn ($state) => (float) $state >= 0 ? 'success' : 'danger'),
+
                 TextColumn::make('unit.name')
                     ->label('Unidad')
                     ->searchable()
