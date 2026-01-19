@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Inventory;
 use App\Models\Unit;
 use App\Models\Warehouse;
+use App\Models\ProductCategory;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Collection;
@@ -22,6 +23,7 @@ class InventoryImport implements ToCollection, WithHeadingRow
             $precioCompra = $row['precio_compra'] ?? 0;
             $existencia = $row['existencia'] ?? 0;
             $almacenNombre = $row['almacen'] ?? null;
+            $categoriaNombre = $row['categoria'] ?? null;
 
             if (!$descripcion) {
                 continue;
@@ -44,18 +46,26 @@ class InventoryImport implements ToCollection, WithHeadingRow
                 $warehouseId = $warehouse->id;
             }
 
-            // 3. Producto
+            // 3. Categoría
+            $categoryId = null;
+            if ($categoriaNombre) {
+                $category = ProductCategory::firstOrCreate(['name' => $categoriaNombre]);
+                $categoryId = $category->id;
+            }
+
+            // 4. Producto
             $product = Product::updateOrCreate(
                 ['name' => $descripcion],
                 [
                     'sell_price' => $precioVenta,
                     'buy_price' => $precioCompra,
                     'unit_id' => $unitId,
+                    'product_category_id' => $categoryId,
                     'currency_id' => 1,
                 ]
             );
 
-            // 4. Inventario
+            // 5. Inventario
             if ($warehouseId) {
                 $inventory = Inventory::where('product_id', $product->id)
                     ->where('warehouse_id', $warehouseId)
