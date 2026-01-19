@@ -83,7 +83,7 @@ class ProductsRelationManager extends RelationManager
 
                     return Service::query()
                         ->when(count($used) > 0, fn($q) => $q->whereNotIn('id', $used))
-                        ->where('category_id', ServiceCategory::CONSULT->value)
+                        ->where('service_category_id', ServiceCategory::CONSULT->value)
                         ->pluck('name', 'id');
                 })
                 ->searchable()
