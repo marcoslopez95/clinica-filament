@@ -91,7 +91,7 @@
                 return $detail->content->examCategory->name;
             }
             return 'Sin Categoría';
-        });
+        })
     @endphp
 
     @foreach($groupedDetails as $categoryName => $details)
@@ -133,7 +133,7 @@
                         </tr>
                     @endif
 
-                    @forelse($detail->referenceResults as $result)
+                    @forelse($detail->referenceResults->sortBy(fn($r) => $r->referenceValue->created_at ?? 0, SORT_REGULAR, false) as $result)
                         <tr>
                             <td align="left">{{ $result->referenceValue->name ?? 'N/A' }}</td>
                             <td align="center">{{ $result->result }}</td>
