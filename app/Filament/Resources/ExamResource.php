@@ -19,29 +19,29 @@ class ExamResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document';
     protected static ?string $slug = 'exams';
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'Laboratorio';
     protected static ?string $modelLabel = 'Examen';
     protected static ?string $pluralModelLabel = 'Examenes';
     protected static ?string $navigationLabel = 'Examenes';
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->can('exams.list');
+        return auth()->user()->can('exams.list') || auth()->user()->hasRole('super_admin');
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()->can('exams.create');
+        return auth()->user()->can('exams.create') || auth()->user()->hasRole('super_admin');
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()->can('exams.edit');
+        return auth()->user()->can('exams.edit') || auth()->user()->hasRole('super_admin');
     }
 
     public static function canDelete($record): bool
     {
-        return auth()->user()->can('exams.delete');
+        return auth()->user()->can('exams.delete') || auth()->user()->hasRole('super_admin');
     }
 
     public static function form(Form $form): Form

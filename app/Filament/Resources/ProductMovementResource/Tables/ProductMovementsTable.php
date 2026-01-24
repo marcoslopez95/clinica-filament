@@ -86,7 +86,7 @@ class ProductMovementsTable
             ->filters([
                 SelectFilter::make('product_category')
                     ->label('Categoría de Producto')
-                    ->options(ProductCategory::all()->pluck('name', 'id'))
+                    ->options(fn () => ProductCategory::pluck('name', 'id'))
                     ->query(function (Builder $query, array $data): Builder {
                         if (empty($data['value'])) {
                             return $query;
@@ -119,6 +119,7 @@ class ProductMovementsTable
                     ->label('Paciente')
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $search): array => Patient::where('first_name', 'like', "%{$search}%")->orWhere('last_name', 'like', "%{$search}%")->limit(50)->get()->pluck('fullName', 'id')->toArray())
+                    ->getOptionLabelUsing(fn ($value): ?string => Patient::find($value)?->fullName)
                     ->query(function (Builder $query, array $data): Builder {
                         if (empty($data['value'])) {
                             return $query;
@@ -139,7 +140,13 @@ class ProductMovementsTable
                 // Let's add an Invoice Type filter.
                 SelectFilter::make('invoice_type')
                     ->label('Almacén (Tipo de Factura)')
-                    ->options(collect(InvoiceType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getName()])),
+                    ->options(collect(InvoiceType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getName()]))
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+                        return $query->whereHas('invoice', fn (Builder $query) => $query->where('invoice_type', $data['value']));
+                    }),
             ])
             ->headerActions([
                 Action::make('exportExcel')
@@ -163,6 +170,6 @@ class ProductMovementsTable
                         )),
                 ]),
             ])
-            ->defaultSort('invoice.date', 'desc');
+            ->defaultSort('id', 'desc');
     }
 }

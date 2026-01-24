@@ -36,6 +36,7 @@
             border: 1px solid #ccc;
             padding: 6px;
             text-align: left;
+            vertical-align: middle;
         }
         .text-right {
             text-align: right;
@@ -84,39 +85,65 @@
         </tr>
     </table>
 
-    @foreach($record->details as $detail)
-        <div class="exam-header text-center">
-            {{ $detail->content->name ?? 'Examen' }}
+    @php
+        $groupedDetails = $record->details->groupBy(function($detail) {
+            if ($detail->content_type === 'App\Models\Exam' && $detail->content && $detail->content->examCategory) {
+                return $detail->content->examCategory->name;
+            }
+            return 'Sin Categoría';
+        });
+    @endphp
+
+    @foreach($groupedDetails as $categoryName => $details)
+        <div class="exam-header" align="center">
+            {{ $categoryName }}
         </div>
+
         <table class="results-table">
             <thead>
                 <tr>
-                    <th>Valor Referencial</th>
-                    <th>Resultado</th>
-                    <th>Unidad</th>
-                    <th>Rango/Valor Ref.</th>
+                    <th width="35%">Parámetro</th>
+                    <th width="20%">Resultado</th>
+                    <th width="20%">Unidad</th>
+                    <th width="25%">Rango/Valor Ref.</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($detail->referenceResults as $result)
-                    <tr>
-                        <td>{{ $result->referenceValue->name ?? 'N/A' }}</td>
-                        <td>{{ $result->result }}</td>
-                        <td>{!! $result->referenceValue->unit->name ?? 'N/A' !!}</td>
-                        <td>
-                            @if($result->referenceValue->min_value && $result->referenceValue->max_value)
-                                {{ $result->referenceValue->min_value }} - {{ $result->referenceValue->max_value }}
-                            @else
-                                {{ $result->referenceValue->min_value ?: $result->referenceValue->max_value ?: 'N/A' }}
-                            @endif
-                        </td>
+                @foreach($details as $detail)
+                    @php
+                        $showExamTitle = true;
+                        if ($detail->content_type === 'App\Models\Exam' && $detail->content && $detail->content->examCategory) {
+                            $showExamTitle = $detail->content->examCategory->show_exam_title;
+                        }
+                    @endphp
 
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="text-center">No hay resultados cargados</td>
-                    </tr>
-                @endforelse
+                    @if($showExamTitle)
+                        <tr>
+                            <td colspan="4" style="background-color: #f9f9f9; font-weight: bold;">
+                                Examen: {{ $detail->content->name ?? 'N/A' }}
+                            </td>
+                        </tr>
+                    @endif
+
+                    @forelse($detail->referenceResults as $result)
+                        <tr>
+                            <td align="left">{{ $result->referenceValue->name ?? 'N/A' }}</td>
+                            <td align="center">{{ $result->result }}</td>
+                            <td align="center">{!! $result->referenceValue->unit->name ?? 'N/A' !!}</td>
+                            <td align="center">
+                                @if($result->referenceValue->min_value && $result->referenceValue->max_value)
+                                    {{ $result->referenceValue->min_value }} - {{ $result->referenceValue->max_value }}
+                                @else
+                                    {{ $result->referenceValue->min_value ?: $result->referenceValue->max_value ?: 'N/A' }}
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center">No hay resultados cargados</td>
+                        </tr>
+                    @endforelse
+                @endforeach
             </tbody>
         </table>
     @endforeach

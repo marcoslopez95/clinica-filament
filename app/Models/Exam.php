@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Currency;
+use App\Models\ExamCategory;
 
 class Exam extends Model implements Auditable
 {
@@ -19,6 +20,17 @@ class Exam extends Model implements Auditable
     use AuditableTrait;
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'exam_category_id',
+        'currency_id',
+        'price',
+    ];
+
+    public function examCategory(): BelongsTo
+    {
+        return $this->belongsTo(ExamCategory::class);
+    }
 
     public function referenceValues(): HasMany
     {

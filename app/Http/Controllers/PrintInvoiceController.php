@@ -11,7 +11,7 @@ class PrintInvoiceController extends Controller
 {
     public function __invoke(Invoice $record)
     {
-        $record->load(['details.content', 'details.referenceResults.referenceValue.unit', 'payments.paymentMethod', 'payments.currency', 'invoiceable']);
+        $record->load(['details.content.examCategory', 'details.referenceResults.referenceValue.unit', 'payments.paymentMethod', 'payments.currency', 'invoiceable']);
 
         $view = $record->invoice_type === InvoiceType::LABORATORY
             ? 'pdf.laboratory'
