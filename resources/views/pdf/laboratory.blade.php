@@ -95,6 +95,14 @@
     @endphp
 
     @foreach($groupedDetails as $categoryName => $details)
+        @php
+            $firstDetail = $details->first();
+            $categoryId = null;
+            if ($firstDetail && $firstDetail->content_type === 'App\Models\Exam' && $firstDetail->content && $firstDetail->content->examCategory) {
+                $categoryId = $firstDetail->content->examCategory->id;
+            }
+            $isType3 = ($categoryId == 3);
+        @endphp
         <div class="exam-header" align="center">
             {{ $categoryName }}
         </div>
@@ -102,10 +110,10 @@
         <table class="results-table">
             <thead>
                 <tr>
-                    <th width="35%">Parámetro</th>
-                    <th width="20%">Resultado</th>
-                    <th width="20%">Unidad</th>
-                    <th width="25%">Rango/Valor Ref.</th>
+                    <th align="center" width="35%">Parámetro</th>
+                    <th align="center" width="20%">Resultado</th>
+                    <th align="center" width="20%">{{ $isType3 ? 'Determinación' : 'Unidad' }}</th>
+                    <th align="center" width="25%">{{ $isType3 ? 'Metodología' : 'Rango/Valor Ref.' }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -129,12 +137,22 @@
                         <tr>
                             <td align="left">{{ $result->referenceValue->name ?? 'N/A' }}</td>
                             <td align="center">{{ $result->result }}</td>
-                            <td align="center">{!! $result->referenceValue->unit->name ?? 'N/A' !!}</td>
                             <td align="center">
-                                @if($result->referenceValue->min_value && $result->referenceValue->max_value)
-                                    {{ $result->referenceValue->min_value }} - {{ $result->referenceValue->max_value }}
+                                @if($isType3)
+                                    {{ $result->referenceValue->min_value ?? 'N/A' }}
                                 @else
-                                    {{ $result->referenceValue->min_value ?: $result->referenceValue->max_value ?: 'N/A' }}
+                                    {!! $result->referenceValue->unit->name ?? 'N/A' !!}
+                                @endif
+                            </td>
+                            <td align="center">
+                                @if($isType3)
+                                    {{ $result->referenceValue->max_value ?? 'N/A' }}
+                                @else
+                                    @if($result->referenceValue->min_value && $result->referenceValue->max_value)
+                                        {{ $result->referenceValue->min_value }} - {{ $result->referenceValue->max_value }}
+                                    @else
+                                        {{ $result->referenceValue->min_value ?: $result->referenceValue->max_value ?: 'N/A' }}
+                                    @endif
                                 @endif
                             </td>
                         </tr>
