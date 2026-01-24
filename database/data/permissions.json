@@ -939,73 +939,109 @@
         "name": "exams.list",
         "description": "Listar Exámenes",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.view",
         "description": "Ver Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.create",
         "description": "Crear Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.edit",
         "description": "Editar Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.delete",
         "description": "Eliminar Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.bulk_delete",
         "description": "Eliminación Masiva de Exámenes",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.reference_values.create",
         "description": "Crear Valor Referencial en Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.reference_values.edit.view",
         "description": "Ver Modal para Editar Valor Referencial en Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.reference_values.edit",
         "description": "Editar Valor Referencial en Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.reference_values.view",
         "description": "Ver Valores Referenciales en Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.reference_values.delete",
         "description": "Eliminar Valor Referencial en Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
     },
     {
         "name": "exams.reference_values.bulk_delete",
         "description": "Eliminación Masiva de Valores Referenciales en Examen",
         "guard": "web",
-        "categoria": "Configuración"
+        "categoria": "Laboratorio"
+    },
+    {
+        "name": "exam_categories.list",
+        "description": "Listar Categorías de Examen",
+        "guard": "web",
+        "categoria": "Laboratorio"
+    },
+    {
+        "name": "exam_categories.view",
+        "description": "Ver Categoría de Examen",
+        "guard": "web",
+        "categoria": "Laboratorio"
+    },
+    {
+        "name": "exam_categories.create",
+        "description": "Crear Categoría de Examen",
+        "guard": "web",
+        "categoria": "Laboratorio"
+    },
+    {
+        "name": "exam_categories.edit",
+        "description": "Editar Categoría de Examen",
+        "guard": "web",
+        "categoria": "Laboratorio"
+    },
+    {
+        "name": "exam_categories.delete",
+        "description": "Eliminar Categoría de Examen",
+        "guard": "web",
+        "categoria": "Laboratorio"
+    },
+    {
+        "name": "exam_categories.bulk_delete",
+        "description": "Eliminación Masiva de Categorías de Examen",
+        "guard": "web",
+        "categoria": "Laboratorio"
     },
     {
         "name": "payment_methods.list",

@@ -34,15 +34,11 @@ class ReferenceValueForm
 
             TextInput::make('min_value')
                 ->label(false)
-                ->prefix('<')
-                ->numeric()
                 ->placeholder('mínimo')
                 ->extraAttributes(['class' => 'text-center']),
 
             TextInput::make('max_value')
                 ->label(false)
-                ->prefix('>')
-                ->numeric()
                 ->placeholder('máximo')
                 ->extraAttributes(['class' => 'text-center']),
 

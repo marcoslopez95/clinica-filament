@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ExamResource\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 
 class ExamForm
@@ -14,6 +15,12 @@ class ExamForm
                 ->label('Nombre')
                 ->required()
                 ->unique('exams', ignoreRecord: true),
+
+            Select::make('exam_category_id')
+                ->relationship('examCategory', 'name')
+                ->label('Categoría')
+                ->searchable()
+                ->preload(),
 
             TextInput::make('price')
                 ->label('Precio')

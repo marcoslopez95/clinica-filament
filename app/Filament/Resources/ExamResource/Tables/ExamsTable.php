@@ -21,12 +21,17 @@ class ExamsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('examCategory.name')
+                    ->label('Categoría')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('price')
-                    ->label('Price')
+                    ->label('Precio')
                     ->sortable(),
 
                 TextColumn::make('currency.name')
