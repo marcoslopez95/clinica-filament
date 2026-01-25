@@ -17,6 +17,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
+use App\Models\Invoice;
+use App\Models\InvoiceDetail;
+use App\Models\Currency;
+use App\Enums\InvoiceType;
+use App\Enums\InvoiceStatus;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Forms\Components\Grid;
@@ -183,6 +188,34 @@ class ListInventories extends ListRecords
                     }
 
                     DB::transaction(function () use ($data) {
+                        $fromWarehouse = Warehouse::find($data['from_warehouse_id']);
+                        $toWarehouse = Warehouse::find($data['to_warehouse_id']);
+                        $mainCurrency = Currency::where('is_main', true)->first() ?? Currency::first();
+
+                        $sourceInvoice = Invoice::create([
+                            'date' => now(),
+                            'invoice_type' => InvoiceType::fromWarehouse($fromWarehouse->id),
+                            'status' => InvoiceStatus::CLOSED,
+                            'currency_id' => $mainCurrency?->id,
+                            'exchange' => $mainCurrency?->exchange ?? 1,
+                            'total' => 0,
+                            'description' => "Transferencia de inventario (Salida): {$fromWarehouse->name} -> {$toWarehouse->name}",
+                            'invoiceable_id' => auth()->id(),
+                            'invoiceable_type' => \App\Models\User::class,
+                        ]);
+
+                        $targetInvoice = Invoice::create([
+                            'date' => now(),
+                            'invoice_type' => InvoiceType::fromWarehouse($toWarehouse->id),
+                            'status' => InvoiceStatus::CLOSED,
+                            'currency_id' => $mainCurrency?->id,
+                            'exchange' => $mainCurrency?->exchange ?? 1,
+                            'total' => 0,
+                            'description' => "Transferencia de inventario (Entrada): {$fromWarehouse->name} -> {$toWarehouse->name}",
+                            'invoiceable_id' => auth()->id(),
+                            'invoiceable_type' => \App\Models\User::class,
+                        ]);
+
                         foreach ($data['items'] as $item) {
                             $sourceInventory = Inventory::find($item['inventory_id']);
                             $quantity = $item['quantity'];
@@ -210,6 +243,26 @@ class ListInventories extends ListRecords
                             );
 
                             $targetInventory->increment('amount', $quantity);
+
+                            // Registrar movimiento de salida (origen)
+                            InvoiceDetail::create([
+                                'invoice_id' => $sourceInvoice->id,
+                                'content_id' => $sourceInventory->product_id,
+                                'content_type' => \App\Models\Product::class,
+                                'quantity' => $quantity,
+                                'price' => 0,
+                                'description' => "Salida por transferencia a {$toWarehouse->name}",
+                            ]);
+
+                            // Registrar movimiento de entrada (destino)
+                            InvoiceDetail::create([
+                                'invoice_id' => $targetInvoice->id,
+                                'content_id' => $sourceInventory->product_id,
+                                'content_type' => \App\Models\Product::class,
+                                'quantity' => $quantity,
+                                'price' => 0,
+                                'description' => "Entrada por transferencia desde {$fromWarehouse->name}",
+                            ]);
                         }
                     });
 

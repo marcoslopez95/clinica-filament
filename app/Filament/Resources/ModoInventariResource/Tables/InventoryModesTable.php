@@ -12,6 +12,11 @@ use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use App\Models\Inventory;
+use App\Models\Invoice;
+use App\Models\InvoiceDetail;
+use App\Models\Currency;
+use App\Enums\InvoiceType;
+use App\Enums\InvoiceStatus;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -85,24 +90,74 @@ class InventoryModesTable
                             return;
                         }
 
-                        // Restar del origen
-                        $record->decrement('amount', $moveAmount);
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($record, $moveAmount, $targetWarehouseId) {
+                            $fromWarehouse = Warehouse::find($record->warehouse_id);
+                            $toWarehouse = Warehouse::find($targetWarehouseId);
+                            $mainCurrency = Currency::where('is_main', true)->first() ?? Currency::first();
 
-                        // Buscar o crear en destino
-                        $targetInventory = Inventory::firstOrCreate(
-                            [
-                                'product_id' => $record->product_id,
-                                'warehouse_id' => $targetWarehouseId,
-                            ],
-                            [
-                                'amount' => 0,
-                                'stock_min' => $record->stock_min,
-                                'batch' => $record->batch,
-                                'end_date' => $record->end_date,
-                            ]
-                        );
+                            $sourceInvoice = Invoice::create([
+                                'date' => now(),
+                                'invoice_type' => InvoiceType::fromWarehouse($fromWarehouse->id),
+                                'status' => InvoiceStatus::CLOSED,
+                                'currency_id' => $mainCurrency?->id,
+                                'exchange' => $mainCurrency?->exchange ?? 1,
+                                'total' => 0,
+                                'description' => "Transferencia de inventario (Salida): {$fromWarehouse->name} -> {$toWarehouse->name}",
+                                'invoiceable_id' => auth()->id(),
+                                'invoiceable_type' => \App\Models\User::class,
+                            ]);
 
-                        $targetInventory->increment('amount', $moveAmount);
+                            $targetInvoice = Invoice::create([
+                                'date' => now(),
+                                'invoice_type' => InvoiceType::fromWarehouse($toWarehouse->id),
+                                'status' => InvoiceStatus::CLOSED,
+                                'currency_id' => $mainCurrency?->id,
+                                'exchange' => $mainCurrency?->exchange ?? 1,
+                                'total' => 0,
+                                'description' => "Transferencia de inventario (Entrada): {$fromWarehouse->name} -> {$toWarehouse->name}",
+                                'invoiceable_id' => auth()->id(),
+                                'invoiceable_type' => \App\Models\User::class,
+                            ]);
+
+                            // Restar del origen
+                            $record->decrement('amount', $moveAmount);
+
+                            // Buscar o crear en destino
+                            $targetInventory = Inventory::firstOrCreate(
+                                [
+                                    'product_id' => $record->product_id,
+                                    'warehouse_id' => $targetWarehouseId,
+                                ],
+                                [
+                                    'amount' => 0,
+                                    'stock_min' => $record->stock_min,
+                                    'batch' => $record->batch,
+                                    'end_date' => $record->end_date,
+                                ]
+                            );
+
+                            $targetInventory->increment('amount', $moveAmount);
+
+                            // Registrar movimiento de salida (origen)
+                            InvoiceDetail::create([
+                                'invoice_id' => $sourceInvoice->id,
+                                'content_id' => $record->product_id,
+                                'content_type' => \App\Models\Product::class,
+                                'quantity' => $moveAmount,
+                                'price' => 0,
+                                'description' => "Salida por transferencia a {$toWarehouse->name}",
+                            ]);
+
+                            // Registrar movimiento de entrada (destino)
+                            InvoiceDetail::create([
+                                'invoice_id' => $targetInvoice->id,
+                                'content_id' => $record->product_id,
+                                'content_type' => \App\Models\Product::class,
+                                'quantity' => $moveAmount,
+                                'price' => 0,
+                                'description' => "Entrada por transferencia desde {$fromWarehouse->name}",
+                            ]);
+                        });
 
                         Notification::make()
                             ->title('Movimiento realizado')

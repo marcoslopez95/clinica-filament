@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use \App\Services\InvoiceStatusService;
 
 class Invoice extends Model implements Auditable
@@ -25,6 +26,13 @@ class Invoice extends Model implements Auditable
     use HasFactory;
     use AuditableTrait;
     use SoftDeletes;
+
+    protected static function booted()
+    {
+        static::addGlobalScope('exclude_user_movements', function (Builder $builder) {
+            $builder->where('invoiceable_type', '!=', \App\Models\User::class);
+        });
+    }
 
     /* -----------------------------------------------------------------
      |  Casts

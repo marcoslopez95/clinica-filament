@@ -6,6 +6,7 @@ use App\Enums\InvoiceType;
 use App\Models\InvoiceDetail;
 use App\Models\Patient;
 use App\Models\Supplier;
+use App\Models\User;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -41,15 +42,25 @@ class ProductMovementsExport implements FromCollection, WithHeadings, WithMappin
      */
     public function map($record): array
     {
-        $invoice = $record->invoice;
-        $isInventory = $invoice->invoice_type === InvoiceType::INVENTORY;
-        $prefix = $isInventory ? '+' : '-';
-
+        $invoice = $record->invoice()->withoutGlobalScope('exclude_user_movements')->first();
+        if (!$invoice) {
+            return [
+                $record->content->name ?? 'N/A',
+                'N/A',
+                'N/A',
+                'N/A',
+                'N/A',
+                'N/A',
+            ];
+        }
+        $prefix = str_contains($record->description, 'Entrada') ? '+' : '-';
         $actorName = 'N/A';
         if ($invoice->invoiceable) {
             if ($invoice->invoiceable instanceof Patient) {
                 $actorName = $invoice->invoiceable->fullName;
             } elseif ($invoice->invoiceable instanceof Supplier) {
+                $actorName = $invoice->invoiceable->name;
+            } elseif ($invoice->invoiceable instanceof User) {
                 $actorName = $invoice->invoiceable->name;
             } else {
                 $actorName = $invoice->invoiceable->name ?? $invoice->invoiceable->fullName ?? 'N/A';
