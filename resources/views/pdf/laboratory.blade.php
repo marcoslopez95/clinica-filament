@@ -87,8 +87,11 @@
 
     @php
         $groupedDetails = $record->details->groupBy(function($detail) {
-            if ($detail->content_type === 'App\Models\Exam' && $detail->content && $detail->content->examCategory) {
+            if ($detail->content_type === 'App\Models\Exam' && $detail->content && method_exists($detail->content, 'examCategory') && $detail->content->examCategory) {
                 return $detail->content->examCategory->name;
+            }
+            if ($detail->content_type === 'App\Models\Product' && $detail->content && method_exists($detail->content, 'productCategory') && $detail->content->productCategory) {
+                return $detail->content->productCategory->name;
             }
             return 'Sin Categoría';
         })
@@ -98,7 +101,7 @@
         @php
             $firstDetail = $details->first();
             $isMethodological = false;
-            if ($firstDetail && $firstDetail->content_type === 'App\Models\Exam' && $firstDetail->content && $firstDetail->content->examCategory) {
+            if ($firstDetail && $firstDetail->content_type === 'App\Models\Exam' && $firstDetail->content && method_exists($firstDetail->content, 'examCategory') && $firstDetail->content->examCategory) {
                 $isMethodological = $firstDetail->content->examCategory->is_methodological;
             }
         @endphp
@@ -119,7 +122,7 @@
                 @foreach($details as $detail)
                     @php
                         $showExamTitle = true;
-                        if ($detail->content_type === 'App\Models\Exam' && $detail->content && $detail->content->examCategory) {
+                        if ($detail->content_type === 'App\Models\Exam' && $detail->content && method_exists($detail->content, 'examCategory') && $detail->content->examCategory) {
                             $showExamTitle = $detail->content->examCategory->show_exam_title;
                         }
                     @endphp

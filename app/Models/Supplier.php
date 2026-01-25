@@ -15,6 +15,8 @@ class Supplier extends Model implements Auditable
     use AuditableTrait;
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'document', 'phone', 'type_document_id'];
+
     public function typeDocument(): BelongsTo
     {
         return $this->belongsTo(TypeDocument::class, 'type_document_id');

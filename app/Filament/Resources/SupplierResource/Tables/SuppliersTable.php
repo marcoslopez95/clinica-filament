@@ -33,6 +33,10 @@ class SuppliersTable
                     ->label('Documento')
                     ->sortable(),
 
+                TextColumn::make('phone')
+                    ->label('Teléfono')
+                    ->searchable(),
+
                 ...\App\Filament\Forms\Tables\TimestampTable::columns(),
             ])
 

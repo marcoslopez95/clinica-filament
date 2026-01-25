@@ -22,6 +22,10 @@ class SupplierForm
             TextInput::make('document')
                 ->label('Documento')
                 ->required(),
+
+            TextInput::make('phone')
+                ->label('Teléfono')
+                ->tel(),
         ];
     }
 
