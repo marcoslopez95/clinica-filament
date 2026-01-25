@@ -17,6 +17,12 @@ class ExamCategory extends Model implements Auditable
         'name',
         'description',
         'show_exam_title',
+        'is_methodological',
+    ];
+
+    protected $casts = [
+        'show_exam_title' => 'boolean',
+        'is_methodological' => 'boolean',
     ];
 
     public function exams(): HasMany

@@ -59,6 +59,10 @@ class ExamCategoryResource extends Resource
                     ->label('Mostrar título de examen')
                     ->default(false)
                     ->required(),
+                Forms\Components\Toggle::make('is_methodological')
+                    ->label('Es metodológica')
+                    ->default(false)
+                    ->required(),
                 Forms\Components\Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
@@ -74,6 +78,9 @@ class ExamCategoryResource extends Resource
                     ->searchable(),
                 Tables\Columns\IconColumn::make('show_exam_title')
                     ->label('Mostrar título')
+                    ->boolean(),
+                Tables\Columns\IconColumn::make('is_methodological')
+                    ->label('Metodológica')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

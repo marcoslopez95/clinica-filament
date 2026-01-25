@@ -43,6 +43,8 @@ class ProductMovementResource extends Resource
     {
         return parent::getEloquentQuery()
             ->where('content_type', Product::class)
-            ->with(['content', 'invoice.invoiceable', 'invoice.currency', 'invoice.details']);
+            ->with(['content', 'invoice' => function ($query) {
+                $query->withoutGlobalScope('exclude_user_movements');
+            }, 'invoice.invoiceable', 'invoice.currency', 'invoice.details']);
     }
 }

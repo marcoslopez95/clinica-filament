@@ -47,24 +47,28 @@ class ProductMovementsTable
                 TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->formatStateUsing(function (InvoiceDetail $record, $state) {
-                        $prefix = ($record->invoice->invoice_type === InvoiceType::INVENTORY) ? '+' : '-';
+                        $prefix = str_contains($record->description, 'Entrada') ? '+' : '-';
                         return "{$prefix}{$state}";
                     })
                     ->color(fn (InvoiceDetail $record): string =>
-                        ($record->invoice->invoice_type === InvoiceType::INVENTORY) ? 'success' : 'danger'
+                        str_contains($record->description, 'Entrada') ? 'success' : 'danger'
                     )
                     ->sortable(),
 
                 TextColumn::make('invoice.invoice_type')
                     ->label('Almacén/Tipo')
-                    ->formatStateUsing(fn ($state) => $state->getName())
+                    ->formatStateUsing(function ($record) {
+                        $invoice = $record->invoice()->withoutGlobalScope('exclude_user_movements')->first();
+                        return $invoice?->invoice_type?->getName() ?? 'N/A';
+                    })
                     ->sortable(),
 
-                TextColumn::make('invoice.invoiceable.fullName')
+                TextColumn::make('invoice.invoiceable')
                     ->label('Paciente/Proveedor')
                     ->placeholder('N/A')
                     ->formatStateUsing(function (InvoiceDetail $record) {
-                        $invoiceable = $record->invoice->invoiceable;
+                        $invoice = $record->invoice()->withoutGlobalScope('exclude_user_movements')->first();
+                        $invoiceable = $invoice?->invoiceable;
                         if (!$invoiceable) return null;
 
                         if ($invoiceable instanceof Patient) {
@@ -72,6 +76,10 @@ class ProductMovementsTable
                         }
 
                         if ($invoiceable instanceof Supplier) {
+                            return $invoiceable->name;
+                        }
+
+                        if ($invoiceable instanceof \App\Models\User) {
                             return $invoiceable->name;
                         }
 
@@ -107,11 +115,11 @@ class ProductMovementsTable
                         return $query
                             ->when(
                                 $data['from'],
-                                fn (Builder $query, $date): Builder => $query->whereHas('invoice', fn ($q) => $q->whereDate('date', '>=', $date)),
+                                fn (Builder $query, $date): Builder => $query->whereHas('invoice', fn ($q) => $q->withoutGlobalScope('exclude_user_movements')->whereDate('date', '>=', $date)),
                             )
                             ->when(
                                 $data['until'],
-                                fn (Builder $query, $date): Builder => $query->whereHas('invoice', fn ($q) => $q->whereDate('date', '<=', $date)),
+                                fn (Builder $query, $date): Builder => $query->whereHas('invoice', fn ($q) => $q->withoutGlobalScope('exclude_user_movements')->whereDate('date', '<=', $date)),
                             );
                     }),
 
@@ -125,7 +133,8 @@ class ProductMovementsTable
                             return $query;
                         }
                         return $query->whereHas('invoice', function (Builder $query) use ($data) {
-                            $query->where('invoiceable_id', $data['value'])
+                            $query->withoutGlobalScope('exclude_user_movements')
+                                  ->where('invoiceable_id', $data['value'])
                                   ->where('invoiceable_type', Patient::class);
                         });
                     }),
@@ -145,7 +154,7 @@ class ProductMovementsTable
                         if (empty($data['value'])) {
                             return $query;
                         }
-                        return $query->whereHas('invoice', fn (Builder $query) => $query->where('invoice_type', $data['value']));
+                        return $query->whereHas('invoice', fn (Builder $query) => $query->withoutGlobalScope('exclude_user_movements')->where('invoice_type', $data['value']));
                     }),
             ])
             ->headerActions([

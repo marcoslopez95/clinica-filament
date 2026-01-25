@@ -87,8 +87,11 @@
 
     @php
         $groupedDetails = $record->details->groupBy(function($detail) {
-            if ($detail->content_type === 'App\Models\Exam' && $detail->content && $detail->content->examCategory) {
+            if ($detail->content_type === 'App\Models\Exam' && $detail->content && method_exists($detail->content, 'examCategory') && $detail->content->examCategory) {
                 return $detail->content->examCategory->name;
+            }
+            if ($detail->content_type === 'App\Models\Product' && $detail->content && method_exists($detail->content, 'productCategory') && $detail->content->productCategory) {
+                return $detail->content->productCategory->name;
             }
             return 'Sin Categoría';
         })
@@ -97,11 +100,10 @@
     @foreach($groupedDetails as $categoryName => $details)
         @php
             $firstDetail = $details->first();
-            $categoryId = null;
-            if ($firstDetail && $firstDetail->content_type === 'App\Models\Exam' && $firstDetail->content && $firstDetail->content->examCategory) {
-                $categoryId = $firstDetail->content->examCategory->id;
+            $isMethodological = false;
+            if ($firstDetail && $firstDetail->content_type === 'App\Models\Exam' && $firstDetail->content && method_exists($firstDetail->content, 'examCategory') && $firstDetail->content->examCategory) {
+                $isMethodological = $firstDetail->content->examCategory->is_methodological;
             }
-            $isType3 = ($categoryId == 3);
         @endphp
         <div class="exam-header" align="center">
             {{ $categoryName }}
@@ -112,15 +114,15 @@
                 <tr>
                     <th align="center" width="35%">Parámetro</th>
                     <th align="center" width="20%">Resultado</th>
-                    <th align="center" width="20%">{{ $isType3 ? 'Determinación' : 'Unidad' }}</th>
-                    <th align="center" width="25%">{{ $isType3 ? 'Metodología' : 'Rango/Valor Ref.' }}</th>
+                    <th align="center" width="20%">{{ $isMethodological ? 'Determinación' : 'Unidad' }}</th>
+                    <th align="center" width="25%">{{ $isMethodological ? 'Metodología' : 'Rango/Valor Ref.' }}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($details as $detail)
                     @php
                         $showExamTitle = true;
-                        if ($detail->content_type === 'App\Models\Exam' && $detail->content && $detail->content->examCategory) {
+                        if ($detail->content_type === 'App\Models\Exam' && $detail->content && method_exists($detail->content, 'examCategory') && $detail->content->examCategory) {
                             $showExamTitle = $detail->content->examCategory->show_exam_title;
                         }
                     @endphp
@@ -128,7 +130,7 @@
                     @if($showExamTitle)
                         <tr>
                             <td colspan="4" style="background-color: #f9f9f9; font-weight: bold;">
-                                Examen: {{ $detail->content->name ?? 'N/A' }}
+                                {{ $detail->content->name ?? 'N/A' }}
                             </td>
                         </tr>
                     @endif
@@ -138,14 +140,14 @@
                             <td align="left">{{ $result->referenceValue->name ?? 'N/A' }}</td>
                             <td align="center">{{ $result->result }}</td>
                             <td align="center">
-                                @if($isType3)
+                                @if($isMethodological)
                                     {{ $result->referenceValue->min_value ?? 'N/A' }}
                                 @else
                                     {!! $result->referenceValue->unit->name ?? 'N/A' !!}
                                 @endif
                             </td>
                             <td align="center">
-                                @if($isType3)
+                                @if($isMethodological)
                                     {{ $result->referenceValue->max_value ?? 'N/A' }}
                                 @else
                                     @if($result->referenceValue->min_value && $result->referenceValue->max_value)
