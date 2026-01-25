@@ -10,6 +10,11 @@ use Illuminate\Support\Carbon;
 
 class InvoiceStats extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        return auth()->user()->can('dashboard.view');
+    }
+
     protected function getStats(): array
     {
         $now = Carbon::now();
