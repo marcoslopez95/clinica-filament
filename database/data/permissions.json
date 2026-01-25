@@ -1,5 +1,11 @@
 [
     {
+        "name": "dashboard.view",
+        "description": "Ver Dashboard",
+        "guard": "web",
+        "categoria": "Dashboard"
+    },
+    {
         "name": "roles.list",
         "description": "Listar Roles",
         "guard": "web",
