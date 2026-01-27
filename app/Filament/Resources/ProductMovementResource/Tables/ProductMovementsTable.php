@@ -47,11 +47,12 @@ class ProductMovementsTable
                 TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->formatStateUsing(function (InvoiceDetail $record, $state) {
-                        $prefix = str_contains($record->description, 'Entrada') ? '+' : '-';
+                        $prefix = (str_contains($record->description, 'Entrada') || $record->invoice->invoice_type === InvoiceType::INVENTORY)
+                            ? '+' : '-';
                         return "{$prefix}{$state}";
                     })
                     ->color(fn (InvoiceDetail $record): string =>
-                        str_contains($record->description, 'Entrada') ? 'success' : 'danger'
+                    (str_contains($record->description, 'Entrada') || $record->invoice->invoice_type === InvoiceType::INVENTORY) ? 'success' : 'danger'
                     )
                     ->sortable(),
 

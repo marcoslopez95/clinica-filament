@@ -180,9 +180,7 @@ class ProductsRelationManager extends RelationManager
                             ->where('product_id', $data['content_id'])
                             ->first();
 
-                        if ($inventory) {
-                            $inventory->increment('amount', $data['quantity']);
-                        } else {
+                        if (!$inventory){
                             Inventory::create([
                                 'product_id' => $data['content_id'],
                                 'warehouse_id' => $warehouse->id,
