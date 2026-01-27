@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EntryResource\RelationManagers;
 
+use App\Models\InvoiceDetail;
 use App\Models\Product;
 use App\Models\Inventory;
 use Filament\Forms\Form;
@@ -165,14 +166,15 @@ class ProductsRelationManager extends RelationManager
                         }
 
                         $owner = $livewire->getOwnerRecord();
-                        $owner
+                        InvoiceDetail::withoutEvents(fn() => $owner
                             ->details()
                             ->create([
                                 'content_id' => $data['content_id'],
                                 'content_type' => Product::class,
                                 'price' => $data['price'],
                                 'quantity' => $data['quantity'],
-                            ]);
+                            ]));
+
 
                         $warehouse = Warehouse::getFarmacia();
 
@@ -181,13 +183,15 @@ class ProductsRelationManager extends RelationManager
                             ->first();
 
                         if (!$inventory){
-                            Inventory::create([
+                            $inventory = Inventory::create([
                                 'product_id' => $data['content_id'],
                                 'warehouse_id' => $warehouse->id,
                                 'stock_min' => 0,
                                 'amount' => $data['quantity'],
                             ]);
                         }
+
+                        $inventory->increment('amount', $data['quantity']);
 
                         $livewire->dispatch('refreshTotal');
                     }),
