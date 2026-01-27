@@ -244,25 +244,26 @@ class ListInventories extends ListRecords
 
                             $targetInventory->increment('amount', $quantity);
 
-                            // Registrar movimiento de salida (origen)
-                            InvoiceDetail::create([
-                                'invoice_id' => $sourceInvoice->id,
-                                'content_id' => $sourceInventory->product_id,
-                                'content_type' => \App\Models\Product::class,
-                                'quantity' => $quantity,
-                                'price' => 0,
-                                'description' => "Salida por transferencia a {$toWarehouse->name}",
-                            ]);
+                            InvoiceDetail::withoutEvents(function () use ($sourceInvoice, $targetInvoice, $sourceInventory, $quantity, $toWarehouse, $fromWarehouse) {
 
-                            // Registrar movimiento de entrada (destino)
-                            InvoiceDetail::create([
-                                'invoice_id' => $targetInvoice->id,
-                                'content_id' => $sourceInventory->product_id,
-                                'content_type' => \App\Models\Product::class,
-                                'quantity' => $quantity,
-                                'price' => 0,
-                                'description' => "Entrada por transferencia desde {$fromWarehouse->name}",
-                            ]);
+                                // Registrar movimiento de salida
+                                $sourceInvoice->details()->create([
+                                    'content_id' => $sourceInventory->product_id,
+                                    'content_type' => \App\Models\Product::class,
+                                    'quantity' => $quantity,
+                                    'price' => 0,
+                                    'description' => "Salida por transferencia a {$toWarehouse->name}",
+                                ]);
+
+                                // Registrar movimiento de entrada
+                                $targetInvoice->details()->create([
+                                    'content_id' => $sourceInventory->product_id,
+                                    'content_type' => \App\Models\Product::class,
+                                    'quantity' => $quantity,
+                                    'price' => 0,
+                                    'description' => "Entrada por transferencia desde {$fromWarehouse->name}",
+                                ]);
+                            });
                         }
                     });
 
