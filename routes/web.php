@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/tu', function () {
+    return view('CumpleNegra');
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
