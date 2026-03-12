@@ -122,7 +122,7 @@ class ListInventories extends ListRecords
                                         ->with('product')
                                         ->get()
                                         ->mapWithKeys(function ($inventory) {
-                                            return [$inventory->id => $inventory->product->name . " (Stock: {$inventory->amount})"];
+                                            return [$inventory->id => $inventory->product?->name . " (Stock: {$inventory->amount})"];
                                         });
                                 })
                                 ->searchable()
